@@ -1,0 +1,11 @@
+
+map-item:
+  # 支付二维码地图的虚拟地图编号，请设置得尽可能大
+  # 1.12 或以下最大的地图ID为 32767，超过将自动限制
+  id: 20070831
+  # 物品名称和 lore，支持 MiniMessage
+  name: '&e&l扫描二维码'
+  lore:
+    - '&7请扫描二维码图像'
+  # 物品的 CustomModelData
+  custom-model-data: unset
