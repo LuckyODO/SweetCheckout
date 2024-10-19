@@ -2,8 +2,10 @@ name: SweetCheckout
 version: '${version}'
 main: top.mrxiaom.sweet.checkout.SweetCheckout
 api-version: 1.13
-depend: [ PlayerPoints ]
-softdepend: [ PlaceholderAPI ]
+depend: []
+softdepend:
+  - PlaceholderAPI
+  - PlayerPoints
 authors: [ MrXiaoM ]
 commands:
   sweetcheckout:
