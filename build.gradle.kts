@@ -7,7 +7,6 @@ allprojects {
 }
 subprojects {
     apply(plugin = "java")
-    apply(plugin = "maven-publish")
     val targetJavaVersion = 8
     
     repositories {
@@ -32,17 +31,6 @@ subprojects {
         options.encoding = "UTF-8"
         if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible) {
             options.release.set(targetJavaVersion)
-        }
-    }
-
-    project.extensions.configure<PublishingExtension> {
-        publications {
-            create<MavenPublication>("maven") {
-                from(components.getByName("java"))
-                groupId = project.group.toString()
-                artifactId = project.name
-                version = project.version.toString()
-            }
         }
     }
 }
