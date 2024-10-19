@@ -18,6 +18,7 @@ dependencies {
     implementation("com.zaxxer:HikariCP:4.0.3") { isTransitive = false }
     implementation("org.jetbrains:annotations:21.0.0")
     implementation("com.github.MrXiaoM:PluginBase:1+")
+    implementation("org.java-websocket:Java-WebSocket:1.5.7")
     implementation(project(":bukkit:nms"))
 }
 tasks {
@@ -31,6 +32,7 @@ tasks {
             "de.tr7zw.changeme.nbtapi" to "nbtapi",
             "net.kyori" to "kyori",
             "top.mrxiaom.qrcode" to "qrcode",
+            "org.java_websocket" to "websocket",
         ).forEach { (original, target) ->
             relocate(original, "$shadowGroup.$target")
         }
