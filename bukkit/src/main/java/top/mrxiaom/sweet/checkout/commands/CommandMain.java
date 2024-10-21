@@ -14,7 +14,9 @@ import top.mrxiaom.qrcode.QRCode;
 import top.mrxiaom.qrcode.enums.ErrorCorrectionLevel;
 import top.mrxiaom.sweet.checkout.SweetCheckout;
 import top.mrxiaom.sweet.checkout.func.AbstractModule;
+import top.mrxiaom.sweet.checkout.func.PaymentAPI;
 import top.mrxiaom.sweet.checkout.func.QRCodeManager;
+import top.mrxiaom.sweet.checkout.packets.plugin.PacketPluginRequestOrder;
 
 import java.util.*;
 
@@ -27,6 +29,28 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+        if (sender instanceof Player) {
+            Player player = (Player) sender;
+            if (args.length == 3 && "points".equalsIgnoreCase(args[0])) {
+                String type = args[1];
+                String money = args[2];
+                PaymentAPI.inst().send(new PacketPluginRequestOrder(
+                        player.getName(), type, money
+                ), resp -> {
+                    String error = resp.getError();
+                    if (!error.isEmpty()) {
+                        t(player, error);
+                        return;
+                    }
+                    // TODO: 将订单储存起来
+                    String orderId = resp.getOrderId();
+                    // 向玩家展示二维码地图
+                    QRCode code = QRCode.create(resp.getPaymentUrl(), ErrorCorrectionLevel.H);
+                    QRCodeManager.inst().generateMap(player, code);
+                });
+                return t(player, "正在请求…");
+            }
+        }
         if (args.length == 1 && "start".equalsIgnoreCase(args[0])) {
             if (sender instanceof Player) {
                 QRCode code = QRCode.create("wxp://f2f196rg-*********SweetCheckout*********-ce_JBziy3z", ErrorCorrectionLevel.H);
