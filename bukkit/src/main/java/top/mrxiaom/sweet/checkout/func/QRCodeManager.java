@@ -167,7 +167,6 @@ public class QRCodeManager extends AbstractModule implements Listener {
         int start = (128 - width) / 2;
         byte[] colors = new byte[16384];
         Arrays.fill(colors, light);
-        System.out.println(width + ", " + start);
         for (int z = 0; z < width; z++) {
             for (int x = 0; x < width; x++) {
                 int index = (start + x) + 128 * (start + z);
