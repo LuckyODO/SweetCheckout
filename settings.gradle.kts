@@ -8,3 +8,4 @@ for (file in File("bukkit/nms").listFiles() ?: arrayOf()) {
         include(":bukkit:nms:${file.name}")
     }
 }
+include(":packets")

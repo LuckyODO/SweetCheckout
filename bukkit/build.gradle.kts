@@ -20,6 +20,7 @@ dependencies {
     implementation("com.github.MrXiaoM:PluginBase:1+")
     implementation("org.java-websocket:Java-WebSocket:1.5.7")
     implementation(project(":bukkit:nms"))
+    implementation(project(":packets"))
 }
 tasks {
     shadowJar {

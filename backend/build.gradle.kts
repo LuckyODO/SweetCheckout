@@ -9,6 +9,7 @@ dependencies {
     implementation("org.java-websocket:Java-WebSocket:1.5.7")
     implementation("com.zaxxer:HikariCP:4.0.3") { isTransitive = false }
     implementation("org.jetbrains:annotations:21.0.0")
+    implementation(project(":packets"))
 }
 
 fun Jar.setupManifest() {
