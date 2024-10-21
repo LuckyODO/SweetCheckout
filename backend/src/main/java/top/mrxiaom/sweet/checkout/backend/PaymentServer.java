@@ -107,33 +107,34 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
 
     @Override
     public boolean inject(WebSocketImpl webSocket, ByteBuffer byteBuffer) {
-        String httpLines = new String(byteBuffer.array(), byteBuffer.position(), byteBuffer.remaining());
-        if (httpLines.startsWith("POST ")) { // POST /api/hook/receive HTTP/1.1
-            String[] lines = httpLines.split("\n");
-            String s1 = lines[0].substring(5);
-            String path = s1.substring(0, s1.lastIndexOf(' '));
-            if (path.equals(ConsoleMain.getConfig().getHook().getEndPoint())) {
-                StringBuilder content = new StringBuilder();
-                boolean flag = false;
-                for (String line : lines) {
-                    if (flag) {
-                        content.append(line.replace("\r", "")).append("\n");
+        if (ConsoleMain.getConfig().getHook().isEnable()) {
+            String httpLines = new String(byteBuffer.array(), byteBuffer.position(), byteBuffer.remaining());
+            if (httpLines.startsWith("POST ")) { // POST /api/hook/receive HTTP/1.1
+                String[] lines = httpLines.split("\n");
+                String s1 = lines[0].substring(5);
+                String path = s1.substring(0, s1.lastIndexOf(' '));
+                if (path.equals(ConsoleMain.getConfig().getHook().getEndPoint())) {
+                    StringBuilder content = new StringBuilder();
+                    boolean flag = false;
+                    for (String line : lines) {
+                        if (flag) {
+                            content.append(line.replace("\r", "")).append("\n");
+                        } else if (line.trim().isEmpty()) {
+                            flag = true;
+                        }
                     }
-                    else if (line.trim().isEmpty()) {
-                        flag = true;
+                    try {
+                        HookReceive receive = gson.fromJson(content.toString(), HookReceive.class);
+                        onHookReceive(receive);
+                    } catch (Throwable t) {
+                        logger.warn("解析Hook消息时出现异常", t);
                     }
-                }
-                try {
-                    HookReceive receive = gson.fromJson(content.toString(), HookReceive.class);
-                    onHookReceive(receive);
-                } catch (Throwable t) {
-                    logger.warn("解析Hook消息时出现异常", t);
-                }
 
-                String resp = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nServer: SweetCheckout\r\nContent-Length: 2\r\n\r\nOK";
-                IDecodeInjector.write(this, webSocket, ByteBuffer.wrap(Charsetfunctions.asciiBytes(resp)));
-                webSocket.flushAndClose(1000, "OK", false);
-                return true;
+                    String resp = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nServer: SweetCheckout\r\nContent-Length: 2\r\n\r\nOK";
+                    IDecodeInjector.write(this, webSocket, ByteBuffer.wrap(Charsetfunctions.asciiBytes(resp)));
+                    webSocket.flushAndClose(1000, "OK", false);
+                    return true;
+                }
             }
         }
         return false;
