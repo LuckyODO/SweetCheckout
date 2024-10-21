@@ -5,9 +5,6 @@ import com.google.gson.GsonBuilder;
 import lombok.Getter;
 import net.minecrell.terminalconsole.SimpleTerminalConsole;
 import org.apache.commons.io.FileUtils;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.config.Configurator;
-import org.java_websocket.WebSocketImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +25,6 @@ public class ConsoleMain extends SimpleTerminalConsole {
     public static void main(String[] args) {
         logger.info("正在运行 SweetCheckout 后端");
         reloadConfig();
-        Configurator.setLevel(WebSocketImpl.class, Level.ALL);
         server = new PaymentServer(logger, config.getPort());
         server.start();
 

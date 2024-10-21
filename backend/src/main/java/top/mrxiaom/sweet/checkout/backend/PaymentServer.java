@@ -28,7 +28,7 @@ import java.util.function.BiFunction;
 public class PaymentServer extends WebSocketServer implements IDecodeInjector {
     Logger logger;
     Map<String, List<BiFunction>> executors = new HashMap<>();
-    Gson gson = new GsonBuilder().create();
+    Gson gson = new GsonBuilder().setLenient().create();
     public PaymentServer(Logger logger, int port) {
         super(new InetSocketAddress(port));
         this.logger = logger;
@@ -102,11 +102,12 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
 
     private void onHookReceive(HookReceive receive) {
         // TODO: 处理接收 hook 收款消息
+        logger.info("收到Hook收款，来自 {} 的 ￥{}", receive.getName(), receive.getMoney());
     }
 
     @Override
     public boolean inject(WebSocketImpl webSocket, ByteBuffer byteBuffer) {
-        String httpLines = new String(byteBuffer.array());
+        String httpLines = new String(byteBuffer.array(), byteBuffer.position(), byteBuffer.remaining());
         if (httpLines.startsWith("POST ")) { // POST /api/hook/receive HTTP/1.1
             String[] lines = httpLines.split("\n");
             String s1 = lines[0].substring(5);
@@ -132,6 +133,7 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
                 String resp = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nServer: SweetCheckout\r\nContent-Length: 2\r\n\r\nOK";
                 IDecodeInjector.write(this, webSocket, ByteBuffer.wrap(Charsetfunctions.asciiBytes(resp)));
                 webSocket.flushAndClose(1000, "OK", false);
+                return true;
             }
         }
         return false;
