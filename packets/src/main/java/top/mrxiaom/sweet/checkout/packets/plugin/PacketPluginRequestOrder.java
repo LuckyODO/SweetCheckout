@@ -17,13 +17,18 @@ public class PacketPluginRequestOrder implements IPacket<PacketPluginRequestOrde
      */
     private String type;
     /**
+     * 商品名
+     */
+    private String productName;
+    /**
      * 金额字符串，后端会自动处理数字
      */
     private String price;
 
-    public PacketPluginRequestOrder(String playerName, String type, String price) {
+    public PacketPluginRequestOrder(String playerName, String type, String productName, String price) {
         this.playerName = playerName;
         this.type = type;
+        this.productName = productName;
         this.price = price;
     }
 
@@ -33,6 +38,10 @@ public class PacketPluginRequestOrder implements IPacket<PacketPluginRequestOrde
 
     public String getType() {
         return type;
+    }
+
+    public String getProductName() {
+        return productName;
     }
 
     public String getPrice() {
@@ -57,6 +66,12 @@ public class PacketPluginRequestOrder implements IPacket<PacketPluginRequestOrde
          * 付款二维码地址
          */
         private String paymentUrl;
+
+        public Response(String error) {
+            this.error = error;
+            this.orderId = "";
+            this.paymentUrl = "";
+        }
 
         public Response(String error, String orderId, String paymentUrl) {
             this.error = error;

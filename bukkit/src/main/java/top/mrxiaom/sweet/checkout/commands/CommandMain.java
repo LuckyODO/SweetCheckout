@@ -35,7 +35,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                 String type = args[1];
                 String money = args[2];
                 PaymentAPI.inst().send(new PacketPluginRequestOrder(
-                        player.getName(), type, money
+                        player.getName(), type, "宝石" /* TODO: 商品名移到配置文件 */, money
                 ), resp -> {
                     String error = resp.getError();
                     if (!error.isEmpty()) {
