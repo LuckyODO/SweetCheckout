@@ -14,10 +14,7 @@ dependencies {
     implementation("net.minecrell:terminalconsoleappender:1.3.0")
     implementation("org.slf4j:slf4j-api:2.0.16")
 
-    // TODO: move wechat pay sdk into src
-    // implementation("com.github.wechatpay-apiv3:wechatpay-java:0.2.14")
-
-    // alipay sdk v2
+    // alipay sdk and wechat pay sdk
     implementation("org.bouncycastle:bcprov-jdk15on:1.62")
     implementation("dom4j:dom4j:1.6.1")
     implementation("com.squareup.okhttp3:okhttp:3.12.13")
@@ -46,6 +43,7 @@ tasks {
                 "org.apache.logging.log4j:log4j-api",
                 "org.apache.logging.log4j:log4j-core",
                 "org.apache.logging.log4j:log4j-slf4j2-impl",
+                "commons-io:commons-io",
             )
             include {
                 println("${it.moduleGroup}:${it.moduleName}")
