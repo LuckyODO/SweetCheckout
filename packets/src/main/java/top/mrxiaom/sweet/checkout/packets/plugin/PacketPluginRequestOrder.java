@@ -58,6 +58,12 @@ public class PacketPluginRequestOrder implements IPacket<PacketPluginRequestOrde
          */
         private String paymentUrl;
 
+        public Response(String error, String orderId, String paymentUrl) {
+            this.error = error;
+            this.orderId = orderId;
+            this.paymentUrl = paymentUrl;
+        }
+
         public String getError() {
             return error;
         }

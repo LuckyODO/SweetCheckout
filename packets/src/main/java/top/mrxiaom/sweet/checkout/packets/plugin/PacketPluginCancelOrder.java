@@ -32,6 +32,10 @@ public class PacketPluginCancelOrder implements IPacket<PacketPluginCancelOrder.
          */
         private String error;
 
+        public Response(String error) {
+            this.error = error;
+        }
+
         public String getError() {
             return error;
         }

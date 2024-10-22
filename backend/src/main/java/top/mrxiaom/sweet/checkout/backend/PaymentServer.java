@@ -14,6 +14,8 @@ import top.mrxiaom.sweet.checkout.backend.data.ClientInfo;
 import top.mrxiaom.sweet.checkout.backend.data.HookReceive;
 import top.mrxiaom.sweet.checkout.packets.PacketSerializer;
 import top.mrxiaom.sweet.checkout.packets.common.IPacket;
+import top.mrxiaom.sweet.checkout.packets.plugin.PacketPluginCancelOrder;
+import top.mrxiaom.sweet.checkout.packets.plugin.PacketPluginRequestOrder;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -32,6 +34,8 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
     public PaymentServer(Logger logger, int port) {
         super(new InetSocketAddress(port));
         this.logger = logger;
+        this.registerExecutor(PacketPluginRequestOrder.class, this::handleRequest);
+        this.registerExecutor(PacketPluginCancelOrder.class, this::handleCancel);
     }
 
     public <T extends IPacket> void registerExecutor(Class<T> type, BiConsumer<T, WebSocket> executor) {
@@ -46,6 +50,40 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
         if (list == null) list = new ArrayList<>();
         list.add(executor);
         executors.put(key, list);
+    }
+
+    private PacketPluginRequestOrder.Response handleRequest(PacketPluginRequestOrder packet, WebSocket webSocket) {
+        ClientInfo client = getOrCreateInfo(webSocket);
+        Configuration config = ConsoleMain.getConfig();
+        if (packet.getType().equals("wechat")) {
+            if (config.getHook().isEnable() && config.getHook().getWeChat().isEnable()) {
+                // TODO: 微信 Hook
+            }
+            if (config.getWeChatNative().isEnable()) {
+                // TODO: 微信 Native
+            }
+        }
+        if (packet.getType().equals("alipay")) {
+            if (config.getAlipayFaceToFace().isEnable()) {
+                // TODO: 支付宝当面付
+            }
+        }
+        return new PacketPluginRequestOrder.Response("payment.type-unknown", "", "");
+    }
+
+    private PacketPluginCancelOrder.Response handleCancel(PacketPluginCancelOrder packet, WebSocket webSocket) {
+        ClientInfo client = getOrCreateInfo(webSocket);
+        // TODO: 取消订单
+        return new PacketPluginCancelOrder.Response("payment.cancel.not-found");
+    }
+
+    public ClientInfo getOrCreateInfo(WebSocket webSocket) {
+        ClientInfo client = webSocket.getAttachment();
+        if (client == null) {
+            client = new ClientInfo();
+            webSocket.setAttachment(client);
+        }
+        return client;
     }
 
     @Override
