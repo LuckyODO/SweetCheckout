@@ -6,6 +6,8 @@ import net.minecrell.terminalconsole.SimpleTerminalConsole;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import top.mrxiaom.sweet.checkout.backend.data.ClientInfo;
+import top.mrxiaom.sweet.checkout.packets.plugin.PacketPluginRequestOrder;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,7 +19,9 @@ public class ConsoleMain extends SimpleTerminalConsole {
     private static Configuration config;
     private boolean running = true;
     private static Logger logger = LoggerFactory.getLogger("Server");
-    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private static final Gson gson = new GsonBuilder()
+            .setPrettyPrinting()
+            .create();
     public static void main(String[] args) {
         logger.info("正在运行 SweetCheckout 后端");
         reloadConfig();
@@ -53,6 +57,7 @@ public class ConsoleMain extends SimpleTerminalConsole {
             } else {
                 config = new Configuration();
             }
+            config.postLoad();
             String configRaw = gson.toJson(config);
             FileUtils.writeStringToFile(file, configRaw, StandardCharsets.UTF_8);
         } catch (IOException e) {

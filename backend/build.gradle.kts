@@ -6,6 +6,7 @@ val targetJavaVersion = 8
 val shadowGroup = "top.mrxiaom.sweet.checkout.backend.libs"
 val entry = "top.mrxiaom.sweet.checkout.backend.ConsoleMain"
 
+@Suppress("VulnerableLibrariesLocal")
 dependencies {
     implementation("org.apache.logging.log4j:log4j-api:2.23.1")
     implementation("org.apache.logging.log4j:log4j-core:2.23.1")
@@ -22,7 +23,7 @@ dependencies {
     implementation("commons-io:commons-io:2.17.0")
     implementation("com.google.code.gson:gson:2.10")
     implementation("top.mrxiaom:Java-WebSocket:1.5.8")
-    implementation("com.zaxxer:HikariCP:4.0.3") { isTransitive = false }
+    implementation("com.zaxxer:HikariCP:4.0.3")
     implementation("org.jetbrains:annotations:21.0.0")
     implementation(project(":packets"))
 }
