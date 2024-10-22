@@ -14,11 +14,9 @@ dependencies {
 
     implementation("commons-io:commons-io:2.17.0")
     implementation("com.google.code.gson:gson:2.10")
-    implementation("top.mrxiaom:Java-WebSocket:1.5.7")
+    implementation("top.mrxiaom:Java-WebSocket:1.5.8")
     implementation("com.zaxxer:HikariCP:4.0.3") { isTransitive = false }
     implementation("org.jetbrains:annotations:21.0.0")
-    implementation("org.projectlombok:lombok:1.18.30")
-    annotationProcessor("org.projectlombok:lombok:1.18.30")
     implementation(project(":packets"))
 }
 

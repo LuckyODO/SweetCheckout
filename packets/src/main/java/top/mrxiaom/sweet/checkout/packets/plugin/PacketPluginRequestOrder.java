@@ -1,15 +1,12 @@
 package top.mrxiaom.sweet.checkout.packets.plugin;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import top.mrxiaom.sweet.checkout.packets.common.IPacket;
 import top.mrxiaom.sweet.checkout.packets.common.IResponsePacket;
 
 /**
  * 插件向后端申请新支付订单
  */
-@Getter
-@AllArgsConstructor
+@SuppressWarnings("FieldMayBeFinal")
 public class PacketPluginRequestOrder implements IPacket<PacketPluginRequestOrder.Response> {
     /**
      * 玩家名
@@ -24,12 +21,29 @@ public class PacketPluginRequestOrder implements IPacket<PacketPluginRequestOrde
      */
     private String price;
 
+    public PacketPluginRequestOrder(String playerName, String type, String price) {
+        this.playerName = playerName;
+        this.type = type;
+        this.price = price;
+    }
+
+    public String getPlayerName() {
+        return playerName;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
     @Override
     public Class<Response> getResponsePacket() {
         return Response.class;
     }
-    @Getter
-    @AllArgsConstructor
+    @SuppressWarnings("FieldMayBeFinal")
     public static class Response implements IResponsePacket {
         /**
          * 错误信息，无错误时为空字符串
@@ -43,5 +57,17 @@ public class PacketPluginRequestOrder implements IPacket<PacketPluginRequestOrde
          * 付款二维码地址
          */
         private String paymentUrl;
+
+        public String getError() {
+            return error;
+        }
+
+        public String getOrderId() {
+            return orderId;
+        }
+
+        public String getPaymentUrl() {
+            return paymentUrl;
+        }
     }
 }

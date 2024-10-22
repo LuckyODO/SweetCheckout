@@ -2,7 +2,6 @@ package top.mrxiaom.sweet.checkout.backend;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import lombok.Getter;
 import net.minecrell.terminalconsole.SimpleTerminalConsole;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -12,14 +11,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+@SuppressWarnings({"FieldMayBeFinal"})
 public class ConsoleMain extends SimpleTerminalConsole {
-    @Getter
     private static PaymentServer server;
-    @Getter
     private static Configuration config;
-    @Getter
     private boolean running = true;
-    @Getter
     private static Logger logger = LoggerFactory.getLogger("Server");
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     public static void main(String[] args) {
@@ -29,6 +25,23 @@ public class ConsoleMain extends SimpleTerminalConsole {
         server.start();
 
         new ConsoleMain().start();
+    }
+
+    public static PaymentServer getServer() {
+        return server;
+    }
+
+    public static Configuration getConfig() {
+        return config;
+    }
+
+    public static Logger getLogger() {
+        return logger;
+    }
+
+    @Override
+    public boolean isRunning() {
+        return running;
     }
 
     public static void reloadConfig() {
