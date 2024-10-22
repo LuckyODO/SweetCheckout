@@ -1,5 +1,15 @@
 package top.mrxiaom.sweet.checkout.backend;
 
+import com.alipay.api.AlipayApiException;
+import com.alipay.api.AlipayClient;
+import com.alipay.api.DefaultAlipayClient;
+import com.alipay.api.domain.AlipayTradePrecreateModel;
+import com.alipay.api.domain.BusinessParams;
+import com.alipay.api.domain.ExtendParams;
+import com.alipay.api.domain.GoodsDetail;
+import com.alipay.api.request.AlipayTradePrecreateRequest;
+import com.alipay.api.request.AlipayTradeQueryRequest;
+import com.alipay.api.response.AlipayTradePrecreateResponse;
 import com.google.gson.*;
 import org.java_websocket.IDecodeInjector;
 import org.java_websocket.WebSocket;
@@ -55,20 +65,62 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
     private PacketPluginRequestOrder.Response handleRequest(PacketPluginRequestOrder packet, WebSocket webSocket) {
         ClientInfo client = getOrCreateInfo(webSocket);
         Configuration config = ConsoleMain.getConfig();
+        // TODO: 验证 price 是否符合格式，在可修正时自动修正格式为 %.2f
         if (packet.getType().equals("wechat")) {
+            // 微信 Hook TODO: 实现微信Hook
             if (config.getHook().isEnable() && config.getHook().getWeChat().isEnable()) {
-                // TODO: 微信 Hook
+
             }
+            // 微信 Native TODO: 实现微信Native支付
             if (config.getWeChatNative().isEnable()) {
-                // TODO: 微信 Native
+
             }
         }
         if (packet.getType().equals("alipay")) {
+            // 支付宝 Hook TODO: 暂无实现计划
+            if (config.getHook().isEnable()) {
+
+            }
+            // 支付宝当面付
             if (config.getAlipayFaceToFace().isEnable()) {
-                // TODO: 支付宝当面付
+                return handleRequestAlipayFaceToFace(packet, client, config);
             }
         }
-        return new PacketPluginRequestOrder.Response("payment.type-unknown", "", "");
+        return new PacketPluginRequestOrder.Response("payment.type-unknown");
+    }
+
+    private PacketPluginRequestOrder.Response handleRequestAlipayFaceToFace(PacketPluginRequestOrder packet, ClientInfo client, Configuration config) {
+        try {
+            String orderId = client.nextOrderId();
+            // TODO: 支付宝当面付
+            AlipayClient alipayClient = new DefaultAlipayClient(config.getAlipayFaceToFace().getConfig());
+
+            AlipayTradePrecreateRequest request = new AlipayTradePrecreateRequest();
+            AlipayTradePrecreateModel model = new AlipayTradePrecreateModel();
+            // TODO: 根据时间生成不会重复的商户订单号
+            model.setOutTradeNo(orderId);
+            model.setTotalAmount(packet.getPrice());
+            model.setSubject(packet.getProductName());
+            model.setProductCode("FACE_TO_FACE_PAYMENT");
+            model.setBody(packet.getProductName());
+
+            request.setBizModel(model);
+
+            AlipayTradePrecreateResponse response = alipayClient.execute(request);
+            System.out.println(response.getBody());
+
+            if (response.isSuccess()) {
+                // TODO: 将检查是否交易成功 (AlipayTradeQueryRequest) 加入定时任务
+                client.addOrder(new ClientInfo.Order(orderId, "alipay", packet.getPlayerName(), packet.getPrice()));
+                return new PacketPluginRequestOrder.Response("", orderId, response.getQrCode());
+            } else {
+                logger.warn("支付宝当面付调用失败");
+                return new PacketPluginRequestOrder.Response("payment.internal-error");
+            }
+        } catch (AlipayApiException e) {
+            logger.warn("支付宝当面付API执行错误", e);
+            return new PacketPluginRequestOrder.Response("payment.internal-error");
+        }
     }
 
     private PacketPluginCancelOrder.Response handleCancel(PacketPluginCancelOrder packet, WebSocket webSocket) {

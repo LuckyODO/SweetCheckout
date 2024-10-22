@@ -10,6 +10,29 @@ public class ClientInfo {
         String type;
         String playerName;
         String money;
+
+        public Order(String id, String type, String playerName, String money) {
+            this.id = id;
+            this.type = type;
+            this.playerName = playerName;
+            this.money = money;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public String getPlayerName() {
+            return playerName;
+        }
+
+        public String getMoney() {
+            return money;
+        }
     }
     private final Map<String, Order> orders = new HashMap<>();
     private final Set<String> locked = new HashSet<>();

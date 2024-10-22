@@ -109,7 +109,7 @@ public class Configuration {
             return alipayPublicKey;
         }
 
-        private AlipayConfig getConfig() {
+        public AlipayConfig getConfig() {
             return config;
         }
     }
