@@ -18,7 +18,7 @@ dependencies {
     implementation("com.zaxxer:HikariCP:4.0.3") { isTransitive = false }
     implementation("org.jetbrains:annotations:21.0.0")
     implementation("com.github.MrXiaoM:PluginBase:1+")
-    implementation("org.java-websocket:Java-WebSocket:1.5.7")
+    implementation("top.mrxiaom:Java-WebSocket:1.5.8")
     implementation(project(":bukkit:nms"))
     implementation(project(":packets"))
 }
