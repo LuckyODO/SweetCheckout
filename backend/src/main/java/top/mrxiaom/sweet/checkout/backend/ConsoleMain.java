@@ -23,7 +23,7 @@ public class ConsoleMain extends SimpleTerminalConsole {
             .setPrettyPrinting()
             .create();
     public static void main(String[] args) {
-        logger.info("正在运行 SweetCheckout 后端");
+        logger.info("正在运行 SweetCheckout 后端.");
         reloadConfig();
         server = new PaymentServer(logger, config.getPort());
         server.start();
@@ -82,6 +82,10 @@ public class ConsoleMain extends SimpleTerminalConsole {
 
     @Override
     protected void shutdown() {
-
+        try {
+            server.stop();
+        } catch (InterruptedException e) {
+            logger.warn("停止服务端时出现异常", e);
+        }
     }
 }

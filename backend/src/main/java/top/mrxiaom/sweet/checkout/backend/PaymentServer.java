@@ -29,10 +29,7 @@ import top.mrxiaom.sweet.checkout.packets.plugin.PacketPluginRequestOrder;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
@@ -41,6 +38,7 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
     Logger logger;
     Map<String, List<BiFunction>> executors = new HashMap<>();
     Gson gson = new GsonBuilder().setLenient().create();
+    Timer timer = new Timer();
     public PaymentServer(Logger logger, int port) {
         super(new InetSocketAddress(port));
         this.logger = logger;
@@ -141,12 +139,12 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
     @Override
     public void onOpen(WebSocket client, ClientHandshake clientHandshake) {
         client.setAttachment(new ClientInfo());
-        logger.info("客户端 {} 已连接", client.getRemoteSocketAddress());
+        logger.info("客户端 {} 已连接.", client.getRemoteSocketAddress());
     }
 
     @Override
     public void onClose(WebSocket client, int i, String s, boolean b) {
-        logger.info("客户端 {} 已断开连接 ({})", client.getRemoteSocketAddress(), i);
+        logger.info("客户端 {} 已断开连接 ({}).", client.getRemoteSocketAddress(), i);
     }
 
     public void send(@NotNull WebSocket client, @NotNull IPacket packet) {
@@ -187,12 +185,18 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
 
     @Override
     public void onStart() {
-        logger.info("服务端已在 {} 端口启动", getAddress().getPort());
+        logger.info("服务端已在 {} 端口启动.", getAddress().getPort());
+    }
+
+    @Override
+    public void stop() throws InterruptedException {
+        timer.cancel();
+        super.stop();
     }
 
     private void onHookReceive(HookReceive receive) {
         // TODO: 处理接收 hook 收款消息
-        logger.info("收到Hook收款，来自 {} 的 ￥{}", receive.getName(), receive.getMoney());
+        logger.info("[收款] 收到Hook收款，来自 {} 的 ￥{}", receive.getName(), receive.getMoney());
     }
 
     @Override
