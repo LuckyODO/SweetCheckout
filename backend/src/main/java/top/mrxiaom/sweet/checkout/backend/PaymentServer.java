@@ -73,6 +73,10 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
         ClientInfo client = getOrCreateInfo(webSocket);
         Configuration config = ConsoleMain.getConfig();
 
+        if (client.getOrderByPlayer(packet.getPlayerName()) != null) {
+            return new PacketPluginRequestOrder.Response("payment.already-requested");
+        }
+
         if (packet.getType().equals("wechat")) {
             // 微信 Hook TODO: 实现微信Hook
             if (config.getHook().isEnable() && config.getHook().getWeChat().isEnable()) {

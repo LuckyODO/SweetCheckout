@@ -83,6 +83,16 @@ public class ClientInfo {
     }
 
     @Nullable
+    public Order getOrderByPlayer(String playerName) {
+        for (Order order : orders.values()) {
+            if (order.getPlayerName().equals(playerName)) {
+                return order;
+            }
+        }
+        return null;
+    }
+
+    @Nullable
     public Order removeOrder(Order order) {
         TimerTask task = order.getTask();
         if (task != null) {
