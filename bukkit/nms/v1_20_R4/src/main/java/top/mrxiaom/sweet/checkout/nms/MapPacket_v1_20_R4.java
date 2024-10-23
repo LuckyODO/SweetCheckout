@@ -3,19 +3,20 @@ package top.mrxiaom.sweet.checkout.nms;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.PacketPlayOutMap;
 import net.minecraft.world.level.saveddata.maps.MapIcon;
+import net.minecraft.world.level.saveddata.maps.MapId;
 import net.minecraft.world.level.saveddata.maps.WorldMap;
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_20_R4.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapPacket_v1_20_R3 implements IMapPacket {
+public class MapPacket_v1_20_R4 implements IMapPacket {
     @Override
     public Object createMapPacket(int mapId, byte[] colors) {
         List<MapIcon> mapIcons = new ArrayList<>();
         WorldMap.b b = of(colors);
-        return new PacketPlayOutMap(mapId, (byte) 0, false, mapIcons, b);
+        return new PacketPlayOutMap(new MapId(mapId), (byte) 0, false, mapIcons, b);
     }
 
     private WorldMap.b of(byte[] colors) {
