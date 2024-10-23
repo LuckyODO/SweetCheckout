@@ -27,6 +27,9 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
+/**
+ * 后端 WebSocket/Http 路由
+ */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class PaymentServer extends WebSocketServer implements IDecodeInjector {
     Gson gson = new GsonBuilder().setLenient().create();
@@ -50,12 +53,26 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
         return timer;
     }
 
+    /**
+     * 注册接收包处理器，无返回值
+     * @param type 包类型
+     * @param executor 处理器
+     * @param <T> 包类型
+     */
     public <T extends IPacket> void registerExecutor(Class<T> type, BiConsumer<T, WebSocket> executor) {
         registerExecutor(type, (packet, client) -> {
             executor.accept(packet, client);
             return null;
         });
     }
+
+    /**
+     * 注册接收包处理器，有返回值
+     * @param type 包类型
+     * @param executor 处理器
+     * @param <S> 返回类型
+     * @param <T> 包类型
+     */
     public <S extends IPacket, T extends IPacket<S>> void registerExecutor(Class<T> type, BiFunction<T, WebSocket, S> executor) {
         String key = type.getName();
         List<BiFunction> list = executors.get(key);
@@ -84,6 +101,7 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
         ClientInfo client = getOrCreateInfo(webSocket);
         Configuration config = ConsoleMain.getConfig();
 
+        // 防止多次请求订单
         if (client.getOrderByPlayer(packet.getPlayerName()) != null) {
             return new PacketPluginRequestOrder.Response("payment.already-requested");
         }
@@ -91,43 +109,21 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
         if (packet.getType().equals("wechat")) {
             // 微信 Hook
             if (config.getHook().isEnable() && config.getHook().getWeChat().isEnable()) {
-                Configuration.WeChatHook hook = config.getHook().getWeChat();
-                String requireProcess = hook.getRequireProcess();
-                if (!requireProcess.isEmpty()) {
-                    if (ProcessHandle.allProcesses().noneMatch(it -> it.info().command().map(name -> name.equals(requireProcess)).orElse(false))) {
-                        return new PacketPluginRequestOrder.Response("payment.hook-not-running");
-                    }
-                }
-                if (wechat.moneyLocked.containsKey(packet.getPrice())) {
-                    return new PacketPluginRequestOrder.Response("payment.hook-price-locked");
-                }
-                String orderId = client.nextOrderId();
-                String paymentUrl = hook.getPaymentUrls().getOrDefault(packet.getPrice(), hook.getPaymentUrl());
-                ClientInfo.Order order = client.createOrder(orderId, "wechat", packet.getPlayerName(), packet.getPrice());
-                wechat.moneyLocked.put(packet.getPrice(), order);
-                return new PacketPluginRequestOrder.Response("hook", orderId, paymentUrl);
+                return wechat.handleHook(packet, client, config);
             }
             // 微信 Native
             if (config.getWeChatNative().isEnable()) {
-                return wechat.handleRequestWeChatNative(packet, client, config);
+                return wechat.handleNative(packet, client, config);
             }
         }
         if (packet.getType().equals("alipay")) {
-            // 支付宝 Hook TODO: 暂无Hook实现计划，先把接口摆在这
+            // 支付宝 Hook
             if (config.getHook().isEnable() && config.getHook().getAlipay().isEnable()) {
-                Configuration.AlipayHook hook = config.getHook().getAlipay();
-                if (alipay.moneyLocked.containsKey(packet.getPrice())) {
-                    return new PacketPluginRequestOrder.Response("payment.hook-price-locked");
-                }
-                String orderId = client.nextOrderId();
-                String paymentUrl = hook.getPaymentUrls().getOrDefault(packet.getPrice(), hook.getPaymentUrl());
-                ClientInfo.Order order = client.createOrder(orderId, "alipay", packet.getPlayerName(), packet.getPrice());
-                alipay.moneyLocked.put(packet.getPrice(), order);
-                return new PacketPluginRequestOrder.Response("hook", orderId, paymentUrl);
+                return alipay.handleHook(packet, client, config);
             }
             // 支付宝当面付
             if (config.getAlipayFaceToFace().isEnable()) {
-                return alipay.handleRequestAlipayFaceToFace(packet, client, config);
+                return alipay.handleFaceToFace(packet, client, config);
             }
         }
         return new PacketPluginRequestOrder.Response("payment.type-unknown");

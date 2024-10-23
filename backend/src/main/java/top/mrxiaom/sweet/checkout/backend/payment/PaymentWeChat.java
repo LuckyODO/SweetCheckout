@@ -22,7 +22,25 @@ public class PaymentWeChat {
         this.server = server;
     }
 
-    public PacketPluginRequestOrder.Response handleRequestWeChatNative(PacketPluginRequestOrder packet, ClientInfo client, Configuration config) {
+    public PacketPluginRequestOrder.Response handleHook(PacketPluginRequestOrder packet, ClientInfo client, Configuration config) {
+        Configuration.WeChatHook hook = config.getHook().getWeChat();
+        String requireProcess = hook.getRequireProcess();
+        if (!requireProcess.isEmpty()) {
+            if (ProcessHandle.allProcesses().noneMatch(it -> it.info().command().map(name -> name.equals(requireProcess)).orElse(false))) {
+                return new PacketPluginRequestOrder.Response("payment.hook-not-running");
+            }
+        }
+        if (moneyLocked.containsKey(packet.getPrice())) {
+            return new PacketPluginRequestOrder.Response("payment.hook-price-locked");
+        }
+        String orderId = client.nextOrderId();
+        String paymentUrl = hook.getPaymentUrls().getOrDefault(packet.getPrice(), hook.getPaymentUrl());
+        ClientInfo.Order order = client.createOrder(orderId, "wechat", packet.getPlayerName(), packet.getPrice());
+        moneyLocked.put(packet.getPrice(), order);
+        return new PacketPluginRequestOrder.Response("hook", orderId, paymentUrl);
+    }
+
+    public PacketPluginRequestOrder.Response handleNative(PacketPluginRequestOrder packet, ClientInfo client, Configuration config) {
         // 微信支付的订单总金额单位为「分」，保留两位小数的结果去掉小数点，再转整数完事
         Integer priceWeChat = Util.parseInt(packet.getPrice().replace(".", "")).orElse(null);
         if (priceWeChat == null) {
