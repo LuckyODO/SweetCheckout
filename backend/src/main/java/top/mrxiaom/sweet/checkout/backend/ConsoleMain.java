@@ -6,8 +6,6 @@ import net.minecrell.terminalconsole.SimpleTerminalConsole;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import top.mrxiaom.sweet.checkout.backend.data.ClientInfo;
-import top.mrxiaom.sweet.checkout.packets.plugin.PacketPluginRequestOrder;
 
 import java.io.File;
 import java.io.IOException;

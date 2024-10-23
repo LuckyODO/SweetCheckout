@@ -41,7 +41,7 @@ public class Configuration {
     }
 
     protected void postLoad() {
-        getAlipayFaceToFace().postLoad(this);
+        getAlipayFaceToFace().postLoad();
     }
 
     public int getPort() {
@@ -79,13 +79,13 @@ public class Configuration {
         private String alipayPublicKey = "file:secrets/alipay/public.txt";
         @Expose(serialize = false, deserialize = false)
         private AlipayConfig config;
-        private void postLoad(Configuration config) {
+        private void postLoad() {
             if (isEnable()) {
                 String privateKeyStr = getPrivateKey();
                 String publicKeyStr = getAlipayPublicKey();
-                String privateKey = parseString(config.logger, "alipayFaceToFace.privateKey", privateKeyStr);
+                String privateKey = parseString(logger, "alipayFaceToFace.privateKey", privateKeyStr);
                 if (privateKey == null) return;
-                String publicKey = parseString(config.logger, "alipayFaceToFace.alipayPublicKey", publicKeyStr);
+                String publicKey = parseString(logger, "alipayFaceToFace.alipayPublicKey", publicKeyStr);
                 if (publicKey == null) return;
                 AlipayConfig alipayConfig = new AlipayConfig();
                 alipayConfig.setServerUrl("https://openapi.alipay.com/gateway.do");
@@ -145,7 +145,7 @@ public class Configuration {
         @SerializedName("payment_url")
         private String paymentUrl = "";
         @SerializedName("payment_urls")
-        private Map<String, String> paymentUrls = new HashMap<String, String>() {{
+        private Map<String, String> paymentUrls = new HashMap<>() {{
             put("1.00", "");
         }};
 
