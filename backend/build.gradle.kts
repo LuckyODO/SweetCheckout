@@ -2,7 +2,7 @@ plugins {
     id ("com.github.johnrengelman.shadow")
 }
 
-val targetJavaVersion = 8
+val targetJavaVersion = 17
 val shadowGroup = "top.mrxiaom.sweet.checkout.backend.libs"
 val entry = "top.mrxiaom.sweet.checkout.backend.ConsoleMain"
 
@@ -26,6 +26,13 @@ dependencies {
     implementation("com.zaxxer:HikariCP:4.0.3")
     implementation("org.jetbrains:annotations:21.0.0")
     implementation(project(":packets"))
+}
+
+java {
+    val javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion.set(JavaLanguageVersion.of(targetJavaVersion))
+    }
 }
 
 fun Jar.setupManifest() {
@@ -69,5 +76,11 @@ tasks {
             "sun.stdout.encoding" to "UTF-8",
             "sun.stderr.encoding" to "UTF-8"
         )
+    }
+    withType<JavaCompile>().configureEach {
+        options.encoding = "UTF-8"
+        if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible) {
+            options.release.set(targetJavaVersion)
+        }
     }
 }
