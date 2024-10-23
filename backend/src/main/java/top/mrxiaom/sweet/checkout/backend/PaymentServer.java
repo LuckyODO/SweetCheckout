@@ -193,7 +193,7 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
         List<BiFunction> list = executors.get(packet.getClass().getName());
         if (list != null && !list.isEmpty()) for (BiFunction executor : list) {
             Object obj = executor.apply(packet, client);
-            if (result == null) {
+            if (result == null && obj != null) {
                 result = obj;
             }
         }
