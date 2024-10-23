@@ -41,6 +41,7 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
     Map<String, List<BiFunction>> executors = new HashMap<>();
     Gson gson = new GsonBuilder().setLenient().create();
     Timer timer = new Timer();
+    Map<String, ClientInfo.Order> moneyLocked = new HashMap<>();
     public PaymentServer(Logger logger, int port) {
         super(new InetSocketAddress(port));
         this.logger = logger;
@@ -78,9 +79,21 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
         }
 
         if (packet.getType().equals("wechat")) {
-            // 微信 Hook TODO: 实现微信Hook
+            // 微信 Hook
             if (config.getHook().isEnable() && config.getHook().getWeChat().isEnable()) {
-
+                Configuration.WeChatHook hook = config.getHook().getWeChat();
+                String requireProcess = hook.getRequireProcess();
+                if (ProcessHandle.allProcesses().noneMatch(it -> it.info().command().map(name -> name.equals(requireProcess)).orElse(false))) {
+                    return new PacketPluginRequestOrder.Response("payment.hook-not-running");
+                }
+                if (moneyLocked.containsKey(packet.getPrice())) {
+                    return new PacketPluginRequestOrder.Response("payment.hook-price-locked");
+                }
+                String orderId = client.nextOrderId();
+                String paymentUrl = hook.getPaymentUrls().getOrDefault(packet.getPrice(), hook.getPaymentUrl());
+                ClientInfo.Order order = client.createOrder(orderId, "wechat", packet.getPlayerName(), packet.getPrice());
+                moneyLocked.put(packet.getPrice(), order);
+                return new PacketPluginRequestOrder.Response(orderId, paymentUrl);
             }
             // 微信 Native TODO: 实现微信Native支付
             if (config.getWeChatNative().isEnable()) {
@@ -122,8 +135,7 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
             System.out.println(response.getBody());
 
             if (response.isSuccess()) {
-                ClientInfo.Order order = new ClientInfo.Order(orderId, "alipay", packet.getPlayerName(), packet.getPrice());
-                client.addOrder(order);
+                ClientInfo.Order order = client.createOrder(orderId, "alipay", packet.getPlayerName(), packet.getPrice());
                 String outTradeNo = response.getOutTradeNo();
                 order.setCancelAction(() -> cancelAlipayFaceToFace(outTradeNo));
                 // 轮询检查是否交易成功
@@ -216,6 +228,10 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
         // 取消订单
         ClientInfo.Order order = client.removeOrder(packet.getOrderId());
         if (order != null) {
+            ClientInfo.Order locked = moneyLocked.get(order.getMoney());
+            if (locked.getId().equals(order.getId())) {
+                moneyLocked.remove(locked.getMoney());
+            }
             Runnable action = order.getCancelAction();
             if (action != null) {
                 action.run();
@@ -229,6 +245,7 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
         ClientInfo client = webSocket.getAttachment();
         if (client == null) {
             client = new ClientInfo();
+            client.setWebSocket(webSocket);
             webSocket.setAttachment(client);
         }
         return client;
@@ -236,7 +253,7 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
 
     @Override
     public void onOpen(WebSocket client, ClientHandshake clientHandshake) {
-        client.setAttachment(new ClientInfo());
+        getOrCreateInfo(client);
         logger.info("客户端 {} 已连接.", client.getRemoteSocketAddress());
     }
 
@@ -293,8 +310,25 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
     }
 
     private void onHookReceive(HookReceive receive) {
-        // TODO: 处理接收 hook 收款消息
-        logger.info("[收款] 收到Hook收款，来自 {} 的 ￥{}", receive.getName(), receive.getMoney());
+        // 处理接收 hook 收款消息
+        Double moneyDouble = Util.parseDouble(receive.getMoney()).orElse(null);
+        if (moneyDouble == null) {
+            logger.warn("[收款] 收到Hook收款，处理金额时出现错误: 名字[{}]，金额[{}]", receive.getName(), receive.getMoney());
+            return;
+        }
+        String money = String.format("%.2f", moneyDouble);
+        logger.info("[收款] 收到Hook收款，来自 {} 的 ￥{}", receive.getName(), money);
+        ClientInfo.Order order = moneyLocked.remove(money);
+        if (order != null) {
+            WebSocket webSocket = order.getClient().getWebSocket();
+            if (!webSocket.isOpen()) {
+                logger.warn("[Hook] 玩家 {} 的 ￥{} 订单异常，在付款完成之前插件断开了与后端的连接", order.getPlayerName(), money);
+                return;
+            }
+            logger.info("[Hook] 玩家 {} 的 ￥{} 订单已付款完成，回调订单结果", order.getPlayerName(), money);
+            order.remove();
+            send(webSocket, new PacketBackendPaymentConfirm(order.getId(), receive.getName(), money));
+        }
     }
 
     @Override

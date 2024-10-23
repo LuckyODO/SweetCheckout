@@ -1,5 +1,6 @@
 package top.mrxiaom.sweet.checkout.backend.data;
 
+import org.java_websocket.WebSocket;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.LocalDateTime;
@@ -7,7 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class ClientInfo {
-    public static class Order {
+    public class Order {
         String id;
         String type;
         String playerName;
@@ -15,7 +16,7 @@ public class ClientInfo {
         TimerTask task = null;
         Runnable cancelAction = null;
 
-        public Order(String id, String type, String playerName, String money) {
+        private Order(String id, String type, String playerName, String money) {
             this.id = id;
             this.type = type;
             this.playerName = playerName;
@@ -53,10 +54,33 @@ public class ClientInfo {
         public String getMoney() {
             return money;
         }
+
+        public ClientInfo getClient() {
+            return ClientInfo.this;
+        }
+
+        public void remove() {
+            getClient().removeOrder(this);
+        }
     }
     private final Map<String, Order> orders = new HashMap<>();
     private static final Set<String> locked = new HashSet<>();
     private final DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+    private WebSocket webSocket;
+
+    public WebSocket getWebSocket() {
+        return webSocket;
+    }
+
+    public void setWebSocket(WebSocket webSocket) {
+        this.webSocket = webSocket;
+    }
+
+    public Order createOrder(String id, String type, String playerName, String money) {
+        Order order = new Order(id, type, playerName, money);
+        addOrder(order);
+        return order;
+    }
 
     public String nextOrderId() {
         String id;
