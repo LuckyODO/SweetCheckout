@@ -19,11 +19,14 @@ import top.mrxiaom.sweet.checkout.packets.backend.PacketBackendPaymentCancel;
 import top.mrxiaom.sweet.checkout.packets.backend.PacketBackendPaymentConfirm;
 import top.mrxiaom.sweet.checkout.packets.plugin.PacketPluginRequestOrder;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TimerTask;
 
-public class PaymentAlipayF2F {
+public class PaymentAlipay {
     PaymentServer server;
-    public PaymentAlipayF2F(PaymentServer server) {
+    public Map<String, ClientInfo.Order> moneyLocked = new HashMap<>();
+    public PaymentAlipay(PaymentServer server) {
         this.server = server;
     }
 

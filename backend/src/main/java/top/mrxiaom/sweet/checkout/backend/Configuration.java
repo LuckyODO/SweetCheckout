@@ -196,6 +196,9 @@ public class Configuration {
         private String endPoint = "/api/hook/receive";
         @SerializedName("wechat")
         private WeChatHook weChat = new WeChatHook();
+        @SerializedName("alipay")
+        private AlipayHook alipay = new AlipayHook();
+
         public boolean isEnable() {
             return enable;
         }
@@ -207,25 +210,36 @@ public class Configuration {
         public WeChatHook getWeChat() {
             return weChat;
         }
+
+        public AlipayHook getAlipay() {
+            return alipay;
+        }
     }
     @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
-    public static class WeChatHook {
-        private boolean enable = false;
+    public static class WeChatHook extends HookProperties {
         @SerializedName("require_process")
         private String requireProcess = "SweetCheckout.Hook.WeChat.exe";
+
+        public String getRequireProcess() {
+            return requireProcess;
+        }
+    }
+    @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
+    public static class AlipayHook extends HookProperties {
+
+    }
+    @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
+    public static abstract class HookProperties {
+        private boolean enable = false;
         @SerializedName("payment_url")
-        private String paymentUrl = "";
+        private String paymentUrl = "收款码地址";
         @SerializedName("payment_urls")
         private Map<String, String> paymentUrls = new HashMap<>() {{
-            put("1.00", "");
+            put("1.00", "示例，1元的收款码地址");
         }};
 
         public boolean isEnable() {
             return enable;
-        }
-
-        public String getRequireProcess() {
-            return requireProcess;
         }
 
         public String getPaymentUrl() {

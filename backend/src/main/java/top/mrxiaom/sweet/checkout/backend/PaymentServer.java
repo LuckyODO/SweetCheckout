@@ -12,8 +12,8 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import top.mrxiaom.sweet.checkout.backend.data.ClientInfo;
 import top.mrxiaom.sweet.checkout.backend.data.HookReceive;
-import top.mrxiaom.sweet.checkout.backend.payment.PaymentAlipayF2F;
-import top.mrxiaom.sweet.checkout.backend.payment.PaymentWeChatNative;
+import top.mrxiaom.sweet.checkout.backend.payment.PaymentAlipay;
+import top.mrxiaom.sweet.checkout.backend.payment.PaymentWeChat;
 import top.mrxiaom.sweet.checkout.backend.util.Util;
 import top.mrxiaom.sweet.checkout.packets.PacketSerializer;
 import top.mrxiaom.sweet.checkout.packets.backend.PacketBackendPaymentConfirm;
@@ -33,9 +33,8 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
     Logger logger;
     Timer timer = new Timer();
     Map<String, List<BiFunction>> executors = new HashMap<>();
-    Map<String, ClientInfo.Order> moneyLocked = new HashMap<>();
-    PaymentWeChatNative wechat;
-    PaymentAlipayF2F alipay;
+    PaymentWeChat wechat = new PaymentWeChat(this);
+    PaymentAlipay alipay = new PaymentAlipay(this);
     public PaymentServer(Logger logger, int port) {
         super(new InetSocketAddress(port));
         this.logger = logger;
@@ -65,6 +64,15 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
         executors.put(key, list);
     }
 
+    @Nullable
+    public Map<String, ClientInfo.Order> getMoneyLockedMap(String type) {
+        return switch (type.toLowerCase()) {
+            case "alipay" -> alipay.moneyLocked;
+            case "wechat" -> wechat.moneyLocked;
+            default -> null;
+        };
+    }
+
     private PacketPluginRequestOrder.Response handleRequest(PacketPluginRequestOrder packet, WebSocket webSocket) {
         // 验证 price 是否符合格式，在可修正时自动修正格式
         Double priceDouble = Util.parseDouble(packet.getPrice()).orElse(null);
@@ -90,13 +98,13 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
                         return new PacketPluginRequestOrder.Response("payment.hook-not-running");
                     }
                 }
-                if (moneyLocked.containsKey(packet.getPrice())) {
+                if (wechat.moneyLocked.containsKey(packet.getPrice())) {
                     return new PacketPluginRequestOrder.Response("payment.hook-price-locked");
                 }
                 String orderId = client.nextOrderId();
                 String paymentUrl = hook.getPaymentUrls().getOrDefault(packet.getPrice(), hook.getPaymentUrl());
                 ClientInfo.Order order = client.createOrder(orderId, "wechat", packet.getPlayerName(), packet.getPrice());
-                moneyLocked.put(packet.getPrice(), order);
+                wechat.moneyLocked.put(packet.getPrice(), order);
                 return new PacketPluginRequestOrder.Response("hook", orderId, paymentUrl);
             }
             // 微信 Native
@@ -105,9 +113,17 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
             }
         }
         if (packet.getType().equals("alipay")) {
-            // 支付宝 Hook TODO: 暂无实现计划
-            if (config.getHook().isEnable()) {
-
+            // 支付宝 Hook TODO: 暂无Hook实现计划，先把接口摆在这
+            if (config.getHook().isEnable() && config.getHook().getAlipay().isEnable()) {
+                Configuration.AlipayHook hook = config.getHook().getAlipay();
+                if (alipay.moneyLocked.containsKey(packet.getPrice())) {
+                    return new PacketPluginRequestOrder.Response("payment.hook-price-locked");
+                }
+                String orderId = client.nextOrderId();
+                String paymentUrl = hook.getPaymentUrls().getOrDefault(packet.getPrice(), hook.getPaymentUrl());
+                ClientInfo.Order order = client.createOrder(orderId, "alipay", packet.getPlayerName(), packet.getPrice());
+                alipay.moneyLocked.put(packet.getPrice(), order);
+                return new PacketPluginRequestOrder.Response("hook", orderId, paymentUrl);
             }
             // 支付宝当面付
             if (config.getAlipayFaceToFace().isEnable()) {
@@ -122,9 +138,12 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
         // 取消订单
         ClientInfo.Order order = client.removeOrder(packet.getOrderId());
         if (order != null) {
-            ClientInfo.Order locked = moneyLocked.get(order.getMoney());
-            if (locked.getId().equals(order.getId())) {
-                moneyLocked.remove(locked.getMoney());
+            Map<String, ClientInfo.Order> moneyLocked = getMoneyLockedMap(order.getType());
+            if (moneyLocked != null) {
+                ClientInfo.Order locked = moneyLocked.get(order.getMoney());
+                if (locked.getId().equals(order.getId())) {
+                    moneyLocked.remove(locked.getMoney());
+                }
             }
             Runnable action = order.getCancelAction();
             if (action != null) {
@@ -211,7 +230,12 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
             return;
         }
         String money = String.format("%.2f", moneyDouble);
-        logger.info("[收款] 收到Hook收款，来自 {} 的 ￥{}", receive.getName(), money);
+        logger.info("[收款] 收到Hook收款，来自 {} 渠道，{} 的 ￥{}", receive.getType(), receive.getName(), money);
+        Map<String, ClientInfo.Order> moneyLocked = getMoneyLockedMap(receive.getType());
+        if (moneyLocked == null) {
+            logger.warn("[Hook] 无效的渠道 {}", receive.getType());
+            return;
+        }
         ClientInfo.Order order = moneyLocked.remove(money);
         if (order != null) {
             WebSocket webSocket = order.getClient().getWebSocket();

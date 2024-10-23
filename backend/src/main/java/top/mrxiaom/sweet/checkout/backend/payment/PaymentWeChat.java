@@ -11,11 +11,14 @@ import top.mrxiaom.sweet.checkout.packets.backend.PacketBackendPaymentCancel;
 import top.mrxiaom.sweet.checkout.packets.backend.PacketBackendPaymentConfirm;
 import top.mrxiaom.sweet.checkout.packets.plugin.PacketPluginRequestOrder;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TimerTask;
 
-public class PaymentWeChatNative {
+public class PaymentWeChat {
     PaymentServer server;
-    public PaymentWeChatNative(PaymentServer server) {
+    public Map<String, ClientInfo.Order> moneyLocked = new HashMap<>();
+    public PaymentWeChat(PaymentServer server) {
         this.server = server;
     }
 
