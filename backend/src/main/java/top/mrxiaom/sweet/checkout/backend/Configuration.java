@@ -3,6 +3,8 @@ package top.mrxiaom.sweet.checkout.backend;
 import com.alipay.api.AlipayConfig;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.wechat.pay.java.core.Config;
+import com.wechat.pay.java.core.RSAAutoCertificateConfig;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +43,7 @@ public class Configuration {
     }
 
     protected void postLoad() {
+        getWeChatNative().postLoad();
         getAlipayFaceToFace().postLoad();
     }
 
@@ -63,9 +66,76 @@ public class Configuration {
     @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
     public static class WeChatNative {
         private boolean enable = false;
+        @SerializedName("api_key")
+        private String apiKey = "商户API V3密钥";
+        @SerializedName("merchant_id")
+        private String merchantId = "商户号";
+        @SerializedName("merchant_serial_number")
+        private String merchantSerialNumber = "商户证书序列号";
+        @SerializedName("private_key")
+        private String privateKey = "file:secrets/wechat/private.txt";
+        @SerializedName("notify_url")
+        private String notifyUrl = "https://mcio.dev/consumer/notify";
+        @SerializedName("sp_app_id")
+        private String spAppId = "服务商应用ID";
+        @SerializedName("sp_merchant_id")
+        private String spMerchantId = "服务商户号";
+        @SerializedName("sub_merchant_id")
+        private String subMerchantId = "子商户号";
 
+        @Expose(serialize = false, deserialize = false)
+        private Config config;
+        private void postLoad() {
+            if (isEnable()) {
+                String privateKeyStr = getPrivateKey();
+                String privateKey = parseString(logger, "alipayFaceToFace.privateKey", privateKeyStr);
+                if (privateKey == null) return;
+                config = new RSAAutoCertificateConfig.Builder()
+                        .merchantId(getMerchantId())
+                        .privateKey(privateKey)
+                        .merchantSerialNumber(getMerchantSerialNumber())
+                        .apiV3Key(getApiKey())
+                        .build();
+            }
+        }
         public boolean isEnable() {
             return enable;
+        }
+
+        public String getApiKey() {
+            return apiKey;
+        }
+
+        public String getMerchantId() {
+            return merchantId;
+        }
+
+        public String getMerchantSerialNumber() {
+            return merchantSerialNumber;
+        }
+
+        public String getPrivateKey() {
+            return privateKey;
+        }
+
+        public String getNotifyUrl() {
+            return notifyUrl;
+        }
+
+        public String getSpAppId() {
+            return spAppId;
+        }
+
+        public String getSpMerchantId() {
+            return spMerchantId;
+        }
+
+        public String getSubMerchantId() {
+            return subMerchantId;
+        }
+
+        public Config getConfig() {
+            return config;
         }
     }
     @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
@@ -77,6 +147,7 @@ public class Configuration {
         private String privateKey = "file:secrets/alipay/private.txt";
         @SerializedName("alipay_public_key")
         private String alipayPublicKey = "file:secrets/alipay/public.txt";
+
         @Expose(serialize = false, deserialize = false)
         private AlipayConfig config;
         private void postLoad() {

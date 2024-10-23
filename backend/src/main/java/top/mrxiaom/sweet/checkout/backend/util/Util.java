@@ -11,4 +11,13 @@ public class Util {
             return Optional.empty();
         }
     }
+
+    public static Optional<Integer> parseInt(String s) {
+        if (s == null) return Optional.empty();
+        try {
+            return Optional.of(Integer.parseInt(s));
+        } catch (NumberFormatException e) {
+            return Optional.empty();
+        }
+    }
 }
