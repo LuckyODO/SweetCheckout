@@ -2,6 +2,7 @@ package top.mrxiaom.sweet.checkout.backend;
 
 import com.alipay.api.AlipayConfig;
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,10 +15,11 @@ import java.util.Map;
 
 @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
 public class Configuration {
-    @Expose(serialize = false, deserialize = false)
-    private Logger logger = LoggerFactory.getLogger(Configuration.class);
+    private static Logger logger = LoggerFactory.getLogger(Configuration.class);
     private int port = 62233;
+    @SerializedName("wechat_native")
     private WeChatNative weChatNative = new WeChatNative();
+    @SerializedName("alipay_face2face")
     private AlipayFaceToFace alipayFaceToFace = new AlipayFaceToFace();
     private Hook hook = new Hook();
 
@@ -69,8 +71,11 @@ public class Configuration {
     @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
     public static class AlipayFaceToFace {
         private boolean enable = false;
-        private String appId;
+        @SerializedName("app_id")
+        private String appId = "";
+        @SerializedName("private_key")
         private String privateKey = "file:secrets/alipay/private.txt";
+        @SerializedName("alipay_public_key")
         private String alipayPublicKey = "file:secrets/alipay/public.txt";
         @Expose(serialize = false, deserialize = false)
         private AlipayConfig config;
@@ -116,7 +121,9 @@ public class Configuration {
     @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
     public static class Hook {
         private boolean enable = true;
+        @SerializedName("end_point")
         private String endPoint = "/api/hook/receive";
+        @SerializedName("wechat")
         private WeChatHook weChat = new WeChatHook();
         public boolean isEnable() {
             return enable;
@@ -133,8 +140,11 @@ public class Configuration {
     @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
     public static class WeChatHook {
         private boolean enable = false;
+        @SerializedName("require_process")
         private String requireProcess = "SweetCheckout.Hook.WeChat.exe";
+        @SerializedName("payment_url")
         private String paymentUrl = "";
+        @SerializedName("payment_urls")
         private Map<String, String> paymentUrls = new HashMap<String, String>() {{
             put("1.00", "");
         }};
