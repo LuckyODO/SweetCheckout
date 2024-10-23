@@ -63,6 +63,10 @@ public class PacketPluginRequestOrder implements IPacket<PacketPluginRequestOrde
          */
         private String error;
         /**
+         * 支付子类型，可用 face2face, native 和 hook
+         */
+        private String subType;
+        /**
          * 订单ID
          */
         private String orderId;
@@ -77,14 +81,19 @@ public class PacketPluginRequestOrder implements IPacket<PacketPluginRequestOrde
             this.paymentUrl = "";
         }
 
-        public Response(String orderId, String paymentUrl) {
+        public Response(String subType, String orderId, String paymentUrl) {
             this.error = "";
+            this.subType = subType;
             this.orderId = orderId;
             this.paymentUrl = paymentUrl;
         }
 
         public String getError() {
             return error;
+        }
+
+        public String getSubType() {
+            return subType;
         }
 
         public String getOrderId() {

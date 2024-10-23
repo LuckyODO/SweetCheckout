@@ -93,7 +93,7 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
                 String paymentUrl = hook.getPaymentUrls().getOrDefault(packet.getPrice(), hook.getPaymentUrl());
                 ClientInfo.Order order = client.createOrder(orderId, "wechat", packet.getPlayerName(), packet.getPrice());
                 moneyLocked.put(packet.getPrice(), order);
-                return new PacketPluginRequestOrder.Response(orderId, paymentUrl);
+                return new PacketPluginRequestOrder.Response("hook", orderId, paymentUrl);
             }
             // 微信 Native TODO: 实现微信Native支付
             if (config.getWeChatNative().isEnable()) {
@@ -147,7 +147,7 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
                 });
                 // 每3秒检查一次是否支付成功
                 timer.schedule(order.getTask(), 1000L, 3000L);
-                return new PacketPluginRequestOrder.Response(orderId, response.getQrCode());
+                return new PacketPluginRequestOrder.Response("face2face", orderId, response.getQrCode());
             } else {
                 logger.warn("支付宝当面付调用失败");
                 return new PacketPluginRequestOrder.Response("payment.internal-error");
