@@ -73,8 +73,8 @@ public class PacketPluginRequestOrder implements IPacket<PacketPluginRequestOrde
             this.paymentUrl = "";
         }
 
-        public Response(String error, String orderId, String paymentUrl) {
-            this.error = error;
+        public Response(String orderId, String paymentUrl) {
+            this.error = "";
             this.orderId = orderId;
             this.paymentUrl = paymentUrl;
         }
