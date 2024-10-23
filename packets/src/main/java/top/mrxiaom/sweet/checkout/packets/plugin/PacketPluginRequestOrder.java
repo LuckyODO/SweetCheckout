@@ -48,6 +48,10 @@ public class PacketPluginRequestOrder implements IPacket<PacketPluginRequestOrde
         return price;
     }
 
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
     @Override
     public Class<Response> getResponsePacket() {
         return Response.class;

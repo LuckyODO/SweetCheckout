@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import top.mrxiaom.sweet.checkout.backend.data.ClientInfo;
 import top.mrxiaom.sweet.checkout.backend.data.HookReceive;
+import top.mrxiaom.sweet.checkout.backend.util.Util;
 import top.mrxiaom.sweet.checkout.packets.PacketSerializer;
 import top.mrxiaom.sweet.checkout.packets.backend.PacketBackendPaymentCancel;
 import top.mrxiaom.sweet.checkout.packets.backend.PacketBackendPaymentConfirm;
@@ -62,9 +63,16 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
     }
 
     private PacketPluginRequestOrder.Response handleRequest(PacketPluginRequestOrder packet, WebSocket webSocket) {
+        // 验证 price 是否符合格式，在可修正时自动修正格式
+        Double priceDouble = Util.parseDouble(packet.getPrice()).orElse(null);
+        if (priceDouble == null) {
+            return new PacketPluginRequestOrder.Response("payment.not-a-number");
+        }
+        packet.setPrice(String.format("%.2f", priceDouble));
+
         ClientInfo client = getOrCreateInfo(webSocket);
         Configuration config = ConsoleMain.getConfig();
-        // TODO: 验证 price 是否符合格式，在可修正时自动修正格式为 %.2f
+
         if (packet.getType().equals("wechat")) {
             // 微信 Hook TODO: 实现微信Hook
             if (config.getHook().isEnable() && config.getHook().getWeChat().isEnable()) {
