@@ -88,7 +88,7 @@ public class Configuration {
         private void postLoad() {
             if (isEnable()) {
                 String privateKeyStr = getPrivateKey();
-                String privateKey = parseString(logger, "alipayFaceToFace.privateKey", privateKeyStr);
+                String privateKey = parseString(logger, "wechat_native.private_key", privateKeyStr);
                 if (privateKey == null) return;
                 config = new RSAAutoCertificateConfig.Builder()
                         .merchantId(getMerchantId())
@@ -154,9 +154,9 @@ public class Configuration {
             if (isEnable()) {
                 String privateKeyStr = getPrivateKey();
                 String publicKeyStr = getAlipayPublicKey();
-                String privateKey = parseString(logger, "alipayFaceToFace.privateKey", privateKeyStr);
+                String privateKey = parseString(logger, "alipay_face2face.private_key", privateKeyStr);
                 if (privateKey == null) return;
-                String publicKey = parseString(logger, "alipayFaceToFace.alipayPublicKey", publicKeyStr);
+                String publicKey = parseString(logger, "alipay_face2face.alipay_public_key", publicKeyStr);
                 if (publicKey == null) return;
                 AlipayConfig alipayConfig = new AlipayConfig();
                 alipayConfig.setServerUrl("https://openapi.alipay.com/gateway.do");
