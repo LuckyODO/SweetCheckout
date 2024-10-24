@@ -129,7 +129,7 @@ public class PaymentAlipay {
                         String buyerLogonId = response.getBuyerLogonId();
                         String money = response.getReceiptAmount();
                         server.getLogger().info("[收款] 从支付宝当面付收款，来自 {} 的 ￥{}", buyerLogonId, money);
-                        server.send(client.getWebSocket(), new PacketBackendPaymentConfirm(orderId, "支付宝用户", money));
+                        server.send(client.getWebSocket(), new PacketBackendPaymentConfirm(orderId, money));
                         break;
                     }
                 }

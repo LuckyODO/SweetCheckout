@@ -13,26 +13,17 @@ public class PacketBackendPaymentConfirm implements IPacket<NoResponse> {
      */
     private String orderId;
     /**
-     * 付款人名字
-     */
-    private String name;
-    /**
      * 支付的金额
      */
     private String money;
 
-    public PacketBackendPaymentConfirm(String orderId, String name, String money) {
+    public PacketBackendPaymentConfirm(String orderId, String money) {
         this.orderId = orderId;
-        this.name = name;
         this.money = money;
     }
 
     public String getOrderId() {
         return orderId;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public String getMoney() {

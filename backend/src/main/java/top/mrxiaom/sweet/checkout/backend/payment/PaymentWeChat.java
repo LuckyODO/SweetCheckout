@@ -114,7 +114,7 @@ public class PaymentWeChat {
                     money = order.getMoney();
                 }
                 server.getLogger().info("[收款] 从微信Native收款，来自 {} 的 ￥{}", openId, money);
-                server.send(client.getWebSocket(), new PacketBackendPaymentConfirm(orderId, "微信用户", money));
+                server.send(client.getWebSocket(), new PacketBackendPaymentConfirm(orderId, money));
                 break;
             case REFUND: // 转入退款
             case CLOSED: // 已关闭

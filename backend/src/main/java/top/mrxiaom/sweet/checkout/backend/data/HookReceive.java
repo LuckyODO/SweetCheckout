@@ -6,20 +6,12 @@ public class HookReceive {
      */
     private String type;
     /**
-     * 付款人名字
-     */
-    private String name;
-    /**
      * 付款金额
      */
     private String money;
 
     public String getType() {
         return type;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public String getMoney() {

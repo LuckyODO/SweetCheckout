@@ -222,11 +222,11 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
         // 处理接收 hook 收款消息
         Double moneyDouble = Util.parseDouble(receive.getMoney()).orElse(null);
         if (moneyDouble == null) {
-            logger.warn("[收款] 收到Hook收款，处理金额时出现错误: 名字[{}]，金额[{}]", receive.getName(), receive.getMoney());
+            logger.warn("[收款] 收到Hook收款，处理金额时出现错误: 渠道[{}]，金额[{}]", receive.getType(), receive.getMoney());
             return;
         }
         String money = String.format("%.2f", moneyDouble);
-        logger.info("[收款] 收到Hook收款，来自 {} 渠道，{} 的 ￥{}", receive.getType(), receive.getName(), money);
+        logger.info("[收款] 收到Hook收款，来自 {} 渠道的 ￥{}", receive.getType(), money);
         Map<String, ClientInfo.Order> moneyLocked = getMoneyLockedMap(receive.getType());
         if (moneyLocked == null) {
             logger.warn("[Hook] 无效的渠道 {}", receive.getType());
@@ -241,7 +241,7 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
             }
             logger.info("[Hook] 玩家 {} 的 ￥{} 订单已付款完成，回调订单结果", order.getPlayerName(), money);
             order.remove();
-            send(webSocket, new PacketBackendPaymentConfirm(order.getId(), receive.getName(), money));
+            send(webSocket, new PacketBackendPaymentConfirm(order.getId(), money));
         }
     }
 
