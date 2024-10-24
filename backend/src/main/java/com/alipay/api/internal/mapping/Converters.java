@@ -27,14 +27,14 @@ public class Converters {
     //规则：返回的"基本"类型只有String,Long,Boolean,Date,采取严格校验方式，如果类型不匹配，报错
     public static boolean isCheckJsonType = false;
 
-    private static final Set<String> baseFields = new HashSet<String>();
+    private static final Set<String> baseFields = new HashSet<>();
 
-    private static final Set<String> excludeFields = new HashSet<String>();
+    private static final Set<String> excludeFields = new HashSet<>();
 
     /**
      * 被子类覆盖的属性
      */
-    private static final Set<String> overideFields = new HashSet<String>();
+    private static final Set<String> overideFields = new HashSet<>();
 
     static {
         baseFields.add("code");
@@ -67,7 +67,6 @@ public class Converters {
      * @param clazz  领域类型
      * @param reader 读取器
      * @return 领域对象
-     * @throws AlipayApiException
      */
     public static <T> T convert(Class<T> clazz, Reader reader) throws AlipayApiException {
         T rsp = null;
@@ -94,7 +93,7 @@ public class Converters {
                     continue;
                 }
 
-                List<AlipayFieldMethod> alipayFieldMethods = new ArrayList<AlipayFieldMethod>();
+                List<AlipayFieldMethod> alipayFieldMethods = new ArrayList<>();
 
                 if (baseFields.contains(itemName) && isResponseClazz) {
 
@@ -187,7 +186,7 @@ public class Converters {
                     } else if (Long.class.isAssignableFrom(typeClass)) {
                         Object value = reader.getPrimitiveObject(itemName);
                         if (value instanceof Long) {
-                            method.invoke(rsp, (Long) value);
+                            method.invoke(rsp, value);
                         } else {
                             if (isCheckJsonType && value != null) {
                                 throw new AlipayApiException(itemName + " is not a Number(Long)");
@@ -199,7 +198,7 @@ public class Converters {
                     } else if (Integer.class.isAssignableFrom(typeClass)) {
                         Object value = reader.getPrimitiveObject(itemName);
                         if (value instanceof Integer) {
-                            method.invoke(rsp, (Integer) value);
+                            method.invoke(rsp, value);
                         } else {
                             if (isCheckJsonType && value != null) {
                                 throw new AlipayApiException(itemName + " is not a Number(Integer)");
@@ -211,7 +210,7 @@ public class Converters {
                     } else if (Boolean.class.isAssignableFrom(typeClass)) {
                         Object value = reader.getPrimitiveObject(itemName);
                         if (value instanceof Boolean) {
-                            method.invoke(rsp, (Boolean) value);
+                            method.invoke(rsp, value);
                         } else {
                             if (isCheckJsonType && value != null) {
                                 throw new AlipayApiException(itemName + " is not a Boolean");
@@ -223,7 +222,7 @@ public class Converters {
                     } else if (Double.class.isAssignableFrom(typeClass)) {
                         Object value = reader.getPrimitiveObject(itemName);
                         if (value instanceof Double) {
-                            method.invoke(rsp, (Double) value);
+                            method.invoke(rsp, value);
                         } else {
                             if (isCheckJsonType && value != null) {
                                 throw new AlipayApiException(itemName + " is not a Double");
@@ -232,7 +231,7 @@ public class Converters {
                     } else if (Number.class.isAssignableFrom(typeClass)) {
                         Object value = reader.getPrimitiveObject(itemName);
                         if (value instanceof Number) {
-                            method.invoke(rsp, (Number) value);
+                            method.invoke(rsp, value);
                         } else {
                             if (isCheckJsonType && value != null) {
                                 throw new AlipayApiException(itemName + " is not a Number");
@@ -282,9 +281,6 @@ public class Converters {
      * <p>
      * 不会抛出异常，不存在则返回null
      *
-     * @param clazz
-     * @param itemName
-     * @return
      */
     private static Field tryGetFieldWithoutExp(Class<?> clazz, String itemName) {
 
@@ -300,9 +296,6 @@ public class Converters {
     /**
      * 获取属性设置属性
      *
-     * @param clazz
-     * @param field
-     * @return
      */
     private static <T> Method tryGetSetMethod(Class<T> clazz, Field field, String methodName) {
 

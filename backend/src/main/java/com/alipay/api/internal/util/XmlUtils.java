@@ -39,7 +39,6 @@ public final class XmlUtils {
      * Creates a new document instance.
      *
      * @return a new document instance
-     * @throws
      */
     public static Document newDocument() throws AlipayApiException {
         Document doc = null;
@@ -155,7 +154,7 @@ public final class XmlUtils {
         if (xml.startsWith("<?xml")) {
             int end = xml.indexOf("?>");
             String sub = xml.substring(0, end);
-            StringTokenizer tokens = new StringTokenizer(sub, " =\"\'");
+            StringTokenizer tokens = new StringTokenizer(sub, " =\"'");
 
             while (tokens.hasMoreTokens()) {
                 String token = tokens.nextToken();
@@ -181,7 +180,7 @@ public final class XmlUtils {
      */
     public static Element getRootElementFromString(String payload)
             throws AlipayApiException {
-        if (payload == null || payload.trim().length() < 1) {
+        if (payload == null || payload.trim().isEmpty()) {
             throw new AlipayApiException("XML_PAYLOAD_EMPTY");
         }
 
@@ -208,7 +207,7 @@ public final class XmlUtils {
      */
     public static List<Element> getElements(Element parent, String tagName) {
         NodeList nodes = parent.getElementsByTagName(tagName);
-        List<Element> elements = new ArrayList<Element>();
+        List<Element> elements = new ArrayList<>();
 
         for (int i = 0; i < nodes.getLength(); i++) {
             Node node = nodes.item(i);
@@ -246,7 +245,7 @@ public final class XmlUtils {
      */
     public static List<Element> getChildElements(Element parent, String tagName) {
         NodeList nodes = parent.getElementsByTagName(tagName);
-        List<Element> elements = new ArrayList<Element>();
+        List<Element> elements = new ArrayList<>();
 
         for (int i = 0; i < nodes.getLength(); i++) {
             Node node = nodes.item(i);

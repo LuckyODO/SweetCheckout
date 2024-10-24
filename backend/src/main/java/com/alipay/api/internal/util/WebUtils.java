@@ -7,7 +7,6 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -68,10 +67,8 @@ public class WebUtils {
 
         }
 
-        verifier = new HostnameVerifier() {
-            public boolean verify(String hostname, SSLSession session) {
-                return true; //允许URL的主机名和服务器的标识主机名不匹配的情况
-            }
+        verifier = (hostname, session) -> {
+            return true; //允许URL的主机名和服务器的标识主机名不匹配的情况
         };
 
     }
@@ -128,7 +125,6 @@ public class WebUtils {
      * @param proxyHost      代理host，传null表示不使用代理
      * @param proxyPort      代理端口，传0表示不使用代理
      * @return 响应字符串
-     * @throws IOException
      */
     public static String doPost(String url, Map<String, String> params, String charset,
                                 int connectTimeout, int readTimeout, String proxyHost,
@@ -153,7 +149,6 @@ public class WebUtils {
      * @param proxyHost      代理host，传null表示不使用代理
      * @param proxyPort      代理端口，传0表示不使用代理
      * @return 响应字符串
-     * @throws IOException
      */
     public static String doPost(String url, String ctype, byte[] content, int connectTimeout,
                                 int readTimeout, String proxyHost, int proxyPort, Map<String, String> headers, Map<String, String> resHeaders) throws IOException {
@@ -213,7 +208,6 @@ public class WebUtils {
      * @param proxyHost      代理host，传null表示不使用代理
      * @param proxyPort      代理端口，传0表示不使用代理
      * @return 响应字符串
-     * @throws IOException
      */
     public static String doPost(String url, Map<String, String> params,
                                 Map<String, FileItem> fileParams, String charset,
@@ -353,7 +347,6 @@ public class WebUtils {
      * @param url    请求地址
      * @param params 请求参数
      * @return 响应字符串
-     * @throws IOException
      */
     public static String doGet(String url, Map<String, String> params) throws IOException {
         return doGet(url, params, DEFAULT_CHARSET);
@@ -366,7 +359,6 @@ public class WebUtils {
      * @param params  请求参数
      * @param charset 字符集，如UTF-8, GBK, GB2312
      * @return 响应字符串
-     * @throws IOException
      */
     public static String doGet(String url, Map<String, String> params,
                                String charset) throws IOException {
@@ -627,7 +619,7 @@ public class WebUtils {
             map = splitUrlQuery(url.substring(url.indexOf('?') + 1));
         }
         if (map == null) {
-            map = new HashMap<String, String>();
+            map = new HashMap<>();
         }
         return map;
     }
@@ -639,15 +631,13 @@ public class WebUtils {
      * @return 参数映射
      */
     public static Map<String, String> splitUrlQuery(String query) {
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new HashMap<>();
 
         String[] pairs = query.split("&");
-        if (pairs != null && pairs.length > 0) {
-            for (String pair : pairs) {
-                String[] param = pair.split("=", 2);
-                if (param != null && param.length == 2) {
-                    result.put(param[0], param[1]);
-                }
+        for (String pair : pairs) {
+            String[] param = pair.split("=", 2);
+            if (param.length == 2) {
+                result.put(param[0], param[1]);
             }
         }
 
@@ -731,11 +721,11 @@ public class WebUtils {
         }
 
         public void checkClientTrusted(X509Certificate[] chain,
-                                       String authType) throws CertificateException {
+                                       String authType) {
         }
 
         public void checkServerTrusted(X509Certificate[] chain,
-                                       String authType) throws CertificateException {
+                                       String authType) {
         }
     }
 }

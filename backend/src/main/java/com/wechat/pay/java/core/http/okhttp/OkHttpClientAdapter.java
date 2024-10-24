@@ -16,10 +16,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import okhttp3.MultipartBody;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+
+import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,14 +81,12 @@ public final class OkHttpClientAdapter extends AbstractHttpClient {
     return null;
   }
 
-  @SuppressWarnings("deprecation")
   private okhttp3.RequestBody createRequestBody(String content, okhttp3.MediaType mediaType) {
     // use an OkHttp3.x compatible method
     // see https://github.com/wechatpay-apiv3/wechatpay-java/issues/70
     return okhttp3.RequestBody.create(mediaType, content);
   }
 
-  @SuppressWarnings("deprecation")
   private okhttp3.RequestBody createRequestBody(byte[] content, okhttp3.MediaType mediaType) {
     return okhttp3.RequestBody.create(mediaType, content);
   }
@@ -129,15 +125,14 @@ public final class OkHttpClientAdapter extends AbstractHttpClient {
       HttpRequest wechatPayRequest, Response okHttpResponse) {
     Map<String, String> responseHeaders = assembleResponseHeader(okHttpResponse);
     try {
+      ResponseBody body = okHttpResponse.body();
+      MediaType mediaType = body == null ? null : body.contentType();
       return new OriginalResponse.Builder()
           .request(wechatPayRequest)
           .headers(responseHeaders)
           .statusCode(okHttpResponse.code())
-          .contentType(
-              okHttpResponse.body() == null || okHttpResponse.body().contentType() == null
-                  ? null
-                  : okHttpResponse.body().contentType().toString())
-          .body(okHttpResponse.body().string())
+          .contentType(mediaType == null ? null : mediaType.toString())
+          .body(body == null ? "" : body.string())
           .build();
     } catch (IOException e) {
       throw new MalformedMessageException(

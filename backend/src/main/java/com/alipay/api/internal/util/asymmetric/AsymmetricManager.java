@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class AsymmetricManager {
 
-    private static final Map<String, IAsymmetricEncryptor> asymmetricManager = new ConcurrentHashMap<String, IAsymmetricEncryptor>();
+    private static final Map<String, IAsymmetricEncryptor> asymmetricManager = new ConcurrentHashMap<>();
 
     static {
         asymmetricManager.put(AlipayConstants.SIGN_TYPE_RSA, new RSAEncryptor());

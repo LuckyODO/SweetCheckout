@@ -128,14 +128,4 @@ public class AlipayConstants {
      **/
     public static final String BATCH_REQUEST_ID = "batch_request_id";
 
-    /**
-     * api诊断地址
-     */
-    public static final String DIAGNOSIS_URL = "https://open.alipay.com/api/errCheck?traceId=";
-
-    /**
-     * api诊断来源
-     */
-    public static final String DIAGNOSIS_SOURCE = "&source=sdk";
-
 }

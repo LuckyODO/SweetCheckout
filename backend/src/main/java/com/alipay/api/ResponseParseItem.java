@@ -3,6 +3,7 @@
  */
 package com.alipay.api;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -12,6 +13,7 @@ import java.io.Serializable;
 public class ResponseParseItem implements Serializable {
 
     /**  */
+    @Serial
     private static final long serialVersionUID = -27707404159419651L;
 
     /**
@@ -29,11 +31,6 @@ public class ResponseParseItem implements Serializable {
      */
     private String encryptContent = null;
 
-    /**
-     * @param startIndex
-     * @param endIndex
-     * @param encryptContent
-     */
     public ResponseParseItem(int startIndex, int endIndex, String encryptContent) {
         super();
         this.startIndex = startIndex;

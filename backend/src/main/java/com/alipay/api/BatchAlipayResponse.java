@@ -5,6 +5,7 @@ package com.alipay.api;
 
 import com.alipay.api.internal.mapping.ApiField;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import java.util.List;
  */
 public class BatchAlipayResponse extends AlipayResponse {
 
+    @Serial
     private static final long serialVersionUID = -4636364816621782447L;
 
     /**
@@ -26,15 +28,13 @@ public class BatchAlipayResponse extends AlipayResponse {
 
     public void addResponse(AlipayResponse response) {
         if (null == responseList) {
-            responseList = new ArrayList<AlipayResponse>();
+            responseList = new ArrayList<>();
         }
         responseList.add(response);
     }
 
     /**
      * 获取批量调用子请求响应列表
-     *
-     * @return
      */
     public List<AlipayResponse> getResponseList() {
         return responseList;

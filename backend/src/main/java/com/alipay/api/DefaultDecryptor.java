@@ -18,7 +18,7 @@ public class DefaultDecryptor implements Decryptor {
     }
 
     public String decrypt(String encryptContent, String encryptType, String charset) {
-        String decryptContent = null;
+        String decryptContent;
         try {
             decryptContent = AlipayEncrypt.decryptContent(encryptContent, encryptType,
                     encryptKey, charset);

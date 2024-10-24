@@ -5,6 +5,8 @@ package com.alipay.api;
 
 import com.alipay.api.internal.mapping.ApiField;
 
+import java.io.Serial;
+
 /**
  * 证书文件下载响应
  *
@@ -13,9 +15,7 @@ import com.alipay.api.internal.mapping.ApiField;
  */
 public class AlipayOpenAppAlipaycertDownloadResponse extends AlipayResponse {
 
-    /**
-     * serialVersionUID
-     */
+    @Serial
     private static final long serialVersionUID = 4500718209713594926L;
 
     @ApiField("code")

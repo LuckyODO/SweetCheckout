@@ -52,9 +52,7 @@ public class XmlUtils {
             reader.setFeature(EGE, false);
             reader.setFeature(EPE, false);
             doc = reader.read(file);
-        } catch (DocumentException e) {
-            throw new SchemaException(SchemaErrorEnum.XML_FORMAT_ERROR, e);
-        } catch (SAXException e) {
+        } catch (DocumentException | SAXException e) {
             throw new SchemaException(SchemaErrorEnum.XML_FORMAT_ERROR, e);
         }
         return doc;
@@ -76,9 +74,7 @@ public class XmlUtils {
             reader.setFeature(EGE, false);
             reader.setFeature(EPE, false);
             doc = reader.read(xml);
-        } catch (DocumentException e) {
-            throw new SchemaException(SchemaErrorEnum.XML_FORMAT_ERROR, e);
-        } catch (SAXException e) {
+        } catch (DocumentException | SAXException e) {
             throw new SchemaException(SchemaErrorEnum.XML_FORMAT_ERROR, e);
         }
         return doc;
@@ -100,9 +96,7 @@ public class XmlUtils {
             reader.setFeature(EGE, false);
             reader.setFeature(EPE, false);
             doc = reader.read(xml);
-        } catch (DocumentException e) {
-            throw new SchemaException(SchemaErrorEnum.XML_FORMAT_ERROR, e);
-        } catch (SAXException e) {
+        } catch (DocumentException | SAXException e) {
             throw new SchemaException(SchemaErrorEnum.XML_FORMAT_ERROR, e);
         }
         return doc;
@@ -113,9 +107,8 @@ public class XmlUtils {
      *
      * @param tagName the name of the root element
      * @return a new element instance
-     * @throws SchemaException problem generating a new document
      */
-    public static Element createRootElement(String tagName) throws SchemaException {
+    public static Element createRootElement(String tagName) {
         Document doc = newDocument();
         Element root = DocumentHelper.createElement(tagName);
         doc.add(root);
@@ -152,7 +145,7 @@ public class XmlUtils {
      * @throws SchemaException problem parsing the XML payload
      */
     public static Element getRootElementFromString(String payload) throws SchemaException {
-        if (payload == null || payload.length() < 1) {
+        if (payload == null || payload.isEmpty()) {
             throw new SchemaException(SchemaErrorEnum.XML_FORMAT_ERROR, "");
         }
 
@@ -194,10 +187,9 @@ public class XmlUtils {
     @SuppressWarnings("unchecked")
     public static List<Element> getChildElements(Element parent, String tagName) {
         List<Element> allNodes = parent.elements(tagName);
-        List<Element> elements = new ArrayList<Element>();
+        List<Element> elements = new ArrayList<>();
 
-        for (int i = 0; i < allNodes.size(); i++) {
-            Element node = allNodes.get(i);
+        for (Element node : allNodes) {
             if (node instanceof Element && node.getParent() == parent) {
                 elements.add(node);
             }
@@ -215,10 +207,9 @@ public class XmlUtils {
     public static List<Element> getElements(Element parent, String tagName) {
         @SuppressWarnings("unchecked")
         List<Element> allNodes = parent.elements();
-        List<Element> elements = new ArrayList<Element>();
+        List<Element> elements = new ArrayList<>();
 
-        for (int i = 0; i < allNodes.size(); i++) {
-            Element node = allNodes.get(i);
+        for (Element node : allNodes) {
             if (node instanceof Element) {
                 elements.add(node);
             }
@@ -328,9 +319,8 @@ public class XmlUtils {
      *
      * @param node the node/element instance to convert
      * @return the XML payload representing the node/element
-     * @throws SchemaException problem converting XML to string
      */
-    public static String nodeToString(Node node) throws SchemaException {
+    public static String nodeToString(Node node) {
         return node.asXML();
     }
 

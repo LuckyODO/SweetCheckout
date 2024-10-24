@@ -10,6 +10,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.security.Security;
 
@@ -24,7 +25,7 @@ public class SM4Encrypt implements Encrypt {
     }
 
     public static final String PROVIDER_NAME = "BC";
-    private static final Charset CIPHER_CHARSET = Charset.forName("UTF-8");
+    private static final Charset CIPHER_CHARSET = StandardCharsets.UTF_8;
 
     private static final String SLASH = "/";
     private static final String ALG = "SM4";
@@ -86,7 +87,6 @@ public class SM4Encrypt implements Encrypt {
     /**
      * getter for property alg
      *
-     * @return
      */
     public static String getAlg() {
         return ALG;
@@ -95,7 +95,6 @@ public class SM4Encrypt implements Encrypt {
     /**
      * getter for property mode
      *
-     * @return
      */
     public String getMode() {
         return MODE;
@@ -104,7 +103,6 @@ public class SM4Encrypt implements Encrypt {
     /**
      * getter for property padding
      *
-     * @return
      */
     public String getPadding() {
         return PADDING;
@@ -113,7 +111,6 @@ public class SM4Encrypt implements Encrypt {
     /**
      * getter for property fullCipherName
      *
-     * @return
      */
     public String getFullCipherName() {
         return fullCipherName;

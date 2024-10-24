@@ -113,10 +113,9 @@ public class NativePayService {
     String requestPath =
         "https://api.mch.weixin.qq.com/v3/pay/partner/transactions/out-trade-no/{out_trade_no}/close";
 
-    CloseOrderRequest realRequest = request;
-    // 添加 path param
+      // 添加 path param
     requestPath =
-        requestPath.replace("{" + "out_trade_no" + "}", urlEncode(realRequest.getOutTradeNo()));
+        requestPath.replace("{" + "out_trade_no" + "}", urlEncode(request.getOutTradeNo()));
 
     if (this.hostName != null) {
       requestPath = requestPath.replaceFirst(HostName.API.getValue(), hostName.getValue());
@@ -129,7 +128,7 @@ public class NativePayService {
             .httpMethod(HttpMethod.POST)
             .url(requestPath)
             .headers(headers)
-            .body(createRequestBody(realRequest))
+            .body(createRequestBody(request))
             .build();
     httpClient.execute(httpRequest, null);
   }
@@ -146,8 +145,7 @@ public class NativePayService {
    */
   public PrepayResponse prepay(PrepayRequest request) {
     String requestPath = "https://api.mch.weixin.qq.com/v3/pay/partner/transactions/native";
-    PrepayRequest realRequest = request;
-    if (this.hostName != null) {
+      if (this.hostName != null) {
       requestPath = requestPath.replaceFirst(HostName.API.getValue(), hostName.getValue());
     }
     HttpHeaders headers = new HttpHeaders();
@@ -158,7 +156,7 @@ public class NativePayService {
             .httpMethod(HttpMethod.POST)
             .url(requestPath)
             .headers(headers)
-            .body(createRequestBody(realRequest))
+            .body(createRequestBody(request))
             .build();
     HttpResponse<PrepayResponse> httpResponse =
         httpClient.execute(httpRequest, PrepayResponse.class);
@@ -179,19 +177,18 @@ public class NativePayService {
     String requestPath =
         "https://api.mch.weixin.qq.com/v3/pay/partner/transactions/id/{transaction_id}";
 
-    QueryOrderByIdRequest realRequest = request;
-    // 添加 path param
+      // 添加 path param
     requestPath =
         requestPath.replace(
-            "{" + "transaction_id" + "}", urlEncode(realRequest.getTransactionId()));
+            "{" + "transaction_id" + "}", urlEncode(request.getTransactionId()));
 
     // 添加 query param
     QueryParameter queryParameter = new QueryParameter();
-    if (realRequest.getSpMchid() != null) {
-      queryParameter.add("sp_mchid", urlEncode(realRequest.getSpMchid()));
+    if (request.getSpMchid() != null) {
+      queryParameter.add("sp_mchid", urlEncode(request.getSpMchid()));
     }
-    if (realRequest.getSubMchid() != null) {
-      queryParameter.add("sub_mchid", urlEncode(realRequest.getSubMchid()));
+    if (request.getSubMchid() != null) {
+      queryParameter.add("sub_mchid", urlEncode(request.getSubMchid()));
     }
     requestPath += queryParameter.getQueryStr();
     if (this.hostName != null) {
@@ -224,18 +221,17 @@ public class NativePayService {
     String requestPath =
         "https://api.mch.weixin.qq.com/v3/pay/partner/transactions/out-trade-no/{out_trade_no}";
 
-    QueryOrderByOutTradeNoRequest realRequest = request;
-    // 添加 path param
+      // 添加 path param
     requestPath =
-        requestPath.replace("{" + "out_trade_no" + "}", urlEncode(realRequest.getOutTradeNo()));
+        requestPath.replace("{" + "out_trade_no" + "}", urlEncode(request.getOutTradeNo()));
 
     // 添加 query param
     QueryParameter queryParameter = new QueryParameter();
-    if (realRequest.getSpMchid() != null) {
-      queryParameter.add("sp_mchid", urlEncode(realRequest.getSpMchid()));
+    if (request.getSpMchid() != null) {
+      queryParameter.add("sp_mchid", urlEncode(request.getSpMchid()));
     }
-    if (realRequest.getSubMchid() != null) {
-      queryParameter.add("sub_mchid", urlEncode(realRequest.getSubMchid()));
+    if (request.getSubMchid() != null) {
+      queryParameter.add("sub_mchid", urlEncode(request.getSubMchid()));
     }
     requestPath += queryParameter.getQueryStr();
     if (this.hostName != null) {

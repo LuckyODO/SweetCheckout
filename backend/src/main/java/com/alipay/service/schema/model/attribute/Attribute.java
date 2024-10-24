@@ -29,22 +29,16 @@ public abstract class Attribute {
     private String              name;
     private AttrTypeEnum        type;
     private AttrValueTypeEnum   valueType;
-    private List<AttributeRule> rules   = new ArrayList<AttributeRule>();
-    private List<Option>        options = new ArrayList<Option>();
+    private List<AttributeRule> rules   = new ArrayList<>();
+    private List<Option>        options = new ArrayList<>();
 
     /**
      * 转换成document的元素
-     *
-     * @return
-     * @throws SchemaException
      */
     public abstract Element toElement() throws SchemaException;
 
     /**
      * 转换成document的元素
-     *
-     * @return
-     * @throws SchemaException
      */
     public abstract Element toValueElement() throws SchemaException;
 
@@ -58,7 +52,7 @@ public abstract class Attribute {
 
     protected void appendRulesElement(Element parent, List<AttributeRule> rules,
                                       String attributeId) throws SchemaException {
-        if (rules == null || rules.size() <= 0) {
+        if (rules == null || rules.isEmpty()) {
             return;
         }
         Element rulesElm = XmlUtils.appendElement(parent, "rules");
@@ -70,7 +64,7 @@ public abstract class Attribute {
 
     protected void appendOptionsElement(Element parent, List<Option> options,
                                         String attributeId) throws SchemaException {
-        if (options == null || options.size() <= 0) {
+        if (options == null || options.isEmpty()) {
             return;
         }
         Element optionsElm = XmlUtils.appendElement(parent, "options");

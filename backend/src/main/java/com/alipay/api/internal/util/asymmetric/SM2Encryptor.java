@@ -161,10 +161,7 @@ public class SM2Encryptor extends BaseAsymmetricEncryptor {
             KeyFactory keyFactory = KeyFactory.getInstance("EC");
             X509EncodedKeySpec keySpec = new X509EncodedKeySpec(x509PublicKey);
             return keyFactory.generatePublic(keySpec);
-        } catch (NoSuchAlgorithmException e) {
-            AlipayLogger.logBizError(e);
-            throw new AlipayApiException(e);
-        } catch (InvalidKeySpecException e) {
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             AlipayLogger.logBizError(e);
             throw new AlipayApiException(e);
         }
@@ -175,10 +172,7 @@ public class SM2Encryptor extends BaseAsymmetricEncryptor {
             KeyFactory keyFactory = KeyFactory.getInstance("EC");
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(pkcs8PriateKey);
             return keyFactory.generatePrivate(keySpec);
-        } catch (NoSuchAlgorithmException e) {
-            AlipayLogger.logBizError(e);
-            throw new AlipayApiException(e);
-        } catch (InvalidKeySpecException e) {
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             AlipayLogger.logBizError(e);
             throw new AlipayApiException(e);
         }

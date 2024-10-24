@@ -5,17 +5,12 @@ import com.wechat.pay.java.core.auth.Validator;
 import com.wechat.pay.java.core.auth.WechatPay2Credential;
 import com.wechat.pay.java.core.auth.WechatPay2Validator;
 import com.wechat.pay.java.core.certificate.CertificateProvider;
-import com.wechat.pay.java.core.cipher.PrivacyDecryptor;
-import com.wechat.pay.java.core.cipher.PrivacyEncryptor;
-import com.wechat.pay.java.core.cipher.RSAPrivacyDecryptor;
-import com.wechat.pay.java.core.cipher.RSAPrivacyEncryptor;
 import com.wechat.pay.java.core.cipher.RSASigner;
 import com.wechat.pay.java.core.cipher.RSAVerifier;
 import com.wechat.pay.java.core.cipher.Signer;
-import com.wechat.pay.java.core.util.PemUtil;
+
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.cert.X509Certificate;
 
 /** RSAConfig抽象类 */
 public abstract class AbstractRSAConfig implements Config {
@@ -66,21 +61,6 @@ public abstract class AbstractRSAConfig implements Config {
 
   /** 微信支付平台公钥Id */
   private final String publicKeyId;
-
-  @Override
-  public PrivacyEncryptor createEncryptor() {
-    if (publicKey != null) {
-      return new RSAPrivacyEncryptor(publicKey, publicKeyId);
-    }
-    X509Certificate certificate = certificateProvider.getAvailableCertificate();
-    return new RSAPrivacyEncryptor(
-        certificate.getPublicKey(), PemUtil.getSerialNumber(certificate));
-  }
-
-  @Override
-  public PrivacyDecryptor createDecryptor() {
-    return new RSAPrivacyDecryptor(privateKey);
-  }
 
   @Override
   public Credential createCredential() {

@@ -45,7 +45,7 @@ public class BatchAlipayRequest implements AlipayRequest<BatchAlipayResponse> {
     public BatchAlipayRequest addRequest(AlipayRequest alipayRequest, String accessToken,
                                          String appAuthToken, String targetAppId) {
         if (this.requestList == null) {
-            this.requestList = new ArrayList<AlipayRequestWrapper>();
+            this.requestList = new ArrayList<>();
         }
         AlipayRequestWrapper alipayRequestWrapper = new AlipayRequestWrapper(alipayRequest,
                 accessToken, appAuthToken, targetAppId);

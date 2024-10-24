@@ -1,6 +1,5 @@
 package com.alipay.api.request;
 
-import com.alipay.api.domain.AlipayTradeCancelModel;
 import java.util.Map;
 
 import com.alipay.api.AlipayRequest;

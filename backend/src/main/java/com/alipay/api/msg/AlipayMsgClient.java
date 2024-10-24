@@ -11,8 +11,8 @@ import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.internal.util.AntCertificationUtil;
 import com.alipay.api.internal.util.StringUtils;
 import com.alipay.api.internal.util.WebUtils;
-import com.alipay.api.internal.util.file.FileUtils;
 import com.alipay.api.internal.util.json.JSONWriter;
+import org.apache.commons.io.FileUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -24,6 +24,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.nio.channels.NotYetConnectedException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +33,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -42,7 +42,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class AlipayMsgClient {
 
-    private static Map<String, AlipayMsgClient>                   clientMap       = new HashMap<String, AlipayMsgClient>();
+    private static Map<String, AlipayMsgClient>                   clientMap       = new HashMap<>();
     private String     serverHost;
     private boolean    isSSL                 = true;
     private MsgHandler messageHandler;
@@ -63,9 +63,9 @@ public class AlipayMsgClient {
     private        int                                            reConnectTimes  = 0;
     private        long                                           waitTime        = 0L;
     private        MsgConnector                                   webSocketConnector;
-    private        LinkedBlockingQueue<String>                    sendingQueue    = new LinkedBlockingQueue<String>(200);
+    private        LinkedBlockingQueue<String>                    sendingQueue    = new LinkedBlockingQueue<>(200);
     private        ConcurrentHashMap<String, ProtocolDataContext> sendingContexts =
-            new ConcurrentHashMap<String, ProtocolDataContext>(256);
+            new ConcurrentHashMap<>(256);
 
     private AlipayMsgClient() {
     }
@@ -93,34 +93,28 @@ public class AlipayMsgClient {
                 if (bizThreadPoolExecutor == null) {
                     bizThreadPoolExecutor = new ThreadPoolExecutor(bizThreadPoolCoreSize, bizThreadPoolMaxSize,
                             15000L, TimeUnit.MILLISECONDS,
-                            new LinkedBlockingQueue<Runnable>(400),
-                            new ThreadFactory() {
-                                public Thread newThread(Runnable r) {
-                                    return new Thread(r, "Alipay-Msg-Thread");
-                                }
-                            }, new ThreadPoolExecutor.AbortPolicy());
+                            new LinkedBlockingQueue<>(400),
+                            r -> new Thread(r, "Alipay-Msg-Thread"), new ThreadPoolExecutor.AbortPolicy());
                 }
                 if (heartBeatExecutor == null) {
                     heartBeatExecutor = new ScheduledThreadPoolExecutor(1);
-                    heartBeatExecutor.scheduleWithFixedDelay(new Runnable() {
-                        public void run() {
-                            try {
-                                if (isConnected()) {
-                                    webSocketConnector.sendPing();
-                                    reConnectTimes = 0;
-                                } else {
-                                    ReconnectStrategy[] strategies = ReconnectStrategy.values();
-                                    while ((!isConnected())
-                                            && (System.currentTimeMillis() - waitTime >=
-                                            strategies[reConnectTimes].getWatiTime())) {
-                                        doConnect();
-                                        waitTime = System.currentTimeMillis();
-                                        reConnectTimes = (++reConnectTimes) % strategies.length;
-                                    }
+                    heartBeatExecutor.scheduleWithFixedDelay(() -> {
+                        try {
+                            if (isConnected()) {
+                                webSocketConnector.sendPing();
+                                reConnectTimes = 0;
+                            } else {
+                                ReconnectStrategy[] strategies = ReconnectStrategy.values();
+                                while ((!isConnected())
+                                        && (System.currentTimeMillis() - waitTime >=
+                                        strategies[reConnectTimes].getWatiTime())) {
+                                    doConnect();
+                                    waitTime = System.currentTimeMillis();
+                                    reConnectTimes = (++reConnectTimes) % strategies.length;
                                 }
-                            } catch (Throwable t) {
-                                AlipayLogger.logBizError(t);
                             }
+                        } catch (Throwable t) {
+                            AlipayLogger.logBizError(t);
                         }
                     }, 0, 2000L, TimeUnit.MILLISECONDS);
                 }
@@ -147,8 +141,8 @@ public class AlipayMsgClient {
 
             RegisterResponse regResp = register();
 
-            Map<String, String> httpHeaders = new HashMap<String, String>(1);
-            if (regResp.getZone() != null && regResp.getZone().length() > 0) {
+            Map<String, String> httpHeaders = new HashMap<>(1);
+            if (regResp.getZone() != null && !regResp.getZone().isEmpty()) {
                 httpHeaders.put("cookie", "zone=" + regResp.getZone() + ";");
             }
             if (loadTest) {
@@ -156,7 +150,7 @@ public class AlipayMsgClient {
             }
             httpHeaders.put("Content-Type", "application/x-www-form-urlencoded;charset=" + charset);
 
-            Map<String, String> params = new HashMap<String, String>(5);
+            Map<String, String> params = new HashMap<>(5);
             params.put("app_id", appId);
             params.put("charset", charset);
             params.put("link_token", regResp.getLinkToken());
@@ -258,7 +252,6 @@ public class AlipayMsgClient {
 
     /**
      * 推荐使用destroy()代替close()
-     * @throws InterruptedException
      */
     public void destroy() throws InterruptedException{
         close();
@@ -270,59 +263,57 @@ public class AlipayMsgClient {
 
     void onMessage(final String str) {
         try {
-            bizThreadPoolExecutor.execute(new Runnable() {
-                public void run() {
-                    if (AlipayLogger.isBizDebugEnabled()) {
-                        AlipayLogger.logBizDebug("receive msg:" + str.replaceAll("[\r\n]", " "));
-                    }
-                    final ProtocolData protocolData = ProtocolData.fromStr(str);
-                    if (protocolData == null) {
+            bizThreadPoolExecutor.execute(() -> {
+                if (AlipayLogger.isBizDebugEnabled()) {
+                    AlipayLogger.logBizDebug("receive msg:" + str.replaceAll("[\r\n]", " "));
+                }
+                final ProtocolData protocolData = ProtocolData.fromStr(str);
+                if (protocolData == null) {
+                    return;
+                }
+                final Message message = protocolData.getMessage();
+                if (message == null) {
+                    return;
+                }
+
+                if (MsgConstants.MSG_CMD_PRODUCE_ACK.equals(message.getxCmd())) {
+                    ProtocolDataContext context = sendingContexts.get(protocolData.getStreamId());
+                    if (context == null) {
+                        AlipayLogger.logBizError("sendingContexts not found. streamId:" + protocolData.getStreamId());
                         return;
                     }
-                    final Message message = protocolData.getMessage();
-                    if (message == null) {
-                        return;
+                    context.setAckData(protocolData);
+                    context.getSendSignal().countDown();
+                } else if (MsgConstants.MSG_CMD_CONSUME.equals(message.getxCmd())) {
+                    boolean checkSign = false;
+                    try {
+                        checkSign = Message.checkSign(message, alipayPublicKey);
+                    } catch (Throwable t) {
+                        AlipayLogger.logBizError("check message sign exception. str:" + str + " exception:" + t.getMessage());
+                    }
+                    if (!checkSign) {
+                        AlipayLogger.logBizError("check message sign fail. str:" + str);
                     }
 
-                    if (MsgConstants.MSG_CMD_PRODUCE_ACK.equals(message.getxCmd())) {
-                        ProtocolDataContext context = sendingContexts.get(protocolData.getStreamId());
-                        if (context == null) {
-                            AlipayLogger.logBizError("sendingContexts not found. streamId:" + protocolData.getStreamId());
-                            return;
-                        }
-                        context.setAckData(protocolData);
-                        context.getSendSignal().countDown();
-                    } else if (MsgConstants.MSG_CMD_CONSUME.equals(message.getxCmd())) {
-                        boolean checkSign = false;
-                        try {
-                            checkSign = Message.checkSign(message, alipayPublicKey);
-                        } catch (Throwable t) {
-                            AlipayLogger.logBizError("check message sign exception. str:" + str + " exception:" + t.getMessage());
-                        }
-                        if (!checkSign) {
-                            AlipayLogger.logBizError("check message sign fail. str:" + str);
-                        }
-
-                        Message consumeAckMsg = new Message();
-                        consumeAckMsg.setxCmd(MsgConstants.MSG_CMD_CONSUME_ACK);
-                        consumeAckMsg.setxMessageId(message.getxMessageId());
-                        consumeAckMsg.setxStatus(MsgConstants.SUCCESS);
-                        ProtocolData consumeAckData = new ProtocolData();
-                        consumeAckData.setFromSys(protocolData.getFromSys());
-                        consumeAckData.setFromSysIp(protocolData.getFromSysIp());
-                        consumeAckData.setStreamId(protocolData.getStreamId());
-                        consumeAckData.setMessage(consumeAckMsg);
-                        try {
-                            messageHandler.onMessage(message.getMsgApi(), message.getxMessageId(), message.getBizContent());
-                        } catch (Throwable t) {
-                            AlipayLogger.logBizError("consume message exception. str:" + str + " exception:" + t.getMessage());
-                            consumeAckMsg.setxStatus(MsgConstants.FAIL);
-                        } finally {
-                            webSocketConnector.send(ProtocolData.toStr(consumeAckData));
-                        }
-                    } else {
-                        AlipayLogger.logBizError("unknown message cmd. str:" + str);
+                    Message consumeAckMsg = new Message();
+                    consumeAckMsg.setxCmd(MsgConstants.MSG_CMD_CONSUME_ACK);
+                    consumeAckMsg.setxMessageId(message.getxMessageId());
+                    consumeAckMsg.setxStatus(MsgConstants.SUCCESS);
+                    ProtocolData consumeAckData = new ProtocolData();
+                    consumeAckData.setFromSys(protocolData.getFromSys());
+                    consumeAckData.setFromSysIp(protocolData.getFromSysIp());
+                    consumeAckData.setStreamId(protocolData.getStreamId());
+                    consumeAckData.setMessage(consumeAckMsg);
+                    try {
+                        messageHandler.onMessage(message.getMsgApi(), message.getxMessageId(), message.getBizContent());
+                    } catch (Throwable t) {
+                        AlipayLogger.logBizError("consume message exception. str:" + str + " exception:" + t.getMessage());
+                        consumeAckMsg.setxStatus(MsgConstants.FAIL);
+                    } finally {
+                        webSocketConnector.send(ProtocolData.toStr(consumeAckData));
                     }
+                } else {
+                    AlipayLogger.logBizError("unknown message cmd. str:" + str);
                 }
             });
         } catch (Throwable e) {
@@ -348,7 +339,7 @@ public class AlipayMsgClient {
         setConnector(serverHost, true);
     }
 
-    public void setConnector(String serverHost, boolean isSSL) throws Exception {
+    public void setConnector(String serverHost, boolean isSSL) {
         this.serverHost = serverHost;
         this.isSSL = isSSL;
     }
@@ -388,7 +379,7 @@ public class AlipayMsgClient {
     }
 
     private RegisterResponse register() throws Exception {
-        Map<String, String> params = new HashMap<String, String>(4);
+        Map<String, String> params = new HashMap<>(4);
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("sign_type", signType);
         params.put("app_id", appId);
@@ -442,7 +433,7 @@ public class AlipayMsgClient {
     }
 
     private String parseRegResp(String rsp) throws Exception {
-        if (rsp == null || rsp.length() <= 0) {
+        if (rsp == null || rsp.isEmpty()) {
             throw new RuntimeException("register response is empty! " + rsp);
         }
         if (!rsp.trim().startsWith("{")) {
@@ -523,7 +514,7 @@ public class AlipayMsgClient {
         }
         if (cookies != null && !cookies.isEmpty()) {
             for (String cookie : cookies) {
-                if (cookie == null || cookie.length() <= 0) {
+                if (cookie == null || cookie.isEmpty()) {
                     continue;
                 }
                 String[] kvs = cookie.split(";");
@@ -543,7 +534,7 @@ public class AlipayMsgClient {
 
     private String readFileToString(String rootCertPath) throws AlipayApiException {
         try {
-            return FileUtils.readFileToString(new File(rootCertPath));
+            return FileUtils.readFileToString(new File(rootCertPath), StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new AlipayApiException(e);
         }

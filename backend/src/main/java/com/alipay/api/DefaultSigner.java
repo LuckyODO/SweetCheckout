@@ -18,7 +18,7 @@ public class DefaultSigner implements Signer {
     }
 
     public String sign(String sourceContent, String signType, String charset) {
-        String sign = null;
+        String sign;
         try {
             sign = AlipaySignature.rsaSign(sourceContent, this.privateKey, charset, signType);
         } catch (AlipayApiException e) {

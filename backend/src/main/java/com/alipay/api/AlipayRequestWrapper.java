@@ -4,11 +4,12 @@
 package com.alipay.api;
 
 /**
- * AlipayReqeust的封装实现，仅用于批量调用
+ * AlipayRequest的封装实现，仅用于批量调用
  *
  * @author gongyi.tnj
  * @version $Id: AlipayRequestWrapper.java, v 0.1 2018-07-18 上午10:32 gongyi.tnj Exp $
  */
+@SuppressWarnings({"rawtypes", "unchecked", "FieldMayBeFinal"})
 public class AlipayRequestWrapper {
 
     /**

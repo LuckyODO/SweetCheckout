@@ -3,6 +3,7 @@
  */
 package com.alipay.api;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -12,6 +13,7 @@ import java.io.Serializable;
 public class ResponseEncryptItem implements Serializable {
 
     /**  */
+    @Serial
     private static final long serialVersionUID = 6680775791485372169L;
 
     /**
@@ -24,10 +26,6 @@ public class ResponseEncryptItem implements Serializable {
      */
     private String realContent;
 
-    /**
-     * @param respContent
-     * @param realContent
-     */
     public ResponseEncryptItem(String respContent, String realContent) {
         super();
         this.respContent = respContent;

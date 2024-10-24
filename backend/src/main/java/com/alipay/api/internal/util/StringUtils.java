@@ -89,7 +89,7 @@ public abstract class StringUtils {
      * 过滤不可见字符
      */
     public static String stripNonValidXMLCharacters(String input) {
-        if (input == null || ("".equals(input))) { return ""; }
+        if (input == null || (input.isEmpty())) { return ""; }
         StringBuilder out = new StringBuilder();
         char current;
         for (int i = 0; i < input.length(); i++) {

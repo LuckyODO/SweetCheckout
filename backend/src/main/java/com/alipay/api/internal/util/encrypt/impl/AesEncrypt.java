@@ -71,9 +71,6 @@ public class AesEncrypt implements Encrypt {
     /**
      * 初始向量的方法, 全部为0. 这里的写法适合于其它算法,针对AES算法的话,IV值一定是128位的(16字节).
      *
-     * @param fullAlg
-     * @return
-     * @throws GeneralSecurityException
      */
     private static byte[] initIv(String fullAlg) {
 

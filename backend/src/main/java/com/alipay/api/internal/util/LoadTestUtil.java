@@ -16,7 +16,7 @@ public class LoadTestUtil {
     private static final String TEST_LOAD_FLAG = "_TEST_1A";
 
     public static Map<String, String> getParamsWithLoadTestFlag(Map<String, String> params) {
-        Map<String, String> result = new HashMap<String, String>(params);
+        Map<String, String> result = new HashMap<>(params);
         if (result.containsKey(AlipayConstants.APP_ID)) {
             String appId = result.get(AlipayConstants.APP_ID);
             result.put(AlipayConstants.APP_ID, appId + TEST_LOAD_FLAG);

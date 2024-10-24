@@ -2,6 +2,7 @@ package com.alipay.api.internal.util;
 
 import com.alipay.api.AlipayConstants;
 
+import java.io.Serial;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -17,6 +18,7 @@ import java.util.TimeZone;
  */
 public class AlipayHashMap extends HashMap<String, String> {
 
+    @Serial
     private static final long serialVersionUID = -1277791390393392630L;
 
     public AlipayHashMap() {

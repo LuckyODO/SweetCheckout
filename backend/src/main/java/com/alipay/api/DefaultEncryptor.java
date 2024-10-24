@@ -18,7 +18,7 @@ public class DefaultEncryptor implements Encryptor {
     }
 
     public String encrypt(String sourceContent, String encryptType, String charset) {
-        String encryptContent = null;
+        String encryptContent;
         try {
             encryptContent = AlipayEncrypt.encryptContent(sourceContent, encryptType,
                     this.encryptKey, charset);

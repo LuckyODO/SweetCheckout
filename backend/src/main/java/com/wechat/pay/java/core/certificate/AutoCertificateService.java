@@ -9,6 +9,8 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +31,7 @@ public class AutoCertificateService {
             private final AtomicInteger threadCount = new AtomicInteger(0);
 
             @Override
-            public Thread newThread(Runnable r) {
+            public Thread newThread(@NotNull Runnable r) {
               Thread t =
                   new Thread(r, "auto-certificate-service-daemon-" + threadCount.incrementAndGet());
               // 用户线程执行完成后不会阻止 JVM 退出

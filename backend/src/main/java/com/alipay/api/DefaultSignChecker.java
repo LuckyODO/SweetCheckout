@@ -18,7 +18,7 @@ public class DefaultSignChecker implements SignChecker {
     }
 
     public boolean check(String sourceContent, String signature, String signType, String charset) {
-        boolean success = false;
+        boolean success;
         try {
             success = AlipaySignature.rsaCheck(sourceContent, signature, alipayPublicKey, charset, signType);
         } catch (AlipayApiException e) {
@@ -28,7 +28,7 @@ public class DefaultSignChecker implements SignChecker {
     }
 
     public boolean checkCert(String sourceContent, String signature, String signType, String charset, String publicKey) {
-        boolean success = false;
+        boolean success;
         try {
             success = AlipaySignature.rsaCheck(sourceContent, signature, publicKey, charset, signType);
         } catch (AlipayApiException e) {

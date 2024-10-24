@@ -16,7 +16,7 @@
 
 package com.alipay.api.internal.util.codec;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Provides Base64 encoding and decoding as defined by RFC 2045.
@@ -154,8 +154,8 @@ public class Base64 implements BinaryEncoder, BinaryDecoder {
             // return false;
             return true;
         }
-        for (int i = 0; i < length; i++) {
-            if (!isBase64(arrayOctect[i])) {
+        for (byte b : arrayOctect) {
+            if (!isBase64(b)) {
                 return false;
             }
         }
@@ -218,7 +218,7 @@ public class Base64 implements BinaryEncoder, BinaryDecoder {
         int lengthDataBits = binaryData.length * EIGHTBIT;
         int fewerThan24bits = lengthDataBits % TWENTYFOURBITGROUP;
         int numberTriplets = lengthDataBits / TWENTYFOURBITGROUP;
-        byte encodedData[] = null;
+        byte[] encodedData = null;
         int encodedDataLength = 0;
         int nbrChunks = 0;
 
@@ -364,7 +364,7 @@ public class Base64 implements BinaryEncoder, BinaryDecoder {
         }
 
         int numberQuadruple = base64Data.length / FOURBYTE;
-        byte decodedData[] = null;
+        byte[] decodedData = null;
         byte b1 = 0, b2 = 0, b3 = 0, b4 = 0, marker0 = 0, marker1 = 0;
 
         // Throw away anything not in base64Data
@@ -423,22 +423,22 @@ public class Base64 implements BinaryEncoder, BinaryDecoder {
      * @return The data, less whitespace (see RFC 2045).
      */
     static byte[] discardWhitespace(byte[] data) {
-        byte groomedData[] = new byte[data.length];
+        byte[] groomedData = new byte[data.length];
         int bytesCopied = 0;
 
-        for (int i = 0; i < data.length; i++) {
-            switch (data[i]) {
+        for (byte datum : data) {
+            switch (datum) {
                 case (byte) ' ':
                 case (byte) '\n':
                 case (byte) '\r':
                 case (byte) '\t':
                     break;
                 default:
-                    groomedData[bytesCopied++] = data[i];
+                    groomedData[bytesCopied++] = datum;
             }
         }
 
-        byte packedData[] = new byte[bytesCopied];
+        byte[] packedData = new byte[bytesCopied];
 
         System.arraycopy(groomedData, 0, packedData, 0, bytesCopied);
 
@@ -453,16 +453,16 @@ public class Base64 implements BinaryEncoder, BinaryDecoder {
      * @return The data, less non-base64 characters (see RFC 2045).
      */
     static byte[] discardNonBase64(byte[] data) {
-        byte groomedData[] = new byte[data.length];
+        byte[] groomedData = new byte[data.length];
         int bytesCopied = 0;
 
-        for (int i = 0; i < data.length; i++) {
-            if (isBase64(data[i])) {
-                groomedData[bytesCopied++] = data[i];
+        for (byte datum : data) {
+            if (isBase64(datum)) {
+                groomedData[bytesCopied++] = datum;
             }
         }
 
-        byte packedData[] = new byte[bytesCopied];
+        byte[] packedData = new byte[bytesCopied];
 
         System.arraycopy(groomedData, 0, packedData, 0, bytesCopied);
 
@@ -498,18 +498,10 @@ public class Base64 implements BinaryEncoder, BinaryDecoder {
     }
 
     public static String encodeBase64String(byte[] input) {
-        try {
-            return new String(encodeBase64(input), "utf-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
+        return new String(encodeBase64(input), StandardCharsets.UTF_8);
     }
 
     public static byte[] decodeBase64String(String base64String) {
-        try {
-            return Base64.decodeBase64(base64String.getBytes("utf-8"));
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
+        return Base64.decodeBase64(base64String.getBytes(StandardCharsets.UTF_8));
     }
 }

@@ -21,7 +21,7 @@ import java.util.Map;
  */
 public class AlipayEncrypt {
 
-    private static Map<String, Encrypt> encryptManager = new HashMap<String, Encrypt>();
+    private static Map<String, Encrypt> encryptManager = new HashMap<>();
 
     static {
         encryptManager.put("AES", new AesEncrypt());
@@ -32,13 +32,6 @@ public class AlipayEncrypt {
 
     /**
      * 加密
-     *
-     * @param content
-     * @param encryptType
-     * @param encryptKey
-     * @param charset
-     * @return
-     * @throws AlipayApiException
      */
     public static String encryptContent(String content, String encryptType, String encryptKey,
                                         String charset) throws AlipayApiException {
@@ -58,13 +51,6 @@ public class AlipayEncrypt {
 
     /**
      * 解密
-     *
-     * @param content
-     * @param encryptType
-     * @param encryptKey
-     * @param charset
-     * @return
-     * @throws AlipayApiException
      */
     public static String decryptContent(String content, String encryptType, String encryptKey,
                                         String charset) throws AlipayApiException {

@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class MultiAttribute extends Attribute {
 
-    private List<String> values = new ArrayList<String>();
+    private List<String> values = new ArrayList<>();
 
     @Override
     public Element toElement() throws SchemaException {
@@ -31,7 +31,7 @@ public class MultiAttribute extends Attribute {
         attributeNode.addAttribute("type", this.getType().getType());
         attributeNode.addAttribute("valueType", this.getValueType().getCode());
         Element valuesNode = XmlUtils.appendElement(attributeNode, "values");
-        if (values != null && values.size() > 0) {
+        if (values != null && !values.isEmpty()) {
             for (String value : values) {
                 Element valueNode = XmlUtils.appendElement(valuesNode, "value");
                 valueNode.setText(value);
@@ -54,7 +54,7 @@ public class MultiAttribute extends Attribute {
         attributeNode.addAttribute("type", this.getType().getType());
         attributeNode.addAttribute("valueType", this.getValueType().getCode());
         Element valuesNode = XmlUtils.appendElement(attributeNode, "values");
-        if (values != null && values.size() > 0) {
+        if (values != null && !values.isEmpty()) {
             for (String value : values) {
                 Element valueNode = XmlUtils.appendElement(valuesNode, "value");
                 valueNode.setText(value);

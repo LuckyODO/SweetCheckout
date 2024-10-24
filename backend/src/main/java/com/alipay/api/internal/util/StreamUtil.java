@@ -3,6 +3,8 @@
  */
 package com.alipay.api.internal.util;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.*;
 
 /**
@@ -82,7 +84,7 @@ public class StreamUtil {
 
     private static class SynchronizedOutputStream extends OutputStream {
         private OutputStream out;
-        private Object       lock;
+        private final Object       lock;
 
         SynchronizedOutputStream(OutputStream out) {
             this(out, out);
@@ -99,13 +101,13 @@ public class StreamUtil {
             }
         }
 
-        public void write(byte[] data) throws IOException {
+        public void write(byte @NotNull [] data) throws IOException {
             synchronized (lock) {
                 out.write(data);
             }
         }
 
-        public void write(byte[] data, int offset, int length) throws IOException {
+        public void write(byte @NotNull [] data, int offset, int length) throws IOException {
             synchronized (lock) {
                 out.write(data, offset, length);
             }

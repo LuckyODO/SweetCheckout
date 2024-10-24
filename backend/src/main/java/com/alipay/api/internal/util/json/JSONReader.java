@@ -22,17 +22,17 @@ public abstract class JSONReader {
     public static final  int    CURRENT    = 1;
     public static final  int    NEXT       = 2;
 
-    private static Map<Character, Character> escapes = new HashMap<Character, Character>();
+    private static Map<Character, Character> escapes = new HashMap<>();
 
     static {
-        escapes.put(Character.valueOf('"'), Character.valueOf('"'));
-        escapes.put(Character.valueOf('\\'), Character.valueOf('\\'));
-        escapes.put(Character.valueOf('/'), Character.valueOf('/'));
-        escapes.put(Character.valueOf('b'), Character.valueOf('\b'));
-        escapes.put(Character.valueOf('f'), Character.valueOf('\f'));
-        escapes.put(Character.valueOf('n'), Character.valueOf('\n'));
-        escapes.put(Character.valueOf('r'), Character.valueOf('\r'));
-        escapes.put(Character.valueOf('t'), Character.valueOf('\t'));
+        escapes.put('"', '"');
+        escapes.put('\\', '\\');
+        escapes.put('/', '/');
+        escapes.put('b', '\b');
+        escapes.put('f', '\f');
+        escapes.put('n', '\n');
+        escapes.put('r', '\r');
+        escapes.put('t', '\t');
     }
 
     private CharacterIterator it;
@@ -131,7 +131,7 @@ public abstract class JSONReader {
     }
 
     private Object object() {
-        Map<Object, Object> ret = new HashMap<Object, Object>();
+        Map<Object, Object> ret = new HashMap<>();
         Object key = read();
         while (token != OBJECT_END) {
             read(); // should be a colon
@@ -147,7 +147,7 @@ public abstract class JSONReader {
     }
 
     private Object array() {
-        List<Object> ret = new ArrayList<Object>();
+        List<Object> ret = new ArrayList<>();
         Object value = read();
         while (token != ARRAY_END) {
             ret.add(value);
@@ -183,8 +183,8 @@ public abstract class JSONReader {
 
         String s = buf.toString();
         return isFloatingPoint
-                ? (length < 17) ? (Object) Double.valueOf(s) : new BigDecimal(s)
-                : (length < 19) ? (Object) Long.valueOf(s) : new BigInteger(s);
+                ? (length < 17) ? Double.valueOf(s) : new BigDecimal(s)
+                : (length < 19) ? Long.valueOf(s) : new BigInteger(s);
     }
 
     private int addDigits() {
@@ -203,9 +203,9 @@ public abstract class JSONReader {
                 if (c == 'u') {
                     add(unicode());
                 } else {
-                    Object value = escapes.get(Character.valueOf(c));
+                    Character value = escapes.get(c);
                     if (value != null) {
-                        add(((Character) value).charValue());
+                        add(value);
                     }
                 }
             } else {

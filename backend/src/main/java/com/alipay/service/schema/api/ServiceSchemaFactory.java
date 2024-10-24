@@ -11,7 +11,7 @@ import java.util.List;
 public class ServiceSchemaFactory {
 
     public static List<Attribute> createEmptyAttributeList() {
-        return new ArrayList<Attribute>();
+        return new ArrayList<>();
     }
 
     public static Attribute createAttribute(AttrTypeEnum attributeType) {

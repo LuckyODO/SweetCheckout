@@ -24,11 +24,7 @@ import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 证书文件可信校验
@@ -60,19 +56,16 @@ public class AntCertificationUtil {
             throw new RuntimeException(e);
         }
 
-        List<X509Certificate> rootCerts = new ArrayList<X509Certificate>();
+        List<X509Certificate> rootCerts = new ArrayList<>();
         try {
             X509Certificate[] certs = readPemCertChain(rootCertContent);
-            for (X509Certificate c : certs) {
-                rootCerts.add(c);
-            }
+            rootCerts.addAll(Arrays.asList(certs));
         } catch (Exception e) {
             AlipayLogger.logBizError(("读取根证书失败"));
             throw new RuntimeException(e);
         }
 
-        boolean result = verifyCertChain(certificates, rootCerts.toArray(new X509Certificate[rootCerts.size()]));
-        return result;
+        return verifyCertChain(certificates, rootCerts.toArray(new X509Certificate[0]));
     }
 
     /**
@@ -93,7 +86,7 @@ public class AntCertificationUtil {
             return false;
         }
 
-        Map<Principal, X509Certificate> subjectMap = new HashMap<Principal, X509Certificate>();
+        Map<Principal, X509Certificate> subjectMap = new HashMap<>();
 
         for (X509Certificate root : rootCerts) {
             subjectMap.put(root.getSubjectDN(), root);
@@ -174,9 +167,9 @@ public class AntCertificationUtil {
      */
     private static boolean sortByDn(X509Certificate[] certs) {
         //主题和证书的映射
-        Map<Principal, X509Certificate> subjectMap = new HashMap<Principal, X509Certificate>();
+        Map<Principal, X509Certificate> subjectMap = new HashMap<>();
         //签发者和证书的映射
-        Map<Principal, X509Certificate> issuerMap = new HashMap<Principal, X509Certificate>();
+        Map<Principal, X509Certificate> issuerMap = new HashMap<>();
         //是否包含自签名证书
         boolean hasSelfSignedCert = false;
 
@@ -195,7 +188,7 @@ public class AntCertificationUtil {
             issuerMap.put(issuerDN, cert);
         }
 
-        List<X509Certificate> certChain = new ArrayList<X509Certificate>();
+        List<X509Certificate> certChain = new ArrayList<>();
 
         X509Certificate current = certs[0];
         addressingUp(subjectMap, certChain, current);
@@ -269,14 +262,11 @@ public class AntCertificationUtil {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(cert.getBytes());
         CertificateFactory factory = CertificateFactory.getInstance("X.509", provider);
         Collection<? extends Certificate> certificates = factory.generateCertificates(inputStream);
-        return (X509Certificate[]) certificates.toArray(new X509Certificate[certificates.size()]);
+        return certificates.toArray(new X509Certificate[0]);
     }
 
     /**
      * 获取根证书序列号
-     *
-     * @param rootCertContent
-     * @return
      */
     public static String getRootCertSN(String rootCertContent) {
         String rootCertSN = null;
@@ -306,9 +296,6 @@ public class AntCertificationUtil {
 
     /**
      * 获取根证书序列号
-     *
-     * @param rootCertContent
-     * @return
      */
     public static String getRootCertSN(String rootCertContent, String signType) {
         if (AlipayConstants.SIGN_TYPE_SM2.equals(signType)) {
@@ -346,31 +333,18 @@ public class AntCertificationUtil {
 
     /**
      * @param certPath 证书路径
-     * @return
-     * @throws AlipayApiException
      */
     public static X509Certificate getCertFromPath(String certPath) throws AlipayApiException {
-        InputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream(certPath);
+        try (InputStream inputStream = new FileInputStream(certPath)) {
             CertificateFactory cf = CertificateFactory.getInstance("X.509", "BC");
             return (X509Certificate) cf.generateCertificate(inputStream);
         } catch (Exception e) {
             throw new AlipayApiException(e);
-        } finally {
-            try {
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-            } catch (IOException e) {
-                throw new AlipayApiException(e);
-            }
         }
     }
 
     public static X509Certificate getCertFromContent(String certContent) throws AlipayApiException {
-        try {
-            InputStream inputStream = new ByteArrayInputStream(certContent.getBytes());
+        try (InputStream inputStream = new ByteArrayInputStream(certContent.getBytes())) {
             CertificateFactory cf = CertificateFactory.getInstance("X.509", "BC");
             return (X509Certificate) cf.generateCertificate(inputStream);
         } catch (Exception e) {
@@ -392,27 +366,14 @@ public class AntCertificationUtil {
     }
 
     public static String getAlipayPublicKey(String alipayPublicCertPath) throws AlipayApiException {
-        InputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream(alipayPublicCertPath);
+        try (InputStream inputStream = new FileInputStream(alipayPublicCertPath)) {
+
             CertificateFactory cf = CertificateFactory.getInstance("X.509", "BC");
             X509Certificate cert = (X509Certificate) cf.generateCertificate(inputStream);
             PublicKey publicKey = cert.getPublicKey();
             return Base64.encodeBase64String(publicKey.getEncoded());
-        } catch (NoSuchProviderException e) {
+        } catch (NoSuchProviderException | CertificateException | IOException e) {
             throw new AlipayApiException(e);
-        } catch (IOException e) {
-            throw new AlipayApiException(e);
-        } catch (CertificateException e) {
-            throw new AlipayApiException(e);
-        } finally {
-            try {
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-            } catch (IOException e) {
-                throw new AlipayApiException(e);
-            }
         }
     }
 }

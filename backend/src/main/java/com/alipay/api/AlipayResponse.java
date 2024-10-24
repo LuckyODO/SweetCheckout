@@ -3,6 +3,7 @@ package com.alipay.api;
 import com.alipay.api.internal.mapping.ApiField;
 import com.alipay.api.internal.util.StringUtils;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ import java.util.Map;
  */
 public abstract class AlipayResponse implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 5014379068811962022L;
 
     @ApiField("code")
@@ -32,8 +34,6 @@ public abstract class AlipayResponse implements Serializable {
 
     /**
      * 废弃方法，请使用getCode替换
-     *
-     * @return
      */
     @Deprecated
     public String getErrorCode() {
@@ -42,8 +42,6 @@ public abstract class AlipayResponse implements Serializable {
 
     /**
      * 废弃方法，请使用setCode替换
-     *
-     * @param errorCode
      */
     @Deprecated
     public void setErrorCode(String errorCode) {

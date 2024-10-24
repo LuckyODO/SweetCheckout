@@ -74,16 +74,10 @@ public class FileItem {
 
     public byte[] getFileHeader() throws IOException {
         if (this.content == null && this.file != null && this.file.exists()) {
-            InputStream in = null;
-            try {
-                in = new FileInputStream(this.file);
+            try (InputStream in = new FileInputStream(this.file)) {
                 byte[] bufferByte = new byte[16];
                 if ((in.read(bufferByte)) != -1) {
                     return bufferByte;
-                }
-            } finally {
-                if (in != null) {
-                    in.close();
                 }
             }
             return null;
@@ -94,24 +88,13 @@ public class FileItem {
 
     public byte[] getContent() throws IOException {
         if (this.content == null && this.file != null && this.file.exists()) {
-            InputStream in = null;
-            ByteArrayOutputStream out = null;
 
-            try {
-                in = new FileInputStream(this.file);
-                out = new ByteArrayOutputStream();
+            try (InputStream in = new FileInputStream(this.file); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
                 int ch;
                 while ((ch = in.read()) != -1) {
                     out.write(ch);
                 }
                 this.content = out.toByteArray();
-            } finally {
-                if (out != null) {
-                    out.close();
-                }
-                if (in != null) {
-                    in.close();
-                }
             }
         }
         return this.content;
@@ -122,18 +105,12 @@ public class FileItem {
         if (this.content != null) {
             out.write(this.content);
         } else if (this.file != null && this.file.exists()) {
-            InputStream in = null;
 
-            try {
-                in = new FileInputStream(this.file);
+            try (InputStream in = new FileInputStream(this.file)) {
                 int bytes;
                 byte[] bufferByte = new byte[1024 * 1024];
                 while ((bytes = in.read(bufferByte)) != -1) {
                     out.write(bufferByte, 0, bytes);
-                }
-            } finally {
-                if (in != null) {
-                    in.close();
                 }
             }
         } else {

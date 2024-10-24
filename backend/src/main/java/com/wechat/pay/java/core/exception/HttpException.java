@@ -2,9 +2,12 @@ package com.wechat.pay.java.core.exception;
 
 import com.wechat.pay.java.core.http.HttpRequest;
 
+import java.io.Serial;
+
 /** 发送HTTP请求失败时抛出。例如构建请求参数失败、发送请求失败、I/O错误等。包含请求信息。 */
 public class HttpException extends WechatPayException {
 
+  @Serial
   private static final long serialVersionUID = 8583990125724273072L;
   private HttpRequest httpRequest;
 

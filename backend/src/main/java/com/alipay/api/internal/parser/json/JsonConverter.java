@@ -48,7 +48,6 @@ public class JsonConverter implements Converter {
      * @param json  JSON格式的数据
      * @param clazz 泛型领域类型
      * @return 领域对象
-     * @throws AlipayApiException
      */
     public <T> T fromJson(final Map<?, ?> json, Class<T> clazz) throws AlipayApiException {
         return Converters.convert(clazz, new Reader() {
@@ -95,7 +94,7 @@ public class JsonConverter implements Converter {
             private List<Object> getListObjectsInner(Class<?> subType, Object itemTmp)
                     throws AlipayApiException {
                 List<Object> listObjs;
-                listObjs = new ArrayList<Object>();
+                listObjs = new ArrayList<>();
                 List<?> tmpList = (List<?>) itemTmp;
                 for (Object subTmp : tmpList) {
                     Object obj = null;
@@ -187,9 +186,6 @@ public class JsonConverter implements Converter {
     }
 
     /**
-     * @param request
-     * @param body
-     * @return
      */
     private String getSignSourceData(AlipayRequest<?> request, String body) throws AlipayApiException {
 
@@ -218,10 +214,6 @@ public class JsonConverter implements Converter {
     /**
      * 获取签名源串内容
      *
-     * @param body
-     * @param rootNode
-     * @param indexOfRootNode
-     * @return
      */
     private String parseSignSourceData(String body, String rootNode, int indexOfRootNode) throws AlipayApiException {
 
@@ -246,8 +238,6 @@ public class JsonConverter implements Converter {
     /**
      * 获取签名
      *
-     * @param body
-     * @return
      */
     private String getSign(String body) {
 
@@ -259,8 +249,7 @@ public class JsonConverter implements Converter {
     }
 
     public String decryptSourceData(AlipayRequest<?> request, String body, String format,
-                                    Decryptor decryptor, String encryptType, String charset)
-            throws AlipayApiException {
+                                    Decryptor decryptor, String encryptType, String charset) {
 
         ResponseParseItem respSignSourceData = getJSONSignSourceData(request, body);
 
@@ -276,9 +265,6 @@ public class JsonConverter implements Converter {
     /**
      * 获取JSON响应加签内容串
      *
-     * @param request
-     * @param body
-     * @return
      */
     private ResponseParseItem getJSONSignSourceData(AlipayRequest<?> request, String body) {
 
@@ -302,10 +288,6 @@ public class JsonConverter implements Converter {
     }
 
     /**
-     * @param body
-     * @param rootNode
-     * @param indexOfRootNode
-     * @return
      */
     private ResponseParseItem parseJSONSignSourceData(String body, String rootNode,
                                                       int indexOfRootNode) {

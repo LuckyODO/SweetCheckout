@@ -31,9 +31,7 @@ public class BufferErrorListener implements JSONErrorListener {
     }
 
     private void indent(int n, StringBuffer ret) {
-        for (int i = 0; i < n; ++i) {
-            ret.append(' ');
-        }
+        ret.append(" ".repeat(Math.max(0, n)));
     }
 
     public void end() {

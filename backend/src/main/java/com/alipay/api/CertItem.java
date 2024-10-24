@@ -3,6 +3,7 @@
  */
 package com.alipay.api;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -13,7 +14,7 @@ import java.io.Serializable;
  */
 public class CertItem implements Serializable {
 
-    /**  */
+    @Serial
     private static final long serialVersionUID = 6531196726066096786L;
 
     /**

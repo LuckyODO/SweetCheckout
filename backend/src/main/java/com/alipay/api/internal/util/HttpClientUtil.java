@@ -15,7 +15,6 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
 import java.security.SecureRandom;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Map;
 import java.util.Set;
@@ -30,7 +29,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class HttpClientUtil extends AbstractHttpClient {
     //OkHttpClients should be shared
-    public static final ConcurrentHashMap<String, OkHttpClient> clients = new ConcurrentHashMap<String, OkHttpClient>();
+    public static final ConcurrentHashMap<String, OkHttpClient> clients = new ConcurrentHashMap<>();
 
     private static final String METHOD_POST = "POST";
     private static final String METHOD_GET = "GET";
@@ -44,11 +43,11 @@ public class HttpClientUtil extends AbstractHttpClient {
         try {
             trustManager = new X509TrustManager() {
                 @Override
-                public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+                public void checkClientTrusted(X509Certificate[] x509Certificates, String s) {
                 }
 
                 @Override
-                public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+                public void checkServerTrusted(X509Certificate[] x509Certificates, String s) {
                 }
 
                 @Override
@@ -63,15 +62,11 @@ public class HttpClientUtil extends AbstractHttpClient {
             ctx.getClientSessionContext().setSessionCacheSize(1000);
 
             socketFactory = ctx.getSocketFactory();
-        } catch (Exception e) {
+        } catch (Exception ignored) {
 
         }
 
-        verifier = new HostnameVerifier() {
-            public boolean verify(String hostname, SSLSession session) {
-                return true;
-            }
-        };
+        verifier = (hostname, session) -> true;
     }
 
     @Override
@@ -89,7 +84,7 @@ public class HttpClientUtil extends AbstractHttpClient {
     @Override
     public String doPost(String url, Map<String, String> params, Map<String, FileItem> fileParams, String charset, Map<String, String> resHeaders) throws IOException {
         if (fileParams == null || fileParams.isEmpty()) {
-            doPost(url, params, charset, resHeaders);
+            return doPost(url, params, charset, resHeaders);
         }
         String boundary = System.currentTimeMillis() + "";
         String ctype = "multipart/form-data;boundary=" + boundary + ";charset=" + charset;
@@ -177,7 +172,7 @@ public class HttpClientUtil extends AbstractHttpClient {
     }
 
     private OkHttpClient getOkHttpClient(URL url, int connectTimeout, int readTimeout, int maxIdleConnections,
-                                         long keepAliveDuration, String proxyHost, int proxyPort) throws IOException {
+                                         long keepAliveDuration, String proxyHost, int proxyPort) {
         OkHttpClient.Builder builder = new OkHttpClient().newBuilder();
         builder.connectTimeout(connectTimeout, TimeUnit.MILLISECONDS)
                 .readTimeout(readTimeout, TimeUnit.MILLISECONDS);
@@ -194,7 +189,7 @@ public class HttpClientUtil extends AbstractHttpClient {
         return builder.build();
     }
 
-    private Request.Builder getOkRequestBuilder(URL url, Map<String, String> headers, String ctype) throws IOException {
+    private Request.Builder getOkRequestBuilder(URL url, Map<String, String> headers, String ctype) {
         Request.Builder builder = new Request.Builder();
         builder.url(url);
         builder.header("Accept", "text/plain,text/xml,text/javascript,text/html");
@@ -215,16 +210,12 @@ public class HttpClientUtil extends AbstractHttpClient {
         }
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         byte[] buff = new byte[4096];
-        try {
-            while (true) {
-                final int read = body.read(buff);
-                if (read == -1) {
-                    break;
-                }
-                os.write(buff, 0, read);
+        while (true) {
+            final int read = body.read(buff);
+            if (read == -1) {
+                break;
             }
-        } catch (IOException e) {
-            throw e;
+            os.write(buff, 0, read);
         }
         return os.toString(charset);
     }

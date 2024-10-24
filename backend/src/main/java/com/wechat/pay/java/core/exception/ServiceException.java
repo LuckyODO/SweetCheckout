@@ -5,9 +5,12 @@ import com.google.gson.JsonObject;
 import com.wechat.pay.java.core.http.HttpRequest;
 import com.wechat.pay.java.core.util.GsonUtil;
 
+import java.io.Serial;
+
 /** 发送HTTP请求成功，返回异常时抛出。例如返回状态码小于200或大于等于300、返回体参数不完整。 */
 public class ServiceException extends WechatPayException {
 
+  @Serial
   private static final long serialVersionUID = -7174975090366956652L;
 
   private final HttpRequest httpRequest;

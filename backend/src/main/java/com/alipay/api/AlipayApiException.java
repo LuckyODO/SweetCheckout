@@ -3,11 +3,14 @@
  */
 package com.alipay.api;
 
+import java.io.Serial;
+
 /**
  * @author runzhi
  */
 public class AlipayApiException extends Exception {
 
+    @Serial
     private static final long serialVersionUID = -238091758285157331L;
 
     private String errCode;

@@ -27,7 +27,7 @@ public final class WechatPay2Validator implements Validator {
   }
 
   @Override
-  public <T> boolean validate(HttpHeaders responseHeaders, String responseBody) {
+  public boolean validate(HttpHeaders responseHeaders, String responseBody) {
     String timestamp = responseHeaders.getHeader(WECHAT_PAY_TIMESTAMP);
     try {
       Instant responseTime = Instant.ofEpochSecond(Long.parseLong(timestamp));

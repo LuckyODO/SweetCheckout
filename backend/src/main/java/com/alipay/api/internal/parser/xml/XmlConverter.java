@@ -57,7 +57,7 @@ public class XmlConverter implements Converter {
                 Element listE = XmlUtils.getChildElement(element, (String) listName);
 
                 if (listE != null) {
-                    list = new ArrayList<Object>();
+                    list = new ArrayList<>();
                     List<Element> itemEs = XmlUtils.getChildElements(listE, (String) itemName);
                     for (Element itemE : itemEs) {
                         Object obj = null;
@@ -93,8 +93,7 @@ public class XmlConverter implements Converter {
     /**
      * @see com.alipay.api.internal.mapping.Converter#getSignItem(com.alipay.api.AlipayRequest, String)
      */
-    public SignItem getSignItem(AlipayRequest<?> request, String responseBody)
-            throws AlipayApiException {
+    public SignItem getSignItem(AlipayRequest<?> request, String responseBody) {
 
         // 响应为空则直接返回
         if (StringUtils.isEmpty(responseBody)) {
@@ -118,8 +117,7 @@ public class XmlConverter implements Converter {
     /**
      * @see com.alipay.api.internal.mapping.Converter#getCertItem(com.alipay.api.AlipayRequest, String)
      */
-    public CertItem getCertItem(AlipayRequest<?> request, String responseBody)
-            throws AlipayApiException {
+    public CertItem getCertItem(AlipayRequest<?> request, String responseBody) {
 
         // 响应为空则直接返回
         if (StringUtils.isEmpty(responseBody)) {
@@ -145,9 +143,6 @@ public class XmlConverter implements Converter {
     }
 
     /**
-     * @param request
-     * @param body
-     * @return
      */
     private String getSignSourceData(AlipayRequest<?> request, String body) {
 
@@ -175,8 +170,6 @@ public class XmlConverter implements Converter {
     /**
      * 获取签名
      *
-     * @param body
-     * @return
      */
     private String getSign(String body) {
 
@@ -197,8 +190,6 @@ public class XmlConverter implements Converter {
     /**
      * 获取证书序列号
      *
-     * @param body
-     * @return
      */
     private String getCert(String body) {
 
@@ -219,10 +210,6 @@ public class XmlConverter implements Converter {
     /**
      * 签名源串
      *
-     * @param body
-     * @param rootNode
-     * @param indexOfRootNode
-     * @return
      */
     private String parseSignSourceData(String body, String rootNode, int indexOfRootNode) {
 
@@ -244,8 +231,7 @@ public class XmlConverter implements Converter {
     }
 
     public String decryptSourceData(AlipayRequest<?> request, String body, String format,
-                                    Decryptor decryptor, String encryptType, String charset)
-            throws AlipayApiException {
+                                    Decryptor decryptor, String encryptType, String charset) {
 
         ResponseParseItem respSignSourceData = getXMLSignSourceData(request, body);
 
@@ -258,9 +244,6 @@ public class XmlConverter implements Converter {
     }
 
     /**
-     * @param request
-     * @param body
-     * @return
      */
     private ResponseParseItem getXMLSignSourceData(AlipayRequest<?> request, String body) {
         String rootNode = request.getApiMethodName().replace('.', '_')
@@ -285,10 +268,6 @@ public class XmlConverter implements Converter {
     /**
      * 绛惧��婧�涓�
      *
-     * @param body
-     * @param rootNode
-     * @param indexOfRootNode
-     * @return
      */
     private ResponseParseItem parseXMLSignSourceData(String body, String rootNode,
                                                      int indexOfRootNode) {

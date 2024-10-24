@@ -32,7 +32,7 @@ public class SchemaException extends Exception {
     public SchemaException(SchemaErrorEnum errorCode, String attributeId) {
         super(errorCode.getErrorMessage());
         String msg = errorCode.getErrorMessage();
-        if (attributeId != null && attributeId.length() != 0) {
+        if (attributeId != null && !attributeId.isEmpty()) {
             msg += "At the filed which id is " + attributeId;
         }
         this.errorCode = errorCode.getErrorCode();

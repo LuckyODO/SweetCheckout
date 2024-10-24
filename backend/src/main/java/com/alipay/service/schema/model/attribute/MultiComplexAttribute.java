@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class MultiComplexAttribute extends Attribute {
 
-    private List<ComplexAttribute> attributes = new ArrayList<ComplexAttribute>();
+    private List<ComplexAttribute> attributes = new ArrayList<>();
 
     public void addAttributes(ComplexAttribute complexAttribute) {
         this.attributes.add(complexAttribute);
@@ -99,11 +99,11 @@ public class MultiComplexAttribute extends Attribute {
     }
 
     public ComplexAttribute cloneAttribute() throws SchemaException {
-        if (this.getAttributes() == null || this.getAttributes().size() <= 0) {
+        if (this.getAttributes() == null || this.getAttributes().isEmpty()) {
             throw new SchemaException(SchemaErrorEnum.SYSTEM_ERROR, this.getId());
         }
         ComplexAttribute complexAttribute = this.getAttributes().get(0);
-        List<Attribute> newAttributes = new ArrayList<Attribute>();
+        List<Attribute> newAttributes = new ArrayList<>();
         for (Attribute attribute : complexAttribute.getAttributes()) {
             Attribute newAttribute = AttrTypeEnum.createAttribute(attribute.getType());
             newAttribute.setId(attribute.getId());

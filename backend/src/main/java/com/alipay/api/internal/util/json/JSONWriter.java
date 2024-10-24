@@ -19,7 +19,7 @@ import java.util.*;
 public class JSONWriter {
 
     private StringBuffer  buf           = new StringBuffer();
-    private Stack<Object> calls         = new Stack<Object>();
+    private Stack<Object> calls         = new Stack<>();
     private boolean       emitClassName = true;
     private DateFormat    format;
     private static final String GET_PREFIX = "get";
@@ -75,7 +75,7 @@ public class JSONWriter {
         } else {
             calls.push(object);
             if (object instanceof Class<?>) { string(object); } else if (object instanceof Boolean) {
-                bool(((Boolean) object).booleanValue());
+                bool((Boolean) object);
             } else if (object instanceof Number) {
                 add(object);
             } else if (object instanceof String) {
@@ -98,10 +98,10 @@ public class JSONWriter {
     }
 
     private boolean cyclic(Object object) {
-        Iterator<Object> it = calls.iterator();
-        while (it.hasNext()) {
-            Object called = it.next();
-            if (object == called) { return true; }
+        for (Object called : calls) {
+            if (object == called) {
+                return true;
+            }
         }
         return false;
     }
@@ -113,35 +113,41 @@ public class JSONWriter {
         try {
             info = Introspector.getBeanInfo(object.getClass());
             PropertyDescriptor[] props = info.getPropertyDescriptors();
-            for (int i = 0; i < props.length; ++i) {
-                PropertyDescriptor prop = props[i];
+            for (PropertyDescriptor prop : props) {
                 String name = prop.getName();
                 Method accessor = prop.getReadMethod();
                 if ((emitClassName || !"class".equals(name)) && accessor != null) {
-                    if (!accessor.isAccessible()) { accessor.setAccessible(true); }
+                    if (!accessor.isAccessible()) {
+                        accessor.setAccessible(true);
+                    }
                     Object value = accessor.invoke(object, (Object[]) null);
-                    if (value == null) { continue; }
-                    if (addedSomething) { add(','); }
+                    if (value == null) {
+                        continue;
+                    }
+                    if (addedSomething) {
+                        add(',');
+                    }
                     add(name, value);
                     addedSomething = true;
                 }
             }
             Field[] ff = object.getClass().getFields();
-            for (int i = 0; i < ff.length; ++i) {
-                Field field = ff[i];
+            for (Field field : ff) {
                 Object value = field.get(object);
-                if (value == null) { continue; }
-                if (addedSomething) { add(','); }
+                if (value == null) {
+                    continue;
+                }
+                if (addedSomething) {
+                    add(',');
+                }
                 add(field.getName(), value);
                 addedSomething = true;
             }
-        } catch (IllegalAccessException iae) {
+        } catch (IllegalAccessException | IntrospectionException iae) {
             iae.printStackTrace();
         } catch (InvocationTargetException ite) {
             ite.getCause().printStackTrace();
             ite.printStackTrace();
-        } catch (IntrospectionException ie) {
-            ie.printStackTrace();
         }
         add("}");
     }
@@ -151,8 +157,7 @@ public class JSONWriter {
         boolean addedSomething = false;
         Field[] ff = object.getClass().getDeclaredFields();
         try {
-            for (int i = 0; i < ff.length; ++i) {
-                Field field = ff[i];
+            for (Field field : ff) {
                 // 获取注解
                 ApiField jsonField = field.getAnnotation(ApiField.class);
                 ApiListField listField = field.getAnnotation(ApiListField.class);
@@ -160,31 +165,38 @@ public class JSONWriter {
                 if (listField != null) {
                     PropertyDescriptor pd = getPropertyDescriptor(field.getName(), object);
                     Method accessor = pd.getReadMethod();
-                    if (!accessor.isAccessible()) { accessor.setAccessible(true); }
+                    if (!accessor.isAccessible()) {
+                        accessor.setAccessible(true);
+                    }
                     Object value = accessor.invoke(object, (Object[]) null);
-                    if (value == null) { continue; }
-                    if (addedSomething) { add(','); }
+                    if (value == null) {
+                        continue;
+                    }
+                    if (addedSomething) {
+                        add(',');
+                    }
                     add(listField.value(), value, true);
                     addedSomething = true;
                 } else if (jsonField != null) {
                     PropertyDescriptor pd = getPropertyDescriptor(field.getName(), object);
                     Method accessor = pd.getReadMethod();
-                    if (!accessor.isAccessible()) { accessor.setAccessible(true); }
+                    if (!accessor.isAccessible()) {
+                        accessor.setAccessible(true);
+                    }
                     Object value = accessor.invoke(object, (Object[]) null);
-                    if (value == null) { continue; }
-                    if (addedSomething) { add(','); }
+                    if (value == null) {
+                        continue;
+                    }
+                    if (addedSomething) {
+                        add(',');
+                    }
                     add(jsonField.value(), value, true);
                     addedSomething = true;
                 }
             }
-        } catch (IntrospectionException e1) {
+        } catch (IntrospectionException | InvocationTargetException | IllegalArgumentException |
+                 IllegalAccessException e1) {
             AlipayLogger.logBizError(e1);
-        } catch (IllegalAccessException e2) {
-            AlipayLogger.logBizError(e2);
-        } catch (IllegalArgumentException e3) {
-            AlipayLogger.logBizError(e3);
-        } catch (InvocationTargetException e4) {
-            AlipayLogger.logBizError(e4);
         }
         add("}");
     }
@@ -207,7 +219,7 @@ public class JSONWriter {
      * 如果第二个字母是大写，则首字母不转大写
      */
     private String getSetMethod(String str) {
-        if (null == str || "".equals(str.trim())) {
+        if (null == str || str.trim().isEmpty()) {
             return str;
         }
         char[] chars = str.toCharArray();

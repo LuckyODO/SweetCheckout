@@ -1,6 +1,5 @@
 package com.alipay.api.request;
 
-import com.alipay.api.domain.AlipayDataDataserviceBillDownloadurlQueryModel;
 import java.util.Map;
 
 import com.alipay.api.AlipayRequest;

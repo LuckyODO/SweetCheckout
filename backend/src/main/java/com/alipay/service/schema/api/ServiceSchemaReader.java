@@ -54,7 +54,7 @@ public class ServiceSchemaReader {
     }
 
     public static Map<String, Attribute> readXmlForMap(Element rootEle) throws SchemaException {
-        Map<String, Attribute> attributeMap = new HashMap<String, Attribute>();
+        Map<String, Attribute> attributeMap = new HashMap<>();
         List<Element> attributeElmList = XmlUtils.getChildElements(rootEle, "attribute");
         for (Element attributeElm : attributeElmList) {
             Attribute attribute = elementToAttribute(attributeElm);

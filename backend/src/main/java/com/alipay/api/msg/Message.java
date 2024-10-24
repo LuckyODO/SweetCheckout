@@ -7,6 +7,7 @@ import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.internal.util.StringUtils;
 import com.alipay.api.internal.util.json.*;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -18,6 +19,7 @@ import java.util.regex.Pattern;
  */
 public class Message implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 8280401559432634875L;
 
     private static final Pattern DATA_PATTERN = Pattern.compile("\"data\"\\s*:\\s*\\{");

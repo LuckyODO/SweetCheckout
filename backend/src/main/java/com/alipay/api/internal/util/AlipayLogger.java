@@ -5,9 +5,9 @@ import com.alipay.api.AlipayResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -34,7 +34,7 @@ public class AlipayLogger {
             try {
                 ip = InetAddress.getLocalHost().getHostAddress();
             } catch (Exception e) {
-                e.printStackTrace();
+                clog.warn("getIp", e);
             }
         }
         return ip;
@@ -52,12 +52,12 @@ public class AlipayLogger {
         if (!needEnableLogger) {
             return;
         }
-        String contentString = null;
+        String contentString;
         try {
-            contentString = new String(content, "UTF-8");
+            contentString = new String(content, StandardCharsets.UTF_8);
             logCommError(e, conn, appKey, method, contentString);
         } catch (Exception e1) {
-            e1.printStackTrace();
+            clog.warn("logCommError", e1);
         }
     }
 
@@ -69,13 +69,9 @@ public class AlipayLogger {
         if (!needEnableLogger) {
             return;
         }
-        String contentString = null;
-        try {
-            contentString = new String(content, "UTF-8");
-            logCommError(e, url, appKey, method, contentString);
-        } catch (UnsupportedEncodingException e1) {
-            e1.printStackTrace();
-        }
+        String contentString;
+        contentString = new String(content, StandardCharsets.UTF_8);
+        logCommError(e, url, appKey, method, contentString);
     }
 
     /**
@@ -123,7 +119,7 @@ public class AlipayLogger {
         DateFormat df = new SimpleDateFormat(AlipayConstants.DATE_TIME_FORMAT);
         df.setTimeZone(TimeZone.getTimeZone(AlipayConstants.DATE_TIMEZONE));
         String sdkName = AlipayConstants.SDK_VERSION;
-        String urlStr = null;
+        String urlStr;
         //rspCode不再获取状态码，原因：https://baiyan.alipay.com/task/173959?bqlKey=8837cee
         String rspCode = "";
         if (conn != null) {
@@ -148,22 +144,20 @@ public class AlipayLogger {
         sb.append("^_^");
         sb.append(rspCode);
         sb.append("^_^");
-        sb.append((e.getMessage() + "").replaceAll("\r\n", " "));
+        sb.append((e.getMessage()).replaceAll("\r\n", " "));
         clog.error(sb.toString());
     }
 
     private static Map<String, String> parseParam(String contentString) {
-        Map<String, String> params = new HashMap<String, String>();
-        if (contentString == null || contentString.trim().equals("")) {
+        Map<String, String> params = new HashMap<>();
+        if (contentString == null || contentString.trim().isEmpty()) {
             return params;
         }
-        String[] paramsArray = contentString.split("\\&");
-        if (paramsArray != null) {
-            for (String param : paramsArray) {
-                String[] keyValue = param.split("=");
-                if (keyValue != null && keyValue.length == 2) {
-                    params.put(keyValue[0], keyValue[1]);
-                }
+        String[] paramsArray = contentString.split("&");
+        for (String param : paramsArray) {
+            String[] keyValue = param.split("=");
+            if (keyValue.length == 2) {
+                params.put(keyValue[0], keyValue[1]);
             }
         }
         return params;
@@ -211,7 +205,7 @@ public class AlipayLogger {
         if (!needEnableLogger) {
             return;
         }
-        rt = rt == null ? new HashMap<String, Object>() : rt;
+        rt = rt == null ? new HashMap<>() : rt;
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         df.setTimeZone(TimeZone.getTimeZone(AlipayConstants.DATE_TIMEZONE));
         StringBuilder sb = new StringBuilder();
@@ -256,7 +250,7 @@ public class AlipayLogger {
         StringBuilder sb = new StringBuilder();
         sb.append("ErrorScene");
         sb.append("^_^");
-        sb.append(tRsp.getErrorCode());
+        sb.append(tRsp.getCode());
         sb.append("^_^");
         sb.append(tRsp.getSubCode());
         sb.append("^_^");
@@ -288,13 +282,13 @@ public class AlipayLogger {
         if (!needEnableLogger) {
             return;
         }
-        rt = rt == null ? new HashMap<String, Object>() : rt;
+        rt = rt == null ? new HashMap<>() : rt;
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         df.setTimeZone(TimeZone.getTimeZone(AlipayConstants.DATE_TIMEZONE));
         StringBuilder sb = new StringBuilder();
         sb.append("ErrorScene");
         sb.append("^_^");
-        sb.append(tRsp.getErrorCode());
+        sb.append(tRsp.getCode());
         sb.append("^_^");
         sb.append(tRsp.getSubCode());
         sb.append("^_^");
@@ -338,7 +332,7 @@ public class AlipayLogger {
         if (!needEnableLogger) {
             return;
         }
-        rt = rt == null ? new HashMap<String, Object>() : rt;
+        rt = rt == null ? new HashMap<>() : rt;
         StringBuilder sb = new StringBuilder();
         sb.append("Summary");
         sb.append("^_^");
@@ -384,25 +378,5 @@ public class AlipayLogger {
 
     public static Boolean isBizDebugEnabled() {
         return blog.isDebugEnabled();
-    }
-
-    /**
-     * 开启DEBUG级别日志（仅针对JDK14LOGGER，LOG4J请自行修改配置文件）
-     *
-     * @param isEnabled
-     */
-    public static void setJDKDebugEnabled(Boolean isEnabled) {
-        //如果使用JDK14LOGGER，将业务日志级别设为DEBUG(FINE)
-        //        if (blog instanceof Jdk14Logger) {
-        //            Jdk14Logger logger = (Jdk14Logger) blog;
-        //            if (isEnabled) {
-        //                logger.getLogger().setLevel(Level.FINE);
-        //                Handler consoleHandler = new ConsoleHandler();
-        //                consoleHandler.setLevel(Level.FINE);
-        //                logger.getLogger().addHandler(consoleHandler);
-        //            } else {
-        //                logger.getLogger().setLevel(Level.INFO);
-        //            }
-        //        }
     }
 }

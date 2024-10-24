@@ -88,7 +88,7 @@ public abstract class AlipayUtils {
             return null;
         }
 
-        Map<String, V> result = new HashMap<String, V>(map.size());
+        Map<String, V> result = new HashMap<>(map.size());
         Set<Entry<String, V>> entries = map.entrySet();
 
         for (Entry<String, V> entry : entries) {
@@ -126,7 +126,7 @@ public abstract class AlipayUtils {
      */
     public static <T extends AlipayResponse> T parseResponse(String json, Class<T> clazz)
             throws AlipayApiException {
-        ObjectJsonParser<T> parser = new ObjectJsonParser<T>(clazz);
+        ObjectJsonParser<T> parser = new ObjectJsonParser<>(clazz);
         return parser.parse(json);
     }
 
@@ -141,7 +141,7 @@ public abstract class AlipayUtils {
             Enumeration<NetworkInterface> netInterfaces = NetworkInterface.getNetworkInterfaces();
             InetAddress ip = null;
             while (netInterfaces.hasMoreElements()) {// 遍历所有的网卡
-                NetworkInterface ni = (NetworkInterface) netInterfaces.nextElement();
+                NetworkInterface ni = netInterfaces.nextElement();
                 if (ni.isLoopback() || ni.isVirtual()) {// 如果是回环和虚拟网络地址的话继续
                     continue;
                 }

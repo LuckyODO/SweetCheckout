@@ -20,21 +20,12 @@ public enum AttrTypeEnum {
     }
 
     public static Attribute createAttribute(AttrTypeEnum attributeType) {
-        Attribute attribute = null;
-        switch (attributeType) {
-            case SINGLE:
-                attribute = new SingleAttribute();
-                break;
-            case MULTI:
-                attribute = new MultiAttribute();
-                break;
-            case COMPLEX:
-                attribute = new ComplexAttribute();
-                break;
-            case MULTICOMPLEX:
-                attribute = new MultiComplexAttribute();
-                break;
-        }
+        Attribute attribute = switch (attributeType) {
+            case SINGLE -> new SingleAttribute();
+            case MULTI -> new MultiAttribute();
+            case COMPLEX -> new ComplexAttribute();
+            case MULTICOMPLEX -> new MultiComplexAttribute();
+        };
         attribute.setType(attributeType);
         return attribute;
     }

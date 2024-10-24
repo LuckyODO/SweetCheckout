@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class ComplexAttribute extends Attribute {
 
-    private List<Attribute> attributes = new ArrayList();
+    private List<Attribute> attributes = new ArrayList<>();
 
     public void addAttribute(Attribute attribute) {
         this.attributes.add(attribute);
