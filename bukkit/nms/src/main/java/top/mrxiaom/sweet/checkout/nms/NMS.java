@@ -80,14 +80,6 @@ public class NMS {
             mapPacket = new MapPacket_v1_8_R3();
             return loaded = true;
         }
-        if (version.getVersionId() == 182) {
-            mapPacket = new MapPacket_v1_8_R2();
-            return loaded = true;
-        }
-        if (version.getVersionId() == 181) {
-            mapPacket = new MapPacket_v1_8_R1();
-            return loaded = true;
-        }
         return false;
     }
 
