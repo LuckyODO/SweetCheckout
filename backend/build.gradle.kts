@@ -54,7 +54,6 @@ tasks {
                 "commons-io:commons-io",
             )
             include {
-                println("${it.moduleGroup}:${it.moduleName}")
                 dependencies.contains("${it.moduleGroup}:${it.moduleName}")
             }
         }
