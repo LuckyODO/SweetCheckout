@@ -10,7 +10,10 @@ import org.java_websocket.handshake.ServerHandshake;
 import top.mrxiaom.pluginbase.func.AutoRegister;
 import top.mrxiaom.sweet.checkout.SweetCheckout;
 import top.mrxiaom.sweet.checkout.packets.PacketSerializer;
+import top.mrxiaom.sweet.checkout.packets.backend.PacketBackendPaymentCancel;
+import top.mrxiaom.sweet.checkout.packets.backend.PacketBackendPaymentConfirm;
 import top.mrxiaom.sweet.checkout.packets.common.IPacket;
+import top.mrxiaom.sweet.checkout.packets.common.NoResponse;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -19,7 +22,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 @AutoRegister
-@SuppressWarnings({"rawtypes"})
+@SuppressWarnings({"rawtypes", "unused"})
 public class PaymentAPI extends AbstractModule {
     public class PaymentClient extends WebSocketClient {
         public PaymentClient(String url) throws URISyntaxException {
@@ -45,6 +48,14 @@ public class PaymentAPI extends AbstractModule {
                 } catch (Throwable t) {
                     warn("接收数据包时出现错误", t);
                 }
+            } else {
+                IPacket packet = PacketSerializer.deserialize(json);
+                if (packet != null) {
+                    Consumer consumer = eventMap.get(packet.getClass().getName());
+                    if (consumer != null) {
+                        consumer.accept(packet);
+                    }
+                }
             }
         }
 
@@ -63,11 +74,18 @@ public class PaymentAPI extends AbstractModule {
     @SuppressWarnings({"deprecation"}) // 兼容旧版本 gson
     JsonParser parser = new JsonParser();
     Map<Long, Consumer> responseMap = new HashMap<>();
+    Map<String, Consumer> eventMap = new HashMap<>();
     PaymentClient client;
     String userAgent;
     public PaymentAPI(SweetCheckout plugin) {
         super(plugin);
         userAgent = "SweetCheckout/" + plugin.getDescription().getVersion() + " Minecraft/" + MinecraftVersion.getVersion().name();
+        registerListener(PacketBackendPaymentConfirm.class, this::onReceivePaymentConfirm);
+        registerListener(PacketBackendPaymentCancel.class, this::onReceivePaymentCancel);
+    }
+
+    private <T extends IPacket<NoResponse>> void registerListener(Class<T> type, Consumer<T> consumer) {
+        eventMap.put(type.getName(), consumer);
     }
 
     public <T extends IPacket> void send(IPacket<T> packet) {
@@ -83,6 +101,14 @@ public class PaymentAPI extends AbstractModule {
             responseMap.put(echo, resp);
         }
         client.send(json.toString());
+    }
+
+    private void onReceivePaymentConfirm(PacketBackendPaymentConfirm packet) {
+
+    }
+
+    private void onReceivePaymentCancel(PacketBackendPaymentCancel packet) {
+
     }
 
     @Override
