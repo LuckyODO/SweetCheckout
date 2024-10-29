@@ -124,10 +124,10 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
         boolean component = MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_20_R4);
         NBT.modify(item, nbt -> {
             nbt.setBoolean("SWEET_CHECKOUT_MAP", true);
-            if (mapCustomModelData != null) {
-                nbt.setInteger("CustomModelData", mapCustomModelData);
-            }
             if (!component) { // 1.8-1.20.4
+                if (mapCustomModelData != null) {
+                    nbt.setInteger("CustomModelData", mapCustomModelData);
+                }
                 nbt.setInteger("map", mapId);
             }
         });
