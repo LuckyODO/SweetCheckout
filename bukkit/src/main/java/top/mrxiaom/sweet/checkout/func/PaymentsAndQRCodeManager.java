@@ -24,6 +24,9 @@ import java.util.*;
 
 @AutoRegister
 public class PaymentsAndQRCodeManager extends AbstractModule implements Listener {
+
+    public static final String FLAG_SWEET_CHECKOUT_MAP = "SWEET_CHECKOUT_MAP";
+
     public static class PaymentInfo {
         public final Player player;
         public final byte[] colors;
@@ -123,7 +126,7 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
         ItemStack item = AdventureItemStack.buildItem(filledMap, mapName, mapLore);
         boolean component = MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_20_R4);
         NBT.modify(item, nbt -> {
-            nbt.setBoolean("SWEET_CHECKOUT_MAP", true);
+            nbt.setBoolean(FLAG_SWEET_CHECKOUT_MAP, true);
             if (!component) { // 1.8-1.20.4
                 if (mapCustomModelData != null) {
                     nbt.setInteger("CustomModelData", mapCustomModelData);
@@ -153,8 +156,8 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
     }
 
     public static boolean isMap(ItemStack item) {
-        return item != null && NBT.get(item, nbt -> {
-            return nbt.hasTag("SWEET_CHECKOUT_MAP");
+        return item != null && item.getType().equals(filledMap) && NBT.get(item, nbt -> {
+            return nbt.hasTag(FLAG_SWEET_CHECKOUT_MAP);
         });
     }
 
@@ -178,6 +181,9 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
         return colors;
     }
 
+    /**
+     * 来自 Minecraft Wiki: <a href="https://zh.minecraft.wiki/w/%E5%9C%B0%E5%9B%BE%E5%AD%98%E5%82%A8%E6%A0%BC%E5%BC%8F#%E5%9C%B0%E5%9B%BE%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E6%A0%BC%E5%BC%8F">地图存储格式</a>
+     */
     public static byte getMapColor(int baseColor, int modifier) {
         return (byte) (baseColor << 2 | modifier & 3);
     }
