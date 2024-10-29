@@ -16,9 +16,11 @@ import top.mrxiaom.sweet.checkout.SweetCheckout;
 import top.mrxiaom.sweet.checkout.func.AbstractModule;
 import top.mrxiaom.sweet.checkout.func.PaymentAPI;
 import top.mrxiaom.sweet.checkout.func.PaymentsAndQRCodeManager;
+import top.mrxiaom.sweet.checkout.packets.common.IPacket;
 import top.mrxiaom.sweet.checkout.packets.plugin.PacketPluginRequestOrder;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 @AutoRegister
 public class CommandMain extends AbstractModule implements CommandExecutor, TabCompleter, Listener {
@@ -32,39 +34,32 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
         if (sender instanceof Player) {
             Player player = (Player) sender;
             if (args.length == 3 && "points".equalsIgnoreCase(args[0])) {
+                PaymentsAndQRCodeManager manager = PaymentsAndQRCodeManager.inst();
                 String type = args[1];
-                String money = args[2];
-                PaymentAPI.inst().send(new PacketPluginRequestOrder(
-                        player.getName(), type, "宝石" /* TODO: 商品名移到配置文件 */, money
+                String moneyStr = args[2];
+                if (!manager.isProcess(player)) {
+                    return t(player, "请先完成你正在进行的订单");
+                }
+                manager.putProcess(player);
+                return send(player, "正在请求…", new PacketPluginRequestOrder(
+                        player.getName(), type, "宝石" /* TODO: 商品名移到配置文件 */, moneyStr
                 ), resp -> {
                     String error = resp.getError();
                     if (!error.isEmpty()) {
+                        // 下单失败时提示玩家
                         t(player, error);
                         return;
                     }
-                    // TODO: 将订单储存起来
+                    // 下单成功操作
                     String orderId = resp.getOrderId();
                     // 向玩家展示二维码地图
                     QRCode code = QRCode.create(resp.getPaymentUrl(), ErrorCorrectionLevel.H);
-                    PaymentsAndQRCodeManager.inst().generateMap(player, code);
+                    manager.requireScan(player, code, orderId, money -> {
+                        // 支付成功操作
+                        // TODO: 给予玩家点券
+                    });
                 });
-                return t(player, "正在请求…");
             }
-        }
-        if (args.length == 1 && "start".equalsIgnoreCase(args[0])) {
-            if (sender instanceof Player) {
-                QRCode code = QRCode.create("wxp://f2f196rg-*********SweetCheckout*********-ce_JBziy3z", ErrorCorrectionLevel.H);
-                Player player = (Player) sender;
-                PaymentsAndQRCodeManager.inst().generateMap(player, code);
-            }
-            return t(sender, "start");
-        }
-        if (args.length == 1 && "end".equalsIgnoreCase(args[0])) {
-            if (sender instanceof Player) {
-                Player player = (Player) sender;
-                PaymentsAndQRCodeManager.inst().remove(player);
-            }
-            return t(sender, "end");
         }
 		if (args.length == 1 && "reload".equalsIgnoreCase(args[0]) && sender.isOp()) {
 			plugin.reloadConfig();
@@ -96,5 +91,12 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
         if (addition != null) stringList.addAll(0, Lists.newArrayList(addition));
         stringList.removeIf(it -> !it.toLowerCase().startsWith(s1));
         return stringList;
+    }
+
+    @SuppressWarnings({"rawtypes"})
+    public <T extends IPacket> boolean send(Player player, String msg, IPacket<T> packet, Consumer<T> resp) {
+        t(player, msg);
+        PaymentAPI.inst().send(packet, resp);
+        return true;
     }
 }

@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
 import org.bukkit.configuration.MemoryConfiguration;
+import org.bukkit.entity.Player;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.jetbrains.annotations.Nullable;
@@ -107,11 +108,18 @@ public class PaymentAPI extends AbstractModule {
     }
 
     private void onReceivePaymentConfirm(PacketBackendPaymentConfirm packet) {
-
+        PaymentsAndQRCodeManager manager = PaymentsAndQRCodeManager.inst();
+        manager.markDone(packet.getOrderId(), packet.getMoney());
     }
 
     private void onReceivePaymentCancel(PacketBackendPaymentCancel packet) {
-
+        PaymentsAndQRCodeManager manager = PaymentsAndQRCodeManager.inst();
+        PaymentsAndQRCodeManager.PaymentInfo info = manager.remove(packet.getOrderId());
+        if (info == null) {
+            warn("收到 " + packet.getOrderId() + " 取消包出错: 没有这个订单号");
+        } else {
+            t(info.player, "已取消付款: " + packet.getReason()); // TODO: 添加到语言文件，并翻译 reason
+        }
     }
 
     @Override

@@ -21,6 +21,7 @@ import top.mrxiaom.sweet.checkout.SweetCheckout;
 import top.mrxiaom.sweet.checkout.nms.NMS;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 @AutoRegister
 public class PaymentsAndQRCodeManager extends AbstractModule implements Listener {
@@ -32,12 +33,16 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
         public final byte[] colors;
         public final ItemStack original;
         public final ItemStack newItem;
+        public final String orderId;
+        public final Consumer<Double> done;
 
-        public PaymentInfo(Player player, byte[] colors, ItemStack original, ItemStack newItem) {
+        public PaymentInfo(Player player, byte[] colors, ItemStack original, ItemStack newItem, String orderId, Consumer<Double> done) {
             this.player = player;
             this.colors = colors;
             this.original = original;
             this.newItem = newItem;
+            this.orderId = orderId;
+            this.done = done;
             update();
         }
 
@@ -51,6 +56,7 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
         }
     }
     private final Map<UUID, PaymentInfo> players = new HashMap<>();
+    private final Set<UUID> processPlayers = new HashSet<>();
     private static Material filledMap;
     protected static int mapId = 20070831;
     private String mapName;
@@ -60,6 +66,15 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
         super(plugin);
         filledMap = Util.valueOr(Material.class, "FILLED_MAP", Material.MAP);
         registerEvents();
+    }
+
+    public void putProcess(Player player) {
+        processPlayers.add(player.getUniqueId());
+    }
+
+    public boolean isProcess(Player player) {
+        UUID uuid = player.getUniqueId();
+        return processPlayers.contains(uuid) || players.containsKey(uuid);
     }
 
     @Override
@@ -122,7 +137,7 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
         }
     }
 
-    public void generateMap(Player player, QRCode code) {
+    public void requireScan(Player player, QRCode code, String orderId, Consumer<Double> done) {
         ItemStack item = AdventureItemStack.buildItem(filledMap, mapName, mapLore);
         boolean component = MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_20_R4);
         NBT.modify(item, nbt -> {
@@ -144,15 +159,53 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
         }
         UUID uuid = player.getUniqueId();
         ItemStack old = player.getInventory().getItemInMainHand();
-        players.put(uuid, new PaymentInfo(player, generateMapColors(code), old, item));
+        putProcess(player);
+        players.put(uuid, new PaymentInfo(player, generateMapColors(code), old, item, orderId, done));
         player.getInventory().setItemInMainHand(item);
     }
 
+    public PaymentInfo remove(String orderId) {
+        PaymentInfo payment = null;
+        for (PaymentInfo pi : players.values()) {
+            if (orderId.equals(pi.orderId)) {
+                payment = pi;
+                break;
+            }
+        }
+        if (payment == null) return null;
+        UUID uuid = payment.player.getUniqueId();
+        processPlayers.remove(uuid);
+        players.remove(uuid);
+        return payment;
+    }
+
     public void remove(Player player) {
-        PaymentInfo info = players.remove(player.getUniqueId());
+        UUID uuid = player.getUniqueId();
+        processPlayers.remove(uuid);
+        PaymentInfo info = players.remove(uuid);
         if (info != null) {
             info.giveItemBack();
         }
+    }
+
+    public void markDone(String orderId, String money) {
+        PaymentInfo payment = null;
+        for (PaymentInfo pi : players.values()) {
+            if (orderId.equals(pi.orderId)) {
+                payment = pi;
+                break;
+            }
+        }
+        if (payment == null) return;
+        UUID uuid = payment.player.getUniqueId();
+        processPlayers.remove(uuid);
+        players.remove(uuid);
+        Double moneyValue = Util.parseDouble(money).orElse(null);
+        if (moneyValue == null) {
+            t(payment.player, "内部错误"); // TODO: 移到语言文件
+            return;
+        }
+        payment.done.accept(moneyValue);
     }
 
     public static boolean isMap(ItemStack item) {
