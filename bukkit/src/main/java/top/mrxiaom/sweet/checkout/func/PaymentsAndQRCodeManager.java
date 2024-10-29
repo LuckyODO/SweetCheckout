@@ -23,14 +23,14 @@ import top.mrxiaom.sweet.checkout.nms.NMS;
 import java.util.*;
 
 @AutoRegister
-public class QRCodeManager extends AbstractModule implements Listener {
-    public static class MapInfo {
+public class PaymentsAndQRCodeManager extends AbstractModule implements Listener {
+    public static class PaymentInfo {
         public final Player player;
         public final byte[] colors;
         public final ItemStack original;
         public final ItemStack newItem;
 
-        public MapInfo(Player player, byte[] colors, ItemStack original, ItemStack newItem) {
+        public PaymentInfo(Player player, byte[] colors, ItemStack original, ItemStack newItem) {
             this.player = player;
             this.colors = colors;
             this.original = original;
@@ -47,13 +47,13 @@ public class QRCodeManager extends AbstractModule implements Listener {
             player.getInventory().setItemInMainHand(original);
         }
     }
-    private final Map<UUID, MapInfo> players = new HashMap<>();
+    private final Map<UUID, PaymentInfo> players = new HashMap<>();
     private static Material filledMap;
     protected static int mapId = 20070831;
     private String mapName;
     private List<String> mapLore;
     private Integer mapCustomModelData;
-    public QRCodeManager(SweetCheckout plugin) {
+    public PaymentsAndQRCodeManager(SweetCheckout plugin) {
         super(plugin);
         filledMap = Util.valueOr(Material.class, "FILLED_MAP", Material.MAP);
         registerEvents();
@@ -100,17 +100,17 @@ public class QRCodeManager extends AbstractModule implements Listener {
         if (e.isCancelled()) return;
         Player player = e.getPlayer();
 
-        MapInfo mapInfo = players.get(player.getUniqueId());
-        if (mapInfo != null) {
+        PaymentInfo paymentInfo = players.get(player.getUniqueId());
+        if (paymentInfo != null) {
             if (isMap(player.getInventory().getItem(e.getNewSlot()))) {
-                mapInfo.update();
+                paymentInfo.update();
             } else {
                 e.setCancelled(true);
                 if (!isMap(player.getInventory().getItem(e.getPreviousSlot()))) {
                     for (int i = 0; i < 9; i++) {
                         if (isMap(player.getInventory().getItem(i))) {
                             player.getInventory().setHeldItemSlot(i);
-                            mapInfo.update();
+                            paymentInfo.update();
                             break;
                         }
                     }
@@ -141,12 +141,12 @@ public class QRCodeManager extends AbstractModule implements Listener {
         }
         UUID uuid = player.getUniqueId();
         ItemStack old = player.getInventory().getItemInMainHand();
-        players.put(uuid, new MapInfo(player, generateMapColors(code), old, item));
+        players.put(uuid, new PaymentInfo(player, generateMapColors(code), old, item));
         player.getInventory().setItemInMainHand(item);
     }
 
     public void remove(Player player) {
-        MapInfo info = players.remove(player.getUniqueId());
+        PaymentInfo info = players.remove(player.getUniqueId());
         if (info != null) {
             info.giveItemBack();
         }
@@ -182,7 +182,7 @@ public class QRCodeManager extends AbstractModule implements Listener {
         return (byte) (baseColor << 2 | modifier & 3);
     }
 
-    public static QRCodeManager inst() {
-        return instanceOf(QRCodeManager.class);
+    public static PaymentsAndQRCodeManager inst() {
+        return instanceOf(PaymentsAndQRCodeManager.class);
     }
 }

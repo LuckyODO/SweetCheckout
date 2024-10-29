@@ -15,7 +15,7 @@ import top.mrxiaom.qrcode.enums.ErrorCorrectionLevel;
 import top.mrxiaom.sweet.checkout.SweetCheckout;
 import top.mrxiaom.sweet.checkout.func.AbstractModule;
 import top.mrxiaom.sweet.checkout.func.PaymentAPI;
-import top.mrxiaom.sweet.checkout.func.QRCodeManager;
+import top.mrxiaom.sweet.checkout.func.PaymentsAndQRCodeManager;
 import top.mrxiaom.sweet.checkout.packets.plugin.PacketPluginRequestOrder;
 
 import java.util.*;
@@ -46,7 +46,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                     String orderId = resp.getOrderId();
                     // 向玩家展示二维码地图
                     QRCode code = QRCode.create(resp.getPaymentUrl(), ErrorCorrectionLevel.H);
-                    QRCodeManager.inst().generateMap(player, code);
+                    PaymentsAndQRCodeManager.inst().generateMap(player, code);
                 });
                 return t(player, "正在请求…");
             }
@@ -55,14 +55,14 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
             if (sender instanceof Player) {
                 QRCode code = QRCode.create("wxp://f2f196rg-*********SweetCheckout*********-ce_JBziy3z", ErrorCorrectionLevel.H);
                 Player player = (Player) sender;
-                QRCodeManager.inst().generateMap(player, code);
+                PaymentsAndQRCodeManager.inst().generateMap(player, code);
             }
             return t(sender, "start");
         }
         if (args.length == 1 && "end".equalsIgnoreCase(args[0])) {
             if (sender instanceof Player) {
                 Player player = (Player) sender;
-                QRCodeManager.inst().remove(player);
+                PaymentsAndQRCodeManager.inst().remove(player);
             }
             return t(sender, "end");
         }
