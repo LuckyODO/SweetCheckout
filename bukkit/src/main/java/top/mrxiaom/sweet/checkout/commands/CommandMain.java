@@ -37,7 +37,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                 PaymentsAndQRCodeManager manager = PaymentsAndQRCodeManager.inst();
                 String type = args[1];
                 String moneyStr = args[2];
-                if (!manager.isProcess(player)) {
+                if (manager.isProcess(player)) {
                     return t(player, "请先完成你正在进行的订单");
                 }
                 manager.putProcess(player);
