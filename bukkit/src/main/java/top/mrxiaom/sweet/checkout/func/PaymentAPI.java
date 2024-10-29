@@ -123,6 +123,8 @@ public class PaymentAPI extends AbstractModule {
             client.connect();
         } catch (Throwable t) {
             warn("连接后端服务器时出现异常", t);
+        } else {
+            warn("未配置后端地址，请在配置文件进行配置");
         }
     }
 
