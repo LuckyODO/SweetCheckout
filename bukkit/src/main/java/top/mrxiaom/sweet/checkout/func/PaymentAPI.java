@@ -7,6 +7,7 @@ import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
+import org.jetbrains.annotations.Nullable;
 import top.mrxiaom.pluginbase.func.AutoRegister;
 import top.mrxiaom.sweet.checkout.SweetCheckout;
 import top.mrxiaom.sweet.checkout.packets.PacketSerializer;
@@ -25,8 +26,10 @@ import java.util.function.Consumer;
 @SuppressWarnings({"rawtypes", "unused"})
 public class PaymentAPI extends AbstractModule {
     public class PaymentClient extends WebSocketClient {
+        String url;
         public PaymentClient(String url) throws URISyntaxException {
             super(new URI(url));
+            this.url = url;
             addHeader("User-Agent", userAgent);
         }
 
@@ -113,12 +116,22 @@ public class PaymentAPI extends AbstractModule {
 
     @Override
     public void reloadConfig(MemoryConfiguration config) {
+        String url = config.getString("backend-host");
+        reload(url);
+    }
+
+    private void reload(@Nullable String url) {
         if (client != null && client.isOpen()) {
+            // 已连接地址与配置文件地址相同时，不断开重连
+            if (client.url.equals(url)) {
+                info("重载时，配置中的后端地址无变动，保持连接");
+                return;
+            }
             client.close();
             client = null;
         }
-        String url = config.getString("backend-host");
         if (url != null) try {
+            info("正在连接到后端 " + url);
             client = new PaymentClient(url);
             client.connect();
         } catch (Throwable t) {
