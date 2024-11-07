@@ -23,7 +23,11 @@ dependencies {
     implementation(project(":packets"))
 }
 tasks {
+    jar {
+        archiveBaseName.set("SweetCheckout-bukkit")
+    }
     shadowJar {
+        archiveBaseName.set("SweetCheckout-bukkit")
         archiveClassifier.set("")
         mapOf(
             "org.intellij.lang.annotations" to "annotations.intellij",
