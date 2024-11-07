@@ -1,5 +1,7 @@
 package top.mrxiaom.sweet.checkout.backend;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.minecrell.terminalconsole.SimpleTerminalConsole;
@@ -18,6 +20,17 @@ public class ConsoleMain extends SimpleTerminalConsole {
     private boolean running = true;
     private static Logger logger = LoggerFactory.getLogger("Server");
     private static final Gson gson = new GsonBuilder()
+            .setExclusionStrategies(new ExclusionStrategy() {
+                @Override
+                public boolean shouldSkipField(FieldAttributes fieldAttributes) {
+                    return false;
+                }
+                @Override
+                public boolean shouldSkipClass(Class<?> aClass) {
+                    String name = aClass.getName();
+                    return name.startsWith("com.alipay") || name.startsWith("com.wechat.pay");
+                }
+            })
             .setPrettyPrinting()
             .create();
     public static void main(String[] args) {
