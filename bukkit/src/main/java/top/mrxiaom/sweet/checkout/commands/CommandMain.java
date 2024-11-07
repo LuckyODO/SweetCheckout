@@ -5,11 +5,13 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.mrxiaom.pluginbase.func.AutoRegister;
+import top.mrxiaom.pluginbase.utils.Pair;
 import top.mrxiaom.qrcode.QRCode;
 import top.mrxiaom.qrcode.enums.ErrorCorrectionLevel;
 import top.mrxiaom.sweet.checkout.SweetCheckout;
@@ -24,9 +26,24 @@ import java.util.function.Consumer;
 
 @AutoRegister
 public class CommandMain extends AbstractModule implements CommandExecutor, TabCompleter, Listener {
+    private boolean useWeChat;
+    private boolean useAlipay;
+    private int paymentTimeout;
+    private int pointsScale;
+    private List<String> pointsCommands;
     public CommandMain(SweetCheckout plugin) {
         super(plugin);
         registerCommand("sweetcheckout", this);
+    }
+
+    @Override
+    public void reloadConfig(MemoryConfiguration config) {
+        useWeChat = config.getBoolean("payment.enable.wechat");
+        useAlipay = config.getBoolean("payment.enable.alipay");
+        paymentTimeout = config.getInt("payment.timeout");
+
+        pointsScale = config.getInt("points.scale");
+        pointsCommands = config.getStringList("points.commands");
     }
 
     @Override
@@ -37,6 +54,17 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                 PaymentsAndQRCodeManager manager = PaymentsAndQRCodeManager.inst();
                 String type = args[1];
                 String moneyStr = args[2];
+                if ("wechat".equalsIgnoreCase(type)) {
+                    if (!useWeChat) {
+                        return t(player, "管理员已禁用微信支付");
+                    }
+                } else if ("alipay".equalsIgnoreCase(type)) {
+                    if (!useAlipay) {
+                        return t(player, "管理员已禁用支付宝支付");
+                    }
+                } else {
+                    return t(player, "未知支付类型");
+                }
                 if (manager.isProcess(player)) {
                     return t(player, "请先完成你正在进行的订单");
                 }
@@ -48,15 +76,19 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                     if (!error.isEmpty()) {
                         // 下单失败时提示玩家
                         t(player, error);
+                        manager.remove(player);
                         return;
                     }
                     // 下单成功操作
                     String orderId = resp.getOrderId();
+                    long now = System.currentTimeMillis();
+                    long outdateTime = now + (paymentTimeout * 1000L) + 500L;
                     // 向玩家展示二维码地图
                     QRCode code = QRCode.create(resp.getPaymentUrl(), ErrorCorrectionLevel.H);
-                    manager.requireScan(player, code, orderId, money -> {
-                        // 支付成功操作
-                        // TODO: 给予玩家点券
+                    manager.requireScan(player, code, orderId, outdateTime, money -> {
+                        // 支付成功操作，给予玩家点券
+                        int points = (int) Math.round(money * pointsScale);
+                        plugin.run(player, pointsCommands, Pair.of("%points%", points));
                     });
                 });
             }

@@ -15,3 +15,36 @@ map-item:
     - '&7请扫描二维码图像'
   # 物品的 CustomModelData
   custom-model-data: unset
+
+# 支付设置
+payment:
+  enable:
+    # 使用启用微信支付
+    wechat: true
+    # 是否启用支付宝支付
+    alipay: true
+  # 支付超时时间 (秒)
+  timeout: 120
+  action-bar:
+    # 支付时，显示在物品栏上方的提示，持续显示。注释此条配置则不显示提示
+    process: '&f请在 &b%timeout%秒 &f内完成付款'
+    # 支付后，显示在物品栏上方的提示，只显示一次。注释此条配置则不显示提示
+    done: '&a支付完成'
+    # 支付超时，显示在物品栏上方的提示，只显示一次。注释此条配置则不显示提示
+    timeout: '&e支付超时'
+    # 支付取消，显示在物品栏上方的提示，只显示一次。注释此条配置则不显示提示
+    cancel: '&e支付取消'
+
+# 支付点数配置 /cz points <支付方式> <点数>
+points:
+  # 充值1元可获得多少点数，只能输入整数
+  scale: 1
+  # 支付完成后执行命令
+  # [console]开头执行控制台命令
+  # [player]开头执行玩家命令
+  # [message]开头给玩家发送消息提示
+  # [actionbar]开头在玩家物品栏上方显示消息提示
+  # [delay]加时间(tick)，延时后再往下执行
+  # 全部支持 PAPI 变量，同时可以使用 %points% 代表充值的点数
+  commands:
+    - '[console]points give %player_name% %points%'

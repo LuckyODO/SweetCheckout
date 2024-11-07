@@ -1,24 +1,27 @@
 package top.mrxiaom.sweet.checkout.func;
 
+import com.google.common.collect.Lists;
 import de.tr7zw.changeme.nbtapi.NBT;
 import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.MemoryConfiguration;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import top.mrxiaom.pluginbase.func.AutoRegister;
 import top.mrxiaom.pluginbase.utils.AdventureItemStack;
+import top.mrxiaom.pluginbase.utils.AdventureUtil;
+import top.mrxiaom.pluginbase.utils.PAPI;
 import top.mrxiaom.pluginbase.utils.Util;
 import top.mrxiaom.qrcode.QRCode;
 import top.mrxiaom.sweet.checkout.SweetCheckout;
 import top.mrxiaom.sweet.checkout.nms.NMS;
+import top.mrxiaom.sweet.checkout.packets.plugin.PacketPluginCancelOrder;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -34,14 +37,16 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
         public final ItemStack original;
         public final ItemStack newItem;
         public final String orderId;
+        public final long outdateTime;
         public final Consumer<Double> done;
 
-        public PaymentInfo(Player player, byte[] colors, ItemStack original, ItemStack newItem, String orderId, Consumer<Double> done) {
+        public PaymentInfo(Player player, byte[] colors, ItemStack original, ItemStack newItem, String orderId, long outdateTime, Consumer<Double> done) {
             this.player = player;
             this.colors = colors;
             this.original = original;
             this.newItem = newItem;
             this.orderId = orderId;
+            this.outdateTime = outdateTime;
             this.done = done;
             update();
         }
@@ -62,10 +67,35 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
     private String mapName;
     private List<String> mapLore;
     private Integer mapCustomModelData;
+    private String paymentActionBarProcess;
+    private String paymentActionBarDone;
+    private String paymentActionBarTimeout;
+    private String paymentActionBarCancel;
     public PaymentsAndQRCodeManager(SweetCheckout plugin) {
         super(plugin);
         filledMap = Util.valueOr(Material.class, "FILLED_MAP", Material.MAP);
         registerEvents();
+        Bukkit.getScheduler().runTaskTimer(plugin, this::everySecond, 20L, 20L);
+    }
+
+    private void everySecond() {
+        long now = System.currentTimeMillis();
+        List<PaymentInfo> list = Lists.newArrayList(players.values());
+        for (PaymentInfo info : list) {
+            Player player = info.player;
+            if (now >= info.outdateTime) {
+                PaymentAPI.inst().send(new PacketPluginCancelOrder(info.orderId));
+                info.giveItemBack();
+                t(player, "超时未支付，已自动取消");
+                if (paymentActionBarTimeout != null) {
+                    AdventureUtil.sendActionBar(player, PAPI.setPlaceholders(player, paymentActionBarTimeout));
+                }
+                remove(info.orderId);
+            } else if (paymentActionBarProcess != null) {
+                int timeout = (int) Math.floor((info.outdateTime - now) / 1000.0);
+                AdventureUtil.sendActionBar(player, PAPI.setPlaceholders(player, paymentActionBarProcess.replace("%timeout%", String.valueOf(timeout))));
+            }
+        }
     }
 
     public void putProcess(Player player) {
@@ -86,6 +116,10 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
         mapName = config.getString("map-item.name");
         mapLore = config.getStringList("map-item.lore");
         mapCustomModelData = Util.parseInt(config.getString("map-item.custom-model-data")).orElse(null);
+        paymentActionBarProcess = config.getString("payment.action-bar.process", null);
+        paymentActionBarDone = config.getString("payment.action-bar.done", null);
+        paymentActionBarTimeout = config.getString("payment.action-bar.timeout", null);
+        paymentActionBarCancel = config.getString("payment.action-bar.cancel", null);
     }
 
     @EventHandler
@@ -137,7 +171,23 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
         }
     }
 
-    public void requireScan(Player player, QRCode code, String orderId, Consumer<Double> done) {
+    @EventHandler
+    public void onItemDrop(PlayerDropItemEvent e) {
+        if (e.isCancelled() || !isMap(e.getItemDrop().getItemStack())) return;
+        Player player = e.getPlayer();
+
+        if (remove(player) != null) {
+            Item item = e.getItemDrop();
+            item.getItemStack().setAmount(0);
+            item.setItemStack(new ItemStack(Material.AIR));
+            item.remove();
+            if (paymentActionBarCancel != null) {
+                AdventureUtil.sendActionBar(player, PAPI.setPlaceholders(player, paymentActionBarCancel));
+            }
+        }
+    }
+
+    public void requireScan(Player player, QRCode code, String orderId, long outdateTime, Consumer<Double> done) {
         ItemStack item = AdventureItemStack.buildItem(filledMap, mapName, mapLore);
         boolean component = MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_20_R4);
         NBT.modify(item, nbt -> {
@@ -160,7 +210,7 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
         UUID uuid = player.getUniqueId();
         ItemStack old = player.getInventory().getItemInMainHand();
         putProcess(player);
-        players.put(uuid, new PaymentInfo(player, generateMapColors(code), old, item, orderId, done));
+        players.put(uuid, new PaymentInfo(player, generateMapColors(code), old, item, orderId, outdateTime, done));
         player.getInventory().setItemInMainHand(item);
     }
 
@@ -179,31 +229,27 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
         return payment;
     }
 
-    public void remove(Player player) {
+    public PaymentInfo remove(Player player) {
         UUID uuid = player.getUniqueId();
         processPlayers.remove(uuid);
         PaymentInfo info = players.remove(uuid);
         if (info != null) {
+            PaymentAPI.inst().send(new PacketPluginCancelOrder(info.orderId));
             info.giveItemBack();
         }
+        return info;
     }
 
     public void markDone(String orderId, String money) {
-        PaymentInfo payment = null;
-        for (PaymentInfo pi : players.values()) {
-            if (orderId.equals(pi.orderId)) {
-                payment = pi;
-                break;
-            }
-        }
+        PaymentInfo payment = remove(orderId);
         if (payment == null) return;
-        UUID uuid = payment.player.getUniqueId();
-        processPlayers.remove(uuid);
-        players.remove(uuid);
         Double moneyValue = Util.parseDouble(money).orElse(null);
         if (moneyValue == null) {
             t(payment.player, "内部错误"); // TODO: 移到语言文件
             return;
+        }
+        if (paymentActionBarDone != null) {
+            AdventureUtil.sendActionBar(payment.player, PAPI.setPlaceholders(payment.player, paymentActionBarDone));
         }
         payment.done.accept(moneyValue);
     }
