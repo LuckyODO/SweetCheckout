@@ -19,6 +19,7 @@ https://open.alipay.com/develop/manage
 ## 3. 生成密钥，并填入后端配置
 
 ![picture](images/alipay-step5.png)
+*错字:* `相当 -> 相对`
 ![picture](images/alipay-step6.png)
 ![picture](images/alipay-step7.png)
 ![picture](images/alipay-step8.png)
