@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer
+
 plugins {
     id ("com.github.johnrengelman.shadow")
 }
@@ -48,14 +50,13 @@ tasks {
         minimize {
             val dependencies = listOf(
                 "org.bouncycastle:bcprov-jdk15on",
-                "org.apache.logging.log4j:log4j-api",
-                "org.apache.logging.log4j:log4j-core",
-                "org.apache.logging.log4j:log4j-slf4j2-impl",
                 "commons-io:commons-io",
             )
             include {
                 dependencies.contains("${it.moduleGroup}:${it.moduleName}")
             }
+            mergeServiceFiles()
+            transform(Log4j2PluginsCacheFileTransformer())
         }
         setupManifest()
     }
