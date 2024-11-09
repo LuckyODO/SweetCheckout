@@ -4,8 +4,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.MemoryConfiguration;
-import org.bukkit.entity.Player;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.jetbrains.annotations.Nullable;
@@ -48,7 +48,7 @@ public class PaymentAPI extends AbstractModule {
                 Consumer resp = responseMap.remove(echoProperty.getAsLong());
                 if (resp != null) try {
                     IPacket packet = PacketSerializer.deserialize(json);
-                    if (packet != null) resp.accept(packet);
+                    if (packet != null) Bukkit.getScheduler().runTask(plugin, () -> resp.accept(packet));
                 } catch (Throwable t) {
                     warn("接收数据包时出现错误", t);
                 }
@@ -92,11 +92,11 @@ public class PaymentAPI extends AbstractModule {
         eventMap.put(type.getName(), consumer);
     }
 
-    public <T extends IPacket> void send(IPacket<T> packet) {
-        send(packet, null);
+    public <T extends IPacket> boolean send(IPacket<T> packet) {
+        return send(packet, null);
     }
 
-    public <T extends IPacket> void send(IPacket<T> packet, Consumer<T> resp) {
+    public <T extends IPacket> boolean send(IPacket<T> packet, Consumer<T> resp) {
         JsonObject json = PacketSerializer.serialize(packet);
         Class<T> respType = packet.getResponsePacket();
         Long echo = (respType == null || resp == null) ? null : this.echo++;
@@ -104,7 +104,12 @@ public class PaymentAPI extends AbstractModule {
             json.addProperty("echo", echo);
             responseMap.put(echo, resp);
         }
-        client.send(json.toString());
+        if (client == null || !client.isOpen()) {
+            warn("请求失败: 未连接到后端");
+            return false;
+        }
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> client.send(json.toString()));
+        return true;
     }
 
     private void onReceivePaymentConfirm(PacketBackendPaymentConfirm packet) {

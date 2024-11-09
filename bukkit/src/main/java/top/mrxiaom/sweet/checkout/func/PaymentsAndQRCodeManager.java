@@ -243,6 +243,7 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
     public void markDone(String orderId, String money) {
         PaymentInfo payment = remove(orderId);
         if (payment == null) return;
+        payment.giveItemBack();
         Double moneyValue = Util.parseDouble(money).orElse(null);
         if (moneyValue == null) {
             t(payment.player, "内部错误"); // TODO: 移到语言文件
