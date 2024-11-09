@@ -102,9 +102,9 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
 
     private static final List<String> emptyList = Lists.newArrayList();
     private static final List<String> listArg0 = Lists.newArrayList(
-            "start", "end");
+            "points");
     private static final List<String> listOpArg0 = Lists.newArrayList(
-            "start", "end", "reload");
+            "points", "reload");
     @Nullable
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
@@ -128,7 +128,9 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
     @SuppressWarnings({"rawtypes"})
     public <T extends IPacket> boolean send(Player player, String msg, IPacket<T> packet, Consumer<T> resp) {
         t(player, msg);
-        PaymentAPI.inst().send(packet, resp);
+        if (!PaymentAPI.inst().send(packet, resp)) {
+            t(player, "未连接后端");
+        }
         return true;
     }
 }
