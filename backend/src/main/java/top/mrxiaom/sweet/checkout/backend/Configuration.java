@@ -148,7 +148,7 @@ public class Configuration {
         @SerializedName("alipay_public_key")
         private String alipayPublicKey = "file:secrets/alipay/public.txt";
         @SerializedName("produce_code")
-        private String produceCode = "FACE_TO_FACE_PAYMENT";
+        private String produceCode = "QR_CODE_OFFLINE";
 
         @Expose(serialize = false, deserialize = false)
         private AlipayConfig config;
