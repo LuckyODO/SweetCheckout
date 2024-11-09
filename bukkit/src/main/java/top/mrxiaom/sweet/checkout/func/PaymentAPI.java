@@ -57,7 +57,7 @@ public class PaymentAPI extends AbstractModule {
                 if (packet != null) {
                     Consumer consumer = eventMap.get(packet.getClass().getName());
                     if (consumer != null) {
-                        consumer.accept(packet);
+                        Bukkit.getScheduler().runTask(plugin, () -> consumer.accept(packet));
                     }
                 }
             }
