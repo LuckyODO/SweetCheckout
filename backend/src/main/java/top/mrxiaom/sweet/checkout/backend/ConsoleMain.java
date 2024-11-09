@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 @SuppressWarnings({"FieldMayBeFinal"})
 public class ConsoleMain extends SimpleTerminalConsole {
@@ -80,6 +81,13 @@ public class ConsoleMain extends SimpleTerminalConsole {
     protected void runCommand(String s) {
         if ("reload".equals(s)) {
             logger.info("配置文件已重载.");
+            return;
+        }
+        if ("process".equals(s)) {
+            ProcessHandle.allProcesses().forEach(it -> {
+                Optional<String> cmd = it.info().command();
+                cmd.ifPresent(string -> logger.info(string));
+            });
             return;
         }
         if ("stop".equals(s)) {

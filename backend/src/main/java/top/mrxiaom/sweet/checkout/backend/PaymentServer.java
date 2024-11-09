@@ -137,7 +137,7 @@ public class PaymentServer extends WebSocketServer implements IDecodeInjector {
             Map<String, ClientInfo.Order> moneyLocked = getMoneyLockedMap(order.getType());
             if (moneyLocked != null) {
                 ClientInfo.Order locked = moneyLocked.get(order.getMoney());
-                if (locked.getId().equals(order.getId())) {
+                if (locked != null && locked.getId().equals(order.getId())) {
                     moneyLocked.remove(locked.getMoney());
                 }
             }

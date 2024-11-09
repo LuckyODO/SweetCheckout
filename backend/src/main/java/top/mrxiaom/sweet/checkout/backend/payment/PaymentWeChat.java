@@ -11,6 +11,7 @@ import top.mrxiaom.sweet.checkout.packets.backend.PacketBackendPaymentCancel;
 import top.mrxiaom.sweet.checkout.packets.backend.PacketBackendPaymentConfirm;
 import top.mrxiaom.sweet.checkout.packets.plugin.PacketPluginRequestOrder;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimerTask;
@@ -26,7 +27,7 @@ public class PaymentWeChat {
         Configuration.WeChatHook hook = config.getHook().getWeChat();
         String requireProcess = hook.getRequireProcess();
         if (!requireProcess.isEmpty()) {
-            if (ProcessHandle.allProcesses().noneMatch(it -> it.info().command().map(name -> name.equals(requireProcess)).orElse(false))) {
+            if (ProcessHandle.allProcesses().noneMatch(it -> it.info().command().map(name -> name.endsWith(File.pathSeparator + requireProcess)).orElse(false))) {
                 return new PacketPluginRequestOrder.Response("payment.hook-not-running");
             }
         }

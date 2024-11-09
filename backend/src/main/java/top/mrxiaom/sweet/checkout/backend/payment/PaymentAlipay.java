@@ -19,9 +19,7 @@ import top.mrxiaom.sweet.checkout.packets.backend.PacketBackendPaymentCancel;
 import top.mrxiaom.sweet.checkout.packets.backend.PacketBackendPaymentConfirm;
 import top.mrxiaom.sweet.checkout.packets.plugin.PacketPluginRequestOrder;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TimerTask;
+import java.util.*;
 
 public class PaymentAlipay {
     PaymentServer server;
@@ -56,7 +54,7 @@ public class PaymentAlipay {
             model.setOutTradeNo(orderId);
             model.setTotalAmount(packet.getPrice());
             model.setSubject(packet.getProductName());
-            model.setProductCode("FACE_TO_FACE_PAYMENT");
+            model.setProductCode(config.getAlipayFaceToFace().getProduceCode());
             model.setBody(packet.getProductName());
 
             request.setBizModel(model);
@@ -77,10 +75,11 @@ public class PaymentAlipay {
                 });
                 // 每3秒检查一次是否支付成功
                 server.getTimer().schedule(order.getTask(), 1000L, 3000L);
+                server.getLogger().info("支付宝当面付下单成功 {} : {}", response.getMsg(), response.getOutTradeNo());
                 return new PacketPluginRequestOrder.Response("face2face", orderId, response.getQrCode());
             } else {
                 client.removeOrder(orderId);
-                server.getLogger().warn("支付宝当面付调用失败");
+                server.getLogger().warn("支付宝当面付调用失败 {}, {} {}", response.getMsg(), response.getSubCode(), response.getSubMsg());
                 return new PacketPluginRequestOrder.Response("payment.internal-error");
             }
         } catch (AlipayApiException e) {
@@ -108,7 +107,12 @@ public class PaymentAlipay {
 
             AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
             AlipayTradeQueryModel model = new AlipayTradeQueryModel();
+
             model.setOutTradeNo(outTradeNo);
+            List<String> queryOptions = new ArrayList<>();
+            queryOptions.add("trade_settle_info");
+            model.setQueryOptions(queryOptions);
+
             request.setBizModel(model);
 
             AlipayTradeQueryResponse response = alipayClient.execute(request);
@@ -134,7 +138,7 @@ public class PaymentAlipay {
                     }
                 }
             } else {
-                server.getLogger().warn("支付宝当面付检查订单失败");
+                server.getLogger().warn("支付宝当面付检查订单失败 {}, {} {}", response.getMsg(), response.getSubCode(), response.getSubMsg());
             }
         } catch (AlipayApiException e) {
             server.getLogger().warn("支付宝当面付API检查订单时执行错误", e);

@@ -147,6 +147,8 @@ public class Configuration {
         private String privateKey = "file:secrets/alipay/private.txt";
         @SerializedName("alipay_public_key")
         private String alipayPublicKey = "file:secrets/alipay/public.txt";
+        @SerializedName("produce_code")
+        private String produceCode = "FACE_TO_FACE_PAYMENT";
 
         @Expose(serialize = false, deserialize = false)
         private AlipayConfig config;
@@ -183,6 +185,10 @@ public class Configuration {
 
         public String getAlipayPublicKey() {
             return alipayPublicKey;
+        }
+
+        public String getProduceCode() {
+            return produceCode;
         }
 
         public AlipayConfig getConfig() {
