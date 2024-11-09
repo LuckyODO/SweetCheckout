@@ -52,6 +52,7 @@ static bool gIsListening = false;
 static RecvMsg_t funcRecvMsg = nullptr;
 static RecvMsg_t realRecvMsg = nullptr;
 static bool isMH_Initialized = false;
+static char baseUrl[MAX_PATH];
 
 const MsgTypes_t msgTypes = {
     { 0x00, "朋友圈消息" },
@@ -113,17 +114,21 @@ static void notice(string content)
     CURLcode res;
     long res_code = 0;
     const char* postContent = content.c_str();
+    const char* url = baseUrl;
     struct curl_slist* header = NULL;
     
     res = curl_global_init(CURL_GLOBAL_DEFAULT);
     if (res != CURLE_OK)
-        fprintf(stderr, "curl_global_init() failed: %s\n",
-            curl_easy_strerror(res));
+    {
+        LOG_INFO("curl_global_init() failed: {}", curl_easy_strerror(res));
+        return;
+    }
     curl = curl_easy_init();
-    if (curl) {
-        LOG_INFO("Send to backend: {}", content);
+    if (curl)
+    {
+        LOG_INFO("Send to backend {}: {}", url, postContent);
 
-        curl_easy_setopt(curl, CURLOPT_URL, baseUrl);
+        curl_easy_setopt(curl, CURLOPT_URL, url);
         
         curl_easy_setopt(curl, CURLOPT_POST, 1L);
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postContent);
@@ -138,14 +143,18 @@ static void notice(string content)
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
         curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
 
-        curl_easy_setopt(curl, CURLOPT_USERAGENT, "curl/8.10.1");
+        curl_easy_setopt(curl, CURLOPT_USERAGENT, "curl/8.11.0");
 
         res = curl_easy_perform(curl);
         if (res != CURLE_OK)
-            fprintf(stderr, "curl_easy_perform() failed: %s\n",
-                curl_easy_strerror(res));
-        res = curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &res_code);
-
+        {
+            LOG_INFO("curl_easy_perform() failed: {}", curl_easy_strerror(res));
+        }
+        else
+        {
+            res = curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &res_code);
+            LOG_INFO("response {}", res_code);
+        }
         curl_slist_free_all(header);
         curl_easy_cleanup(curl);
     }
@@ -239,7 +248,7 @@ static MH_STATUS UninitializeHook()
     return status;
 }
 
-void ListenMessage()
+void ListenMessage(PortPath_t* pp)
 {
     MH_STATUS status = MH_UNKNOWN;
     if (gIsListening) {
@@ -267,6 +276,7 @@ void ListenMessage()
     }
 
     gIsListening = true;
+    strcat_s(baseUrl, pp->baseUrl);
 }
 
 void UnListenMessage()
