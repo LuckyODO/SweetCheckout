@@ -60,7 +60,6 @@ public class PaymentAlipay {
             request.setBizModel(model);
 
             AlipayTradePrecreateResponse response = alipayClient.execute(request);
-            System.out.println(response.getBody());
 
             if (response.isSuccess()) {
                 ClientInfo.Order order = client.createOrder(orderId, "alipay", packet.getPlayerName(), packet.getPrice());
@@ -75,16 +74,16 @@ public class PaymentAlipay {
                 });
                 // 每3秒检查一次是否支付成功
                 server.getTimer().schedule(order.getTask(), 1000L, 3000L);
-                server.getLogger().info("支付宝当面付下单成功 {} : {}", response.getMsg(), response.getOutTradeNo());
+                server.getLogger().info("支付宝 订单码支付 下单成功 {} : {}", response.getMsg(), response.getOutTradeNo());
                 return new PacketPluginRequestOrder.Response("face2face", orderId, response.getQrCode());
             } else {
                 client.removeOrder(orderId);
-                server.getLogger().warn("支付宝当面付调用失败 {}, {} {}", response.getMsg(), response.getSubCode(), response.getSubMsg());
+                server.getLogger().warn("支付宝 订单码支付 调用失败 {}, {} {}", response.getMsg(), response.getSubCode(), response.getSubMsg());
                 return new PacketPluginRequestOrder.Response("payment.internal-error");
             }
         } catch (AlipayApiException e) {
             client.removeOrder(orderId);
-            server.getLogger().warn("支付宝当面付API执行错误", e);
+            server.getLogger().warn("支付宝 订单码支付 API执行错误", e);
             return new PacketPluginRequestOrder.Response("payment.internal-error");
         }
     }
@@ -116,7 +115,6 @@ public class PaymentAlipay {
             request.setBizModel(model);
 
             AlipayTradeQueryResponse response = alipayClient.execute(request);
-            System.out.println(response.getBody());
             if (response.isSuccess()) {
                 String status = response.getTradeStatus();
                 switch (status.toUpperCase()) {
@@ -132,16 +130,18 @@ public class PaymentAlipay {
                         // 买家支付宝账号，通常是打码的手机号
                         String buyerLogonId = response.getBuyerLogonId();
                         String money = response.getReceiptAmount();
-                        server.getLogger().info("[收款] 从支付宝当面付收款，来自 {} 的 ￥{}", buyerLogonId, money);
+                        server.getLogger().info("[收款] 从支付宝 订单码支付 收款，来自 {} 的 ￥{}", buyerLogonId, money);
                         server.send(client.getWebSocket(), new PacketBackendPaymentConfirm(orderId, money));
                         break;
                     }
                 }
             } else {
-                server.getLogger().warn("支付宝当面付检查订单失败 {}, {} {}", response.getMsg(), response.getSubCode(), response.getSubMsg());
+                if (!response.getSubCode().equals("ACQ.TRADE_NOT_EXIST")) {
+                    server.getLogger().warn("支付宝 订单码支付 检查订单失败 {}, {} {}，查询的订单号 {}\n    {}", response.getMsg(), response.getSubCode(), response.getSubMsg(), outTradeNo, response.getBody());
+                }
             }
         } catch (AlipayApiException e) {
-            server.getLogger().warn("支付宝当面付API检查订单时执行错误", e);
+            server.getLogger().warn("支付宝 订单码支付 API检查订单时执行错误", e);
         }
     }
 
@@ -155,7 +155,7 @@ public class PaymentAlipay {
             request.setBizModel(model);
             alipayClient.execute(request);
         } catch (AlipayApiException e) {
-            server.getLogger().warn("支付宝当面付API关闭交易时执行错误", e);
+            server.getLogger().warn("支付宝 订单码支付 API关闭交易时执行错误", e);
         }
     }
 }

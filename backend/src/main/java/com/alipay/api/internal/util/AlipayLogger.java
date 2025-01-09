@@ -23,7 +23,7 @@ public class AlipayLogger {
 
     private static String  osName           = System.getProperties().getProperty("os.name");
     private static String  ip               = null;
-    private static boolean needEnableLogger = true;
+    private static boolean needEnableLogger = false;
 
     public static void setNeedEnableLogger(boolean needEnableLogger) {
         AlipayLogger.needEnableLogger = needEnableLogger;

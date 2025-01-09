@@ -18,13 +18,6 @@ public class AlipayTradeQueryModel extends AlipayObject {
 	private static final long serialVersionUID = 7188238489752751173L;
 
 	/**
-	 * 银行间联模式下有用，其它场景请不要使用；
-双联通过该参数指定需要查询的交易所属收单机构的pid;
-	 */
-	@ApiField("org_pid")
-	private String orgPid;
-
-	/**
 	 * 订单支付时传入的商户订单号,和支付宝交易号不能同时为空。
 trade_no,out_trade_no如果同时存在优先取trade_no
 	 */
@@ -38,19 +31,6 @@ trade_no,out_trade_no如果同时存在优先取trade_no
 	@ApiField("string")
 	private List<String> queryOptions;
 
-	/**
-	 * 支付宝交易号，和商户订单号不能同时为空
-	 */
-	@ApiField("trade_no")
-	private String tradeNo;
-
-	public String getOrgPid() {
-		return this.orgPid;
-	}
-	public void setOrgPid(String orgPid) {
-		this.orgPid = orgPid;
-	}
-
 	public String getOutTradeNo() {
 		return this.outTradeNo;
 	}
@@ -63,13 +43,6 @@ trade_no,out_trade_no如果同时存在优先取trade_no
 	}
 	public void setQueryOptions(List<String> queryOptions) {
 		this.queryOptions = queryOptions;
-	}
-
-	public String getTradeNo() {
-		return this.tradeNo;
-	}
-	public void setTradeNo(String tradeNo) {
-		this.tradeNo = tradeNo;
 	}
 
 }
