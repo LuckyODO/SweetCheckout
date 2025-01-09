@@ -9,6 +9,7 @@ import com.alipay.api.domain.AlipayTradeQueryModel;
 import com.alipay.api.request.AlipayTradeCloseRequest;
 import com.alipay.api.request.AlipayTradePrecreateRequest;
 import com.alipay.api.request.AlipayTradeQueryRequest;
+import com.alipay.api.response.AlipayTradeCloseResponse;
 import com.alipay.api.response.AlipayTradePrecreateResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import top.mrxiaom.sweet.checkout.backend.Configuration;
@@ -136,9 +137,13 @@ public class PaymentAlipay {
                     }
                 }
             } else {
-                if (!response.getSubCode().equals("ACQ.TRADE_NOT_EXIST")) {
-                    server.getLogger().warn("支付宝 订单码支付 检查订单失败 {}, {} {}，查询的订单号 {}\n    {}", response.getMsg(), response.getSubCode(), response.getSubMsg(), outTradeNo, response.getBody());
+                if (response.getSubCode().equals("ACQ.TRADE_NOT_EXIST")) {
+                    // 忽略交易不存在的情况
+                    // precreate 之后，只要用户不扫码，交易就不存在
+                    // 订单一预创建就开始轮询，不应该处理交易不存在的情况
+                    return;
                 }
+                server.getLogger().warn("支付宝 订单码支付 检查订单失败 {}, {} {}，查询的订单号 {}\n    {}", response.getMsg(), response.getSubCode(), response.getSubMsg(), outTradeNo, response.getBody());
             }
         } catch (AlipayApiException e) {
             server.getLogger().warn("支付宝 订单码支付 API检查订单时执行错误", e);
@@ -153,7 +158,12 @@ public class PaymentAlipay {
             AlipayTradeCloseModel model = new AlipayTradeCloseModel();
             model.setOutTradeNo(outTradeNo);
             request.setBizModel(model);
-            alipayClient.execute(request);
+            AlipayTradeCloseResponse response = alipayClient.execute(request);
+            if (!response.isSuccess()) {
+                if (!response.getSubCode().equals("ACQ.TRADE_NOT_EXIST")) {
+                    server.getLogger().warn("支付宝 订单码支付 关闭订单失败 {}, {} {}，要关闭的订单号 {}\n    {}", response.getMsg(), response.getSubCode(), response.getSubMsg(), outTradeNo, response.getBody());
+                }
+            }
         } catch (AlipayApiException e) {
             server.getLogger().warn("支付宝 订单码支付 API关闭交易时执行错误", e);
         }
