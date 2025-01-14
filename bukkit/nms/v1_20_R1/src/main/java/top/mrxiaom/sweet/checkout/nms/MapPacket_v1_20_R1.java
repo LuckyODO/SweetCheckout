@@ -6,7 +6,9 @@ import net.minecraft.world.level.saveddata.maps.MapIcon;
 import net.minecraft.world.level.saveddata.maps.WorldMap;
 import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.map.MapRenderer;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,5 +29,18 @@ public class MapPacket_v1_20_R1 implements IMapPacket {
     public void sendPacket(Player player, Object packet) {
         CraftPlayer p = (CraftPlayer) player;
         p.getHandle().c.a((Packet<?>) packet);
+    }
+
+    @Override
+    public byte[] getColors(MapRenderer renderer) {
+        Class<?> type = renderer.getClass();
+        try {
+            Field worldMapField = type.getDeclaredField("worldMap");
+            worldMapField.setAccessible(true);
+            WorldMap worldMap = (WorldMap) worldMapField.get(renderer);
+            return worldMap.g;
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(type.getName(), e);
+        }
     }
 }

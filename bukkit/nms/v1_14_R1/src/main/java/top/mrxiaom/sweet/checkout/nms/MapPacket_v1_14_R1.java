@@ -3,9 +3,12 @@ package top.mrxiaom.sweet.checkout.nms;
 import net.minecraft.server.v1_14_R1.MapIcon;
 import net.minecraft.server.v1_14_R1.Packet;
 import net.minecraft.server.v1_14_R1.PacketPlayOutMap;
+import net.minecraft.server.v1_14_R1.WorldMap;
 import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.map.MapRenderer;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,5 +23,18 @@ public class MapPacket_v1_14_R1 implements IMapPacket {
     public void sendPacket(Player player, Object packet) {
         CraftPlayer p = (CraftPlayer) player;
         p.getHandle().playerConnection.sendPacket((Packet<?>) packet);
+    }
+
+    @Override
+    public byte[] getColors(MapRenderer renderer) {
+        Class<?> type = renderer.getClass();
+        try {
+            Field worldMapField = type.getDeclaredField("worldMap");
+            worldMapField.setAccessible(true);
+            WorldMap worldMap = (WorldMap) worldMapField.get(renderer);
+            return worldMap.colors;
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(type.getName(), e);
+        }
     }
 }
