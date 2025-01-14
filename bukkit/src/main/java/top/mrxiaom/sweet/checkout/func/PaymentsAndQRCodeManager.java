@@ -29,7 +29,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.CharBuffer;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -91,6 +90,7 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
         long now = System.currentTimeMillis();
         List<PaymentInfo> list = Lists.newArrayList(players.values());
         for (PaymentInfo info : list) {
+            if (info.orderId == null) continue;
             Player player = info.player;
             if (now >= info.outdateTime) {
                 PaymentAPI.inst().send(new PacketPluginCancelOrder(info.orderId));
@@ -206,6 +206,9 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
     }
 
     public void requireScan(Player player, QRCode code, String orderId, long outdateTime, Consumer<Double> done) {
+        requireScan(player, generateMapColors(code), orderId, outdateTime, done);
+    }
+    public void requireScan(Player player, byte[] colors, String orderId, long outdateTime, Consumer<Double> done) {
         ItemStack item = AdventureItemStack.buildItem(filledMap, mapName, mapLore);
         boolean component = MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_20_R4);
         NBT.modify(item, nbt -> {
@@ -228,7 +231,7 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
         UUID uuid = player.getUniqueId();
         ItemStack old = player.getInventory().getItemInMainHand();
         putProcess(player);
-        players.put(uuid, new PaymentInfo(player, generateMapColors(code), old, item, orderId, outdateTime, done));
+        players.put(uuid, new PaymentInfo(player, colors, old, item, orderId, outdateTime, done));
         player.getInventory().setItemInMainHand(item);
     }
 
@@ -252,7 +255,9 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
         processPlayers.remove(uuid);
         PaymentInfo info = players.remove(uuid);
         if (info != null) {
-            PaymentAPI.inst().send(new PacketPluginCancelOrder(info.orderId));
+            if (info.orderId != null) {
+                PaymentAPI.inst().send(new PacketPluginCancelOrder(info.orderId));
+            }
             info.giveItemBack();
         }
         return info;
@@ -270,7 +275,9 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
         if (paymentActionBarDone != null) {
             AdventureUtil.sendActionBar(payment.player, PAPI.setPlaceholders(payment.player, paymentActionBarDone));
         }
-        payment.done.accept(moneyValue);
+        if (payment.done != null) {
+            payment.done.accept(moneyValue);
+        }
     }
 
     public static boolean isMap(ItemStack item) {

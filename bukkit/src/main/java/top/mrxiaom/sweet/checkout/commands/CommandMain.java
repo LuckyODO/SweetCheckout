@@ -8,6 +8,11 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.MapMeta;
+import org.bukkit.map.MapRenderer;
+import org.bukkit.map.MapView;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.mrxiaom.pluginbase.func.AutoRegister;
@@ -20,11 +25,16 @@ import top.mrxiaom.sweet.checkout.SweetCheckout;
 import top.mrxiaom.sweet.checkout.func.AbstractModule;
 import top.mrxiaom.sweet.checkout.func.PaymentAPI;
 import top.mrxiaom.sweet.checkout.func.PaymentsAndQRCodeManager;
+import top.mrxiaom.sweet.checkout.nms.NMS;
 import top.mrxiaom.sweet.checkout.packets.common.IPacket;
 import top.mrxiaom.sweet.checkout.packets.plugin.PacketPluginRequestOrder;
 
+import java.io.File;
 import java.util.*;
 import java.util.function.Consumer;
+
+import static top.mrxiaom.sweet.checkout.func.PaymentsAndQRCodeManager.readBase64;
+import static top.mrxiaom.sweet.checkout.func.PaymentsAndQRCodeManager.writeBase64;
 
 @AutoRegister
 public class CommandMain extends AbstractModule implements CommandExecutor, TabCompleter, Listener {
@@ -49,6 +59,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
     }
 
     @Override
+    @SuppressWarnings({"deprecation"})
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
@@ -93,6 +104,38 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                         plugin.run(player, pointsCommands, Pair.of("%points%", points));
                     });
                 });
+            }
+            if (args.length >= 1 && "map".equalsIgnoreCase(args[0]) && sender.isOp()) {
+                if (args.length == 2) {
+                    byte[] colors = readBase64(new File(plugin.getDataFolder(), args[1]), 16384);
+                    if (colors == null) {
+                        return Messages.commands__map__invalid.tm(player);
+                    }
+                    PaymentsAndQRCodeManager manager = PaymentsAndQRCodeManager.inst();
+                    long now = System.currentTimeMillis();
+                    long outdateTime = now + (paymentTimeout * 1000L) + 500L;
+                    manager.requireScan(player, colors, null, outdateTime, null);
+                    return Messages.commands__map__given.tm(player);
+                }
+                ItemStack item = player.getItemInHand();
+                ItemMeta meta = item.getItemMeta();
+                MapRenderer renderer = null;
+                if (meta instanceof MapMeta) {
+                    MapMeta map = (MapMeta) meta;
+                    MapView mapView = map.getMapView();
+                    if (mapView != null) {
+                        List<MapRenderer> renderers = mapView.getRenderers();
+                        if (!renderers.isEmpty()) {
+                            renderer = renderers.get(0);
+                        }
+                    }
+                }
+                if (renderer == null) {
+                    return Messages.commands__map__not_found.tm(player);
+                }
+                byte[] colors = NMS.getColors(renderer);
+                writeBase64(new File(plugin.getDataFolder(), "output.map"), colors);
+                return Messages.commands__map__success.tm(player);
             }
         }
 		if (args.length == 1 && "reload".equalsIgnoreCase(args[0]) && sender.isOp()) {

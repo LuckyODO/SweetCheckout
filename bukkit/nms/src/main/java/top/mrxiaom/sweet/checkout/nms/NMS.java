@@ -2,6 +2,7 @@ package top.mrxiaom.sweet.checkout.nms;
 
 import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
 import org.bukkit.entity.Player;
+import org.bukkit.map.MapRenderer;
 
 import static de.tr7zw.changeme.nbtapi.utils.MinecraftVersion.*;
 
@@ -97,5 +98,9 @@ public class NMS {
 
     public static void sendPacket(Player player, Object packet) {
         mapPacket.sendPacket(player, packet);
+    }
+
+    public static byte[] getColors(MapRenderer renderer) {
+        return mapPacket.getColors(renderer);
     }
 }
