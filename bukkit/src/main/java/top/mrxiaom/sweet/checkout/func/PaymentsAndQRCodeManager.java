@@ -71,6 +71,7 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
     private String paymentActionBarDone;
     private String paymentActionBarTimeout;
     private String paymentActionBarCancel;
+    private byte mapDarkColor, mapLightColor;
     public PaymentsAndQRCodeManager(SweetCheckout plugin) {
         super(plugin);
         filledMap = Util.valueOr(Material.class, "FILLED_MAP", Material.MAP);
@@ -116,6 +117,12 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
         mapName = config.getString("map-item.name");
         mapLore = config.getStringList("map-item.lore");
         mapCustomModelData = Util.parseInt(config.getString("map-item.custom-model-data")).orElse(null);
+        mapLightColor = getMapColor(
+                config.getInt("map-item.colors.light.base", 8),
+                config.getInt("map-item.colors.light.modifier", 2));
+        mapDarkColor = getMapColor(
+                config.getInt("map-item.colors.dark.base", 29),
+                config.getInt("map-item.colors.dark.modifier", 3));
         paymentActionBarProcess = config.getString("payment.action-bar.process", null);
         paymentActionBarDone = config.getString("payment.action-bar.done", null);
         paymentActionBarTimeout = config.getString("payment.action-bar.timeout", null);
@@ -261,20 +268,22 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
         });
     }
 
-    public static byte[] generateMapColors(QRCode code) {
-        byte dark = getMapColor(29, 3);
-        byte light = getMapColor(8, 2);
-        int width = code.getModuleCount();
-        boolean scaling = width * 2 < 128;
-        if (scaling) width *= 2;
-        int start = (128 - width) / 2;
+    public byte[] generateMapColors(QRCode code) {
+        int widthAndHeight = code.getModuleCount();
+        // 如果二维码放大2倍，都比128还小，那应该缩放2倍显示
+        boolean scaling = widthAndHeight * 2 < 128;
+        if (scaling) widthAndHeight *= 2;
+        // 左上角起始坐标
+        int start = (128 - widthAndHeight) / 2;
         byte[] colors = new byte[16384];
-        Arrays.fill(colors, light);
-        for (int z = 0; z < width; z++) {
-            for (int x = 0; x < width; x++) {
-                int index = (start + x) + 128 * (start + z);
+        // 先把地图填满亮色（背景色）
+        Arrays.fill(colors, mapLightColor);
+        for (int z = 0; z < widthAndHeight; z++) {
+            for (int x = 0; x < widthAndHeight; x++) {
+                // 再画上暗色（前景色）
                 if (scaling ? code.isDark(z / 2,x / 2) : code.isDark(z, x)) {
-                    colors[index] = dark;
+                    int index = (start + x) + 128 * (start + z);
+                    colors[index] = mapDarkColor;
                 }
             }
         }

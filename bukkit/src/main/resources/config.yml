@@ -15,6 +15,19 @@ map-item:
     - '&7请扫描二维码图像'
   # 物品的 CustomModelData
   custom-model-data: unset
+  # 二维码地图颜色样式，详见 Minecraft Wiki 介绍，
+  # 「下表为目前游戏中使用的地图基色，以及它们被颜色修饰修饰后的颜色」
+  # https://zh.minecraft.wiki/w/%E5%9C%B0%E5%9B%BE%E5%AD%98%E5%82%A8%E6%A0%BC%E5%BC%8F#%E5%9C%B0%E5%9B%BE%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E6%A0%BC%E5%BC%8F
+  # 下面的 base 是 地图基色B，modifier 是 颜色修饰M。
+  colors:
+    # 亮色（背景色）
+    light:
+      base: 8
+      modifier: 2
+    # 暗色（前景色）
+    dark:
+      base: 29
+      modifier: 3
 
 # 支付设置
 payment:
