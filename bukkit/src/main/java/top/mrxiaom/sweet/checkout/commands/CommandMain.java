@@ -77,7 +77,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                     String error = resp.getError();
                     if (!error.isEmpty()) {
                         // 下单失败时提示玩家
-                        t(player, error);
+                        Errors.fromString(error).tm(player, Pair.of("%type%", error));
                         manager.remove(player);
                         return;
                     }
