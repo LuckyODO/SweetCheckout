@@ -14,6 +14,8 @@ import top.mrxiaom.pluginbase.func.AutoRegister;
 import top.mrxiaom.pluginbase.utils.Pair;
 import top.mrxiaom.qrcode.QRCode;
 import top.mrxiaom.qrcode.enums.ErrorCorrectionLevel;
+import top.mrxiaom.sweet.checkout.Errors;
+import top.mrxiaom.sweet.checkout.Messages;
 import top.mrxiaom.sweet.checkout.SweetCheckout;
 import top.mrxiaom.sweet.checkout.func.AbstractModule;
 import top.mrxiaom.sweet.checkout.func.PaymentAPI;
@@ -56,20 +58,20 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                 String moneyStr = args[2];
                 if ("wechat".equalsIgnoreCase(type)) {
                     if (!useWeChat) {
-                        return t(player, "管理员已禁用微信支付");
+                        return Messages.commands__points__disabled__wechat.tm(player);
                     }
                 } else if ("alipay".equalsIgnoreCase(type)) {
                     if (!useAlipay) {
-                        return t(player, "管理员已禁用支付宝支付");
+                        return Messages.commands__points__disabled__alipay.tm(player);
                     }
                 } else {
-                    return t(player, "未知支付类型");
+                    return Messages.commands__points__unknown_type.tm(player);
                 }
                 if (manager.isProcess(player)) {
-                    return t(player, "请先完成你正在进行的订单");
+                    return Messages.commands__points__processing.tm(player);
                 }
                 manager.putProcess(player);
-                return send(player, "正在请求…", new PacketPluginRequestOrder(
+                return send(player, Messages.commands__points__send.str(), new PacketPluginRequestOrder(
                         player.getName(), type, "宝石" /* TODO: 商品名移到配置文件 */, moneyStr
                 ), resp -> {
                     String error = resp.getError();
@@ -95,7 +97,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
         }
 		if (args.length == 1 && "reload".equalsIgnoreCase(args[0]) && sender.isOp()) {
 			plugin.reloadConfig();
-			return t(sender, "&a配置文件已重载");
+			return Messages.commands__reload.tm(sender);
 		}
         return true;
     }
@@ -129,7 +131,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
     public <T extends IPacket> boolean send(Player player, String msg, IPacket<T> packet, Consumer<T> resp) {
         t(player, msg);
         if (!PaymentAPI.inst().send(packet, resp)) {
-            t(player, "未连接后端");
+            Messages.not_connect.tm(player);
         }
         return true;
     }

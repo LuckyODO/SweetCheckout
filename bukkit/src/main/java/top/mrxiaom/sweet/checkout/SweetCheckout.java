@@ -4,6 +4,7 @@ import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import top.mrxiaom.pluginbase.BukkitPlugin;
+import top.mrxiaom.pluginbase.func.LanguageManager;
 import top.mrxiaom.pluginbase.utils.AdventureUtil;
 import top.mrxiaom.pluginbase.utils.PAPI;
 import top.mrxiaom.pluginbase.utils.Pair;
@@ -35,6 +36,9 @@ public class SweetCheckout extends BukkitPlugin {
         if (!NMS.init()) {
             throw new IllegalStateException("不支持的游戏版本 " + MinecraftVersion.getVersion().name());
         }
+        LanguageManager.inst()
+                .setLangFile("messages.yml")
+                .register(Messages.class, Messages::holder);
         options.registerDatabase(
                 // 在这里添加数据库 (如果需要的话)
         );
