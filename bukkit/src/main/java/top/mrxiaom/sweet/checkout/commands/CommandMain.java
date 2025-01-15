@@ -70,7 +70,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            if (args.length == 3 && "points".equalsIgnoreCase(args[0])) {
+            if (args.length == 3 && "points".equalsIgnoreCase(args[0]) && player.hasPermission("sweet.checkout.points")) {
                 PaymentsAndQRCodeManager manager = PaymentsAndQRCodeManager.inst();
                 String type = args[1];
                 String moneyStr = args[2];
@@ -198,7 +198,12 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                 return Messages.commands__map__success.tm(player);
             }
         }
-		if (args.length == 1 && "reload".equalsIgnoreCase(args[0]) && sender.isOp()) {
+		if (args.length >= 1 && "reload".equalsIgnoreCase(args[0]) && sender.isOp()) {
+            if (args.length == 2 && "database".equalsIgnoreCase(args[1])) {
+                plugin.options.database().reloadConfig();
+                plugin.options.database().reconnect();
+                return Messages.commands__reload_database.tm(sender);
+            }
 			plugin.reloadConfig();
 			return Messages.commands__reload.tm(sender);
 		}
