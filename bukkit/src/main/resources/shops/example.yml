@@ -1,0 +1,23 @@
+# 本文件名去掉扩展名，即为本商品的ID
+
+# 商品名称 (随机)
+names:
+  - 'VIP'
+# 真正在游戏中提示信息里显示的商品名称
+display: '测试商品'
+payment:
+  # 是否允许使用支付宝
+  alipay: true
+  # 是否允许使用微信
+  wechat: true
+# 商品价格 (元)
+price: 1.00
+# 支付完成后执行命令
+# [console]开头执行控制台命令
+# [player]开头执行玩家命令
+# [message]开头给玩家发送消息提示
+# [actionbar]开头在玩家物品栏上方显示消息提示
+# [delay]加时间(tick)，延时后再往下执行
+# 全部支持 PAPI 变量
+rewards:
+  - '[console]msg %player_name% 测试商品'
