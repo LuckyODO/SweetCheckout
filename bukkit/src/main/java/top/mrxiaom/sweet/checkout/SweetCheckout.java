@@ -39,7 +39,8 @@ public class SweetCheckout extends BukkitPlugin {
         LanguageManager.inst()
                 .setLangFile("messages.yml")
                 .register(Messages.class, Messages::holder)
-                .register(Errors.class, Errors::holder);
+                .register(Errors.class, Errors::holder)
+                .register(CancelReasons.class, CancelReasons::holder);
         options.registerDatabase(
                 // TODO: 添加数据库，以记录每一条成功的交易
         );
