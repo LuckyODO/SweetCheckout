@@ -54,6 +54,8 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
 
     @Override
     public void reloadConfig(MemoryConfiguration config) {
+        plugin.processingLogs = !config.getBoolean("no-processing-logs");
+
         useWeChat = config.getBoolean("payment.enable.wechat");
         useAlipay = config.getBoolean("payment.enable.alipay");
         paymentTimeout = config.getInt("payment.timeout");
@@ -87,11 +89,13 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                     return Messages.commands__points__processing.tm(player);
                 }
                 manager.putProcess(player);
+                String productName = random(pointsNames, "商品");
                 return send(player, Messages.commands__points__send.str(), new PacketPluginRequestOrder(
-                        player.getName(), type, random(pointsNames, "商品"), moneyStr
+                        player.getName(), type, productName, moneyStr
                 ), resp -> {
                     String error = resp.getError();
                     if (!error.isEmpty()) {
+                        warn("玩家 " + player.getName() + " 通过 " + type + " 下单点券 (￥" + moneyStr + ") 失败: " + error);
                         // 下单失败时提示玩家
                         Errors.fromString(error).tm(player, Pair.of("%type%", error));
                         manager.remove(player);
@@ -101,11 +105,13 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                     String orderId = resp.getOrderId();
                     long now = System.currentTimeMillis();
                     long outdateTime = now + (paymentTimeout * 1000L) + 500L;
+                    if (plugin.processingLogs) info("玩家 " + player.getName() + " 通过 " + type + " 下单点券 (￥" + moneyStr + ") 成功，订单号为 " + orderId);
                     // 向玩家展示二维码地图
                     QRCode code = QRCode.create(resp.getPaymentUrl(), ErrorCorrectionLevel.H);
                     manager.requireScan(player, code, orderId, outdateTime, money -> {
                         // 支付成功操作，给予玩家点券
                         int points = (int) Math.round(money * pointsScale);
+                        info("玩家 " + player.getName() + " 通过 " + type  + " 支付 ￥" + money + " 获得了 " + points + " 点券 --" + productName + " " + orderId);
                         plugin.run(player, pointsCommands, Pair.of("%points%", points));
                     });
                 });
@@ -133,11 +139,13 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                     return Messages.commands__buy__processing.tm(player);
                 }
                 manager.putProcess(player);
+                String productName = random(shop.names, "商品");
                 return send(player, Messages.commands__buy__send.str(), new PacketPluginRequestOrder(
-                        player.getName(), type, random(shop.names, "商品"), shop.price
+                        player.getName(), type, productName, shop.price
                 ), resp -> {
                     String error = resp.getError();
                     if (!error.isEmpty()) {
+                        warn("玩家 " + player.getName() + " 通过 " + type + " 下单 " + shop.display + " (" + shop.id + ") 失败: " + error);
                         // 下单失败时提示玩家
                         Errors.fromString(error).tm(player, Pair.of("%type%", error));
                         manager.remove(player);
@@ -145,12 +153,14 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                     }
                     // 下单成功操作
                     String orderId = resp.getOrderId();
+                    if (plugin.processingLogs) info("玩家 " + player.getName() + " 通过 " + type + " 下单商品 " + shop.display + " (" + shop.id + ") 成功，订单号为 " + orderId);
                     long now = System.currentTimeMillis();
                     long outdateTime = now + (paymentTimeout * 1000L) + 500L;
                     // 向玩家展示二维码地图
                     QRCode code = QRCode.create(resp.getPaymentUrl(), ErrorCorrectionLevel.H);
                     manager.requireScan(player, code, orderId, outdateTime, money -> {
                         // 支付成功操作，给予玩家奖励
+                        info("玩家 " + player.getName() + " 通过 " + type + " 支付 ￥" + money + " 购买了商品 " + shop.display + " (" + shop.id + ") --" + productName + " " + orderId);
                         plugin.run(player, shop.rewards);
                     });
                 });

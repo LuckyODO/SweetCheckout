@@ -93,6 +93,9 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
             if (info.orderId == null) continue;
             Player player = info.player;
             if (now >= info.outdateTime) {
+                if (plugin.processingLogs) {
+                    info("玩家 " + player.getName() + " 超时未支付，已取消订单 " + info.orderId);
+                }
                 PaymentAPI.inst().send(new PacketPluginCancelOrder(info.orderId));
                 info.giveItemBack();
                 t(player, "超时未支付，已自动取消");
@@ -256,6 +259,9 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
         PaymentInfo info = players.remove(uuid);
         if (info != null) {
             if (info.orderId != null) {
+                if (plugin.processingLogs) {
+                    info("玩家 " + player.getName() + " 主动取消了订单 " + info.orderId);
+                }
                 PaymentAPI.inst().send(new PacketPluginCancelOrder(info.orderId));
             }
             info.giveItemBack();

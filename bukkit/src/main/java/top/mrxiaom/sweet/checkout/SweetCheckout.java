@@ -29,7 +29,7 @@ public class SweetCheckout extends BukkitPlugin {
                 .scanIgnore("top.mrxiaom.sweet.checkout.libs")
         );
     }
-
+    public boolean processingLogs;
 
     @Override
     protected void beforeEnable() {
