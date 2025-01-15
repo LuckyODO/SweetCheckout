@@ -35,6 +35,7 @@ import java.util.function.Consumer;
 
 import static top.mrxiaom.sweet.checkout.func.PaymentsAndQRCodeManager.readBase64;
 import static top.mrxiaom.sweet.checkout.func.PaymentsAndQRCodeManager.writeBase64;
+import static top.mrxiaom.sweet.checkout.utils.Utils.random;
 
 @AutoRegister
 public class CommandMain extends AbstractModule implements CommandExecutor, TabCompleter, Listener {
@@ -42,6 +43,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
     private boolean useAlipay;
     private int paymentTimeout;
     private int pointsScale;
+    private List<String> pointsNames;
     private List<String> pointsCommands;
     public CommandMain(SweetCheckout plugin) {
         super(plugin);
@@ -55,6 +57,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
         paymentTimeout = config.getInt("payment.timeout");
 
         pointsScale = config.getInt("points.scale");
+        pointsNames = config.getStringList("points.names");
         pointsCommands = config.getStringList("points.commands");
     }
 
@@ -83,7 +86,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                 }
                 manager.putProcess(player);
                 return send(player, Messages.commands__points__send.str(), new PacketPluginRequestOrder(
-                        player.getName(), type, "宝石" /* TODO: 商品名移到配置文件 */, moneyStr
+                        player.getName(), type, random(pointsNames, "商品"), moneyStr
                 ), resp -> {
                     String error = resp.getError();
                     if (!error.isEmpty()) {
@@ -149,7 +152,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
     private static final List<String> listArg0 = Lists.newArrayList(
             "points");
     private static final List<String> listOpArg0 = Lists.newArrayList(
-            "points", "reload");
+            "points", "map", "reload");
     @Nullable
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
