@@ -40,3 +40,22 @@ SweetCheckout 目录结构
 + ✅ 代表 此方案可用。
 + ❔ 代表 此方案已实现，但由于开发者未申请相关接口等原因，未进行测试。
 + ❌ 代表 此方案暂不可用。
+
+## 命令 (Bukkit)
+
+根命令 `/sweetcheckout`，别名为 `/checkout` 或 `/cz`。  
+`<>`包裹的为必选参数，`[]`包裹的为可选参数。  
+
+| 命令                           | 描述                                                       | 权限                      |
+|------------------------------|----------------------------------------------------------|-------------------------|
+| `/checkout points <类型> <金额>` | 通过微信(wechat)或支付宝(alipay)下单指定金额的点券                        | `sweet.checkout.points` |
+| `/checkout buy <商品ID> <类型>`  | 通过微信(wechat)或支付宝(alipay)下单指定商品                           | 在商品配置定义                 |
+| `/checkout map [文件名]`        | 不输入文件名时，将手中的地图保存到`output.map`文件；输入文件名时，通过地图预览文件以测试文件是否正常 | OP                      |
+| `/checkout reload database`  | 重新连接数据库                                                  | OP/控制台                  |
+| `/checkout reload`           | 重载配置文件                                                   | OP/控制台                  |
+
+## 鸣谢
+
++ [alipay/alipay-sdk-java-all](https://github.com/alipay/alipay-sdk-java-all): 支付宝官方SDK(v2) —— Apache-2.0 License
++ [wechatpay-apiv3/wechatpay-java](https://github.com/wechatpay-apiv3/wechatpay-java): 微信支付官方SDK —— Apache-2.0 License
++ [lich0821/WeChatFerry](https://github.com/lich0821/WeChatFerry): 微信Hook实现参考 —— MIT License
