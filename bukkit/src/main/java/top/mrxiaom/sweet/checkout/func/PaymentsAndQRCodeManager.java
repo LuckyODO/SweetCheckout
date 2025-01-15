@@ -54,10 +54,10 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
             this.orderId = orderId;
             this.outdateTime = outdateTime;
             this.done = done;
-            update();
+            updateMapColors();
         }
 
-        public void update() {
+        public void updateMapColors() {
             Object packet = NMS.createMapPacket(mapId, colors);
             NMS.sendPacket(player, packet);
         }
@@ -173,19 +173,21 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
         if (e.isCancelled()) return;
         Player player = e.getPlayer();
 
+        // 如果正在支付中
         PaymentInfo paymentInfo = players.get(player.getUniqueId());
         if (paymentInfo != null) {
             if (isMap(player.getInventory().getItem(e.getNewSlot()))) {
-                paymentInfo.update();
+                // 手持的是二维码地图，就发送地图画面更新
+                paymentInfo.updateMapColors();
             } else {
                 e.setCancelled(true);
-                if (!isMap(player.getInventory().getItem(e.getPreviousSlot()))) {
-                    for (int i = 0; i < 9; i++) {
-                        if (isMap(player.getInventory().getItem(i))) {
-                            player.getInventory().setHeldItemSlot(i);
-                            paymentInfo.update();
-                            break;
-                        }
+                if (isMap(player.getInventory().getItem(e.getPreviousSlot()))) return;
+                // 手持的不是二维码地图，就强制手持二维码地图
+                for (int i = 0; i < 9; i++) {
+                    if (isMap(player.getInventory().getItem(i))) {
+                        player.getInventory().setHeldItemSlot(i);
+                        paymentInfo.updateMapColors();
+                        break;
                     }
                 }
             }
@@ -194,7 +196,9 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
 
     @EventHandler
     public void onItemDrop(PlayerDropItemEvent e) {
-        if (e.isCancelled() || !isMap(e.getItemDrop().getItemStack())) return;
+        if (e.isCancelled()) return;
+        // 手持二维码地图按Q键
+        if (!isMap(e.getItemDrop().getItemStack())) return;
         Player player = e.getPlayer();
 
         if (remove(player) != null) {
@@ -267,6 +271,13 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
             info.giveItemBack();
         }
         return info;
+    }
+
+    @Override
+    public void onDisable() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            remove(player);
+        }
     }
 
     public void markDone(String orderId, String money) {
