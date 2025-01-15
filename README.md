@@ -1,8 +1,8 @@
-> 本项目目前正处于早期开发阶段，可能会存在一些问题。
-
 # SweetCheckout
 
 自部署支付系统，无费率，免费，开源。
+
+![Minecraft versions](https://img.shields.io/badge/minecraft-1.8.8--1.21.4-blue) ![Bukkit Java Compatible](https://img.shields.io/badge/Bukkit-Java_8-purple) ![Backend Java Compatible](https://img.shields.io/badge/backend-Java_17-purple)
 
 <details>
     <summary>免责声明</summary>
@@ -28,6 +28,14 @@ SweetCheckout 目录结构
 + `Bukkit插件`: 与玩家交互的逻辑
 + `微信Hook软件`: 接收微信收款消息，转发给后端处理
 
+## 使用方法
+
+将后端部署在服务器上，使用 `java -jar backend-x.x.x.jar` 的方式启动后端，编辑 `config.json`，输入各支付方案的参数，保存并重载后端。
+
+在 [docs](/docs) 目录中有一些支付方案的配置教程，自行查阅。
+
+后端部署完成后，在 Minecraft 服务端上安装 Bukkit 插件，安装后在 `config.yml` 中配置后端地址，使得插件可以与后端通讯。使用 `/cz points` 命令来测试是否可以下单、收款即可。
+
 ## 支付方案
 
 |     | 平台　　 | 方案　　                                                                                | 说明 |
@@ -37,9 +45,9 @@ SweetCheckout 目录结构
 | ❔ | 微信 | [Native](https://pay.weixin.qq.com/static/product/product_intro.shtml?name=native)  | 官方接口。Native支付是指商户系统按微信支付协议生成支付`二维码`，用户再用微信“扫一扫”完成支付的模式。 |
 | ✅ | 微信 | Hook                                                                                | 第三方接口。商家在后端配置各金额的支付`二维码`，付款时将二维码展示给用户，Hook截取微信PC版收款信息，由后端进行确认付款的模式。 |
 
-+ ✅ 代表 此方案可用。
++ ✅ 代表 此方案可用，已测试通过。
 + ❔ 代表 此方案已实现，但由于开发者未申请相关接口等原因，未进行测试。
-+ ❌ 代表 此方案暂不可用。
++ ❌ 代表 此方案暂不可用，暂无实现方法。
 
 ## 命令 (Bukkit)
 
