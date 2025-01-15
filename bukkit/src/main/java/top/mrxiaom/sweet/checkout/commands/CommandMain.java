@@ -35,8 +35,8 @@ import java.io.File;
 import java.util.*;
 import java.util.function.Consumer;
 
-import static top.mrxiaom.sweet.checkout.func.PaymentsAndQRCodeManager.readBase64;
-import static top.mrxiaom.sweet.checkout.func.PaymentsAndQRCodeManager.writeBase64;
+import static top.mrxiaom.sweet.checkout.utils.Utils.readBase64;
+import static top.mrxiaom.sweet.checkout.utils.Utils.writeBase64;
 import static top.mrxiaom.sweet.checkout.utils.Utils.random;
 
 @AutoRegister

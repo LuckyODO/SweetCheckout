@@ -1,5 +1,14 @@
 package top.mrxiaom.sweet.checkout.utils;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import top.mrxiaom.sweet.checkout.SweetCheckout;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 import java.util.Random;
 
@@ -8,5 +17,31 @@ public class Utils {
         if (list.isEmpty()) return def;
         if (list.size() == 1) return list.get(0);
         return list.get(new Random().nextInt(list.size()));
+    }
+
+    public static void writeBase64(File file, byte @NotNull [] bytes) {
+        try (FileWriter writer = new FileWriter(file)) {
+            String encoded = Base64.getEncoder().encodeToString(bytes);
+            writer.write(encoded);
+        } catch (IOException e) {
+            SweetCheckout.getInstance().warn("写入 Base64 时出现错误", e);
+        }
+    }
+
+    public static byte @Nullable [] readBase64(File file, int requireLength) {
+        if (!file.exists()) return null;
+        try (FileReader reader = new FileReader(file)) {
+            char[] buffer = new char[16384];
+            StringBuilder sb = new StringBuilder();
+            int len;
+            while ((len = reader.read(buffer)) != -1) {
+                sb.append(buffer, 0, len);
+            }
+            byte[] decoded = Base64.getDecoder().decode(sb.toString());
+            return decoded.length < requireLength ? null : decoded;
+        } catch (IOException | IllegalArgumentException e) {
+            SweetCheckout.getInstance().warn("读取 Base64 时出现错误", e);
+            return null;
+        }
     }
 }

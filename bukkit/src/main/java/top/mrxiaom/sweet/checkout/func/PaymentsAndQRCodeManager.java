@@ -13,8 +13,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import top.mrxiaom.pluginbase.func.AutoRegister;
 import top.mrxiaom.pluginbase.utils.AdventureItemStack;
 import top.mrxiaom.pluginbase.utils.AdventureUtil;
@@ -22,54 +20,22 @@ import top.mrxiaom.pluginbase.utils.PAPI;
 import top.mrxiaom.pluginbase.utils.Util;
 import top.mrxiaom.qrcode.QRCode;
 import top.mrxiaom.sweet.checkout.SweetCheckout;
-import top.mrxiaom.sweet.checkout.nms.NMS;
+import top.mrxiaom.sweet.checkout.func.entry.PaymentInfo;
 import top.mrxiaom.sweet.checkout.packets.plugin.PacketPluginCancelOrder;
+import top.mrxiaom.sweet.checkout.utils.Utils;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
 
 @AutoRegister
 public class PaymentsAndQRCodeManager extends AbstractModule implements Listener {
-
     public static final String FLAG_SWEET_CHECKOUT_MAP = "SWEET_CHECKOUT_MAP";
+    private static Material filledMap;
 
-    public static class PaymentInfo {
-        public final Player player;
-        public final byte[] colors;
-        public final ItemStack original;
-        public final ItemStack newItem;
-        public final String orderId;
-        public final long outdateTime;
-        public final Consumer<Double> done;
-
-        public PaymentInfo(Player player, byte[] colors, ItemStack original, ItemStack newItem, String orderId, long outdateTime, Consumer<Double> done) {
-            this.player = player;
-            this.colors = colors;
-            this.original = original;
-            this.newItem = newItem;
-            this.orderId = orderId;
-            this.outdateTime = outdateTime;
-            this.done = done;
-            updateMapColors();
-        }
-
-        public void updateMapColors() {
-            Object packet = NMS.createMapPacket(mapId, colors);
-            NMS.sendPacket(player, packet);
-        }
-
-        public void giveItemBack() {
-            player.getInventory().setItemInMainHand(original);
-        }
-    }
     private final Map<UUID, PaymentInfo> players = new HashMap<>();
     private final Set<UUID> processPlayers = new HashSet<>();
-    private static Material filledMap;
-    protected static int mapId = 20070831;
+    private int mapId = 20070831;
     private String mapName;
     private List<String> mapLore;
     private Integer mapCustomModelData;
@@ -134,8 +100,8 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
         mapDarkColor = getMapColor(
                 config.getInt("map-item.colors.dark.base", 29),
                 config.getInt("map-item.colors.dark.modifier", 3));
-        mapLightPattern = readBase64(new File(plugin.getDataFolder(), "qrcode_light.map"), 16384);
-        mapDarkPattern = readBase64(new File(plugin.getDataFolder(), "qrcode_dark.map"), 16384);
+        mapLightPattern = Utils.readBase64(new File(plugin.getDataFolder(), "qrcode_light.map"), 16384);
+        mapDarkPattern = Utils.readBase64(new File(plugin.getDataFolder(), "qrcode_dark.map"), 16384);
 
         paymentActionBarProcess = config.getString("payment.action-bar.process", null);
         paymentActionBarDone = config.getString("payment.action-bar.done", null);
@@ -148,6 +114,7 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
         PlayerInventory inv = e.getPlayer().getInventory();
         for (int i = 0; i < inv.getSize(); i++) {
             ItemStack item = inv.getItem(i);
+            // 上线自动没收二维码地图
             if (isMap(item)) {
                 inv.setItem(i, null);
             }
@@ -238,7 +205,7 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
         UUID uuid = player.getUniqueId();
         ItemStack old = player.getInventory().getItemInMainHand();
         putProcess(player);
-        players.put(uuid, new PaymentInfo(player, colors, old, item, orderId, outdateTime, done));
+        players.put(uuid, new PaymentInfo(mapId, player, colors, old, item, orderId, outdateTime, done));
         player.getInventory().setItemInMainHand(item);
     }
 
@@ -338,32 +305,6 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
      */
     public static byte getMapColor(int baseColor, int modifier) {
         return (byte) (baseColor << 2 | modifier & 3);
-    }
-
-    public static void writeBase64(File file, byte @NotNull [] bytes) {
-        try (FileWriter writer = new FileWriter(file)) {
-            String encoded = Base64.getEncoder().encodeToString(bytes);
-            writer.write(encoded);
-        } catch (IOException e) {
-            SweetCheckout.getInstance().warn("写入 Base64 时出现错误", e);
-        }
-    }
-
-    public static byte @Nullable [] readBase64(File file, int requireLength) {
-        if (!file.exists()) return null;
-        try (FileReader reader = new FileReader(file)) {
-            char[] buffer = new char[16384];
-            StringBuilder sb = new StringBuilder();
-            int len;
-            while ((len = reader.read(buffer)) != -1) {
-                sb.append(buffer, 0, len);
-            }
-            byte[] decoded = Base64.getDecoder().decode(sb.toString());
-            return decoded.length < requireLength ? null : decoded;
-        } catch (IOException | IllegalArgumentException e) {
-            SweetCheckout.getInstance().warn("读取 Base64 时出现错误", e);
-            return null;
-        }
     }
 
     public static PaymentsAndQRCodeManager inst() {

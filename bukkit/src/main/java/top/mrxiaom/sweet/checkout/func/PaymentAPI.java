@@ -10,7 +10,11 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.jetbrains.annotations.Nullable;
 import top.mrxiaom.pluginbase.func.AutoRegister;
+import top.mrxiaom.pluginbase.utils.Pair;
+import top.mrxiaom.sweet.checkout.CancelReasons;
+import top.mrxiaom.sweet.checkout.Messages;
 import top.mrxiaom.sweet.checkout.SweetCheckout;
+import top.mrxiaom.sweet.checkout.func.entry.PaymentInfo;
 import top.mrxiaom.sweet.checkout.packets.PacketSerializer;
 import top.mrxiaom.sweet.checkout.packets.backend.PacketBackendPaymentCancel;
 import top.mrxiaom.sweet.checkout.packets.backend.PacketBackendPaymentConfirm;
@@ -96,7 +100,7 @@ public class PaymentAPI extends AbstractModule {
         return send(packet, null);
     }
 
-    public <T extends IPacket> boolean send(IPacket<T> packet, Consumer<T> resp) {
+    public <T extends IPacket> boolean send(IPacket<T> packet, @Nullable Consumer<T> resp) {
         JsonObject json = PacketSerializer.serialize(packet);
         Class<T> respType = packet.getResponsePacket();
         Long echo = (respType == null || resp == null) ? null : this.echo++;
@@ -119,11 +123,16 @@ public class PaymentAPI extends AbstractModule {
 
     private void onReceivePaymentCancel(PacketBackendPaymentCancel packet) {
         PaymentsAndQRCodeManager manager = PaymentsAndQRCodeManager.inst();
-        PaymentsAndQRCodeManager.PaymentInfo info = manager.remove(packet.getOrderId());
+        PaymentInfo info = manager.remove(packet.getOrderId());
         if (info == null) {
             warn("收到 " + packet.getOrderId() + " 取消包出错: 没有这个订单号");
         } else {
-            t(info.player, "已取消付款: " + packet.getReason()); // TODO: 添加到语言文件，并翻译 reason
+            if (plugin.processingLogs) {
+                info("玩家 " + info.player.getName() + " 因 " + packet.getReason() + " 取消了订单 " + packet.getOrderId());
+            }
+            CancelReasons reason = CancelReasons.fromString(packet.getReason());
+            String reasonString = reason.str(Pair.of("%reason%", packet.getReason()));
+            Messages.cancelled.tm(info.player, Pair.of("%reason%", reasonString));
         }
     }
 

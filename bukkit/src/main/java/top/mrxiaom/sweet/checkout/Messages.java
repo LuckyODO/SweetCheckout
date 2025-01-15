@@ -27,6 +27,7 @@ public enum Messages implements IHolderAccessor {
     commands__map__success("&a地图数据已导出到 output.map 文件"),
     commands__map__invalid("&e该文件不是有效的地图文件"),
     commands__map__given("&e已开启二维码扫描模拟"),
+    cancelled("已取消付款，原因: %reason%"),
 
     ;
     Messages(String defaultValue) {
