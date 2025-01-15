@@ -44,6 +44,7 @@ public class ShopManager extends AbstractModule {
                 }
             });
         }
+        info("[shops] 共加载了 " + shops.size() + " 个商品");
     }
 
     public Set<String> shops() {
