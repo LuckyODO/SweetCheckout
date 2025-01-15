@@ -25,6 +25,8 @@ import top.mrxiaom.sweet.checkout.SweetCheckout;
 import top.mrxiaom.sweet.checkout.func.AbstractModule;
 import top.mrxiaom.sweet.checkout.func.PaymentAPI;
 import top.mrxiaom.sweet.checkout.func.PaymentsAndQRCodeManager;
+import top.mrxiaom.sweet.checkout.func.ShopManager;
+import top.mrxiaom.sweet.checkout.func.entry.ShopItem;
 import top.mrxiaom.sweet.checkout.nms.NMS;
 import top.mrxiaom.sweet.checkout.packets.common.IPacket;
 import top.mrxiaom.sweet.checkout.packets.plugin.PacketPluginRequestOrder;
@@ -108,6 +110,51 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                     });
                 });
             }
+            if (args.length == 3 && "buy".equalsIgnoreCase(args[0])) {
+                String shopId = args[1];
+                ShopItem shop = ShopManager.inst().get(shopId);
+                if (shop == null) {
+                    return Messages.commands__buy__not_found.tm(player);
+                }
+                PaymentsAndQRCodeManager manager = PaymentsAndQRCodeManager.inst();
+                String type = args[2];
+                if ("wechat".equalsIgnoreCase(type)) {
+                    if (!shop.paymentWeChat) {
+                        return Messages.commands__buy__disabled__wechat.tm(player);
+                    }
+                } else if ("alipay".equalsIgnoreCase(type)) {
+                    if (!shop.paymentAlipay) {
+                        return Messages.commands__buy__disabled__alipay.tm(player);
+                    }
+                } else {
+                    return Messages.commands__buy__unknown_type.tm(player);
+                }
+                if (manager.isProcess(player)) {
+                    return Messages.commands__buy__processing.tm(player);
+                }
+                manager.putProcess(player);
+                return send(player, Messages.commands__buy__send.str(), new PacketPluginRequestOrder(
+                        player.getName(), type, random(shop.names, "商品"), shop.price
+                ), resp -> {
+                    String error = resp.getError();
+                    if (!error.isEmpty()) {
+                        // 下单失败时提示玩家
+                        Errors.fromString(error).tm(player, Pair.of("%type%", error));
+                        manager.remove(player);
+                        return;
+                    }
+                    // 下单成功操作
+                    String orderId = resp.getOrderId();
+                    long now = System.currentTimeMillis();
+                    long outdateTime = now + (paymentTimeout * 1000L) + 500L;
+                    // 向玩家展示二维码地图
+                    QRCode code = QRCode.create(resp.getPaymentUrl(), ErrorCorrectionLevel.H);
+                    manager.requireScan(player, code, orderId, outdateTime, money -> {
+                        // 支付成功操作，给予玩家奖励
+                        plugin.run(player, shop.rewards);
+                    });
+                });
+            }
             if (args.length >= 1 && "map".equalsIgnoreCase(args[0]) && sender.isOp()) {
                 if (args.length == 2) {
                     byte[] colors = readBase64(new File(plugin.getDataFolder(), args[1]), 16384);
@@ -150,14 +197,40 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
 
     private static final List<String> emptyList = Lists.newArrayList();
     private static final List<String> listArg0 = Lists.newArrayList(
-            "points");
+            "points", "buy");
     private static final List<String> listOpArg0 = Lists.newArrayList(
-            "points", "map", "reload");
+            "points", "buy", "map", "reload");
     @Nullable
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         if (args.length == 1) {
             return startsWith(sender.isOp() ? listOpArg0 : listArg0, args[0]);
+        }
+        if (args.length == 2) {
+            if ("points".equalsIgnoreCase(args[0])) {
+                List<String> list = new ArrayList<>();
+                if (useAlipay) list.add("alipay");
+                if (useWeChat) list.add("wechat");
+                return startsWith(list, args[1]);
+            }
+            if ("buy".equalsIgnoreCase(args[0])) {
+                return startsWith(ShopManager.inst().shops(sender), args[1]);
+            }
+        }
+        if (args.length == 3) {
+            if ("buy".equalsIgnoreCase(args[0])) {
+                ShopItem shop = ShopManager.inst().get(args[1]);
+                if (shop == null) {
+                    return emptyList;
+                }
+                if (shop.permission != null && !sender.hasPermission(shop.permission)) {
+                    return emptyList;
+                }
+                List<String> list = new ArrayList<>();
+                if (shop.paymentAlipay) list.add("alipay");
+                if (shop.paymentWeChat) list.add("wechat");
+                return startsWith(list, args[1]);
+            }
         }
         return emptyList;
     }

@@ -2,16 +2,14 @@ package top.mrxiaom.sweet.checkout.func;
 
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.permissions.Permissible;
 import top.mrxiaom.pluginbase.func.AutoRegister;
 import top.mrxiaom.pluginbase.utils.Util;
 import top.mrxiaom.sweet.checkout.SweetCheckout;
 import top.mrxiaom.sweet.checkout.func.entry.ShopItem;
 
 import java.io.File;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 @AutoRegister
 public class ShopManager extends AbstractModule {
@@ -49,6 +47,17 @@ public class ShopManager extends AbstractModule {
 
     public Set<String> shops() {
         return shops.keySet();
+    }
+
+    public Set<String> shops(Permissible p) {
+        if (p.isOp()) return shops();
+        Set<String> set = new HashSet<>();
+        for (ShopItem shop : shops.values()) {
+            if (shop.permission == null || p.hasPermission(shop.permission)) {
+                set.add(shop.id);
+            }
+        }
+        return set;
     }
 
     public ShopItem get(String id) {
