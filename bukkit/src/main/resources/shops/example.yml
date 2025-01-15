@@ -5,6 +5,9 @@ names:
   - 'VIP'
 # 真正在游戏中提示信息里显示的商品名称
 display: '测试商品'
+# 购买该商品所需权限，注释此条目则无需权限
+# 其中，%id% 会被替换为本商品的ID
+permission: 'sweet.checkout.buy.%id%'
 payment:
   # 是否允许使用支付宝
   alipay: true
