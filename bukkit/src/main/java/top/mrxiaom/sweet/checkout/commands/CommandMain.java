@@ -162,7 +162,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                     long now = System.currentTimeMillis();
                     long outdateTime = now + (paymentTimeout * 1000L) + 500L;
                     if (plugin.processingLogs) info("玩家 " + player.getName() + " 通过 " + type + " 下单商品 " + shop.display + " (" + shop.id + ") 成功，订单号为 " + orderId);
-                    Messages.commands__points__sent.tm(player,
+                    Messages.commands__buy__sent.tm(player,
                             Pair.of("%order_id%", orderId),
                             Pair.of("%display%", shop.display),
                             Pair.of("%money%", shop.price),
