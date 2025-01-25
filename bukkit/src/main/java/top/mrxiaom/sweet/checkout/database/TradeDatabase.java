@@ -81,13 +81,14 @@ public class TradeDatabase extends AbstractPluginHolder implements IDatabase {
         }
     }
 
-    public void log(Player player, LocalDateTime time, String type, String money, String reason) {
+    public void log(OfflinePlayer player, LocalDateTime time, String type, String money, String reason) {
         try (Connection conn = plugin.getConnection();
             PreparedStatement ps = conn.prepareStatement(
                     "INSERT INTO `" + TABLE_TRADE_LOG + "`(`uuid`,`name`,`time`,`type`,`money`,`reason`) VALUES(?,?,?,?,?,?);"
             )) {
             ps.setString(1, player.getUniqueId().toString());
-            ps.setString(2, player.getName());
+            String name = player.getName();
+            ps.setString(2, name == null ? "" : name);
             ps.setTimestamp(3, Timestamp.valueOf(time));
             ps.setString(4, type);
             ps.setString(5, money);

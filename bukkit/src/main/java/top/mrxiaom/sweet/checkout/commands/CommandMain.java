@@ -1,6 +1,7 @@
 package top.mrxiaom.sweet.checkout.commands;
 		
 import com.google.common.collect.Lists;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -17,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.mrxiaom.pluginbase.func.AutoRegister;
 import top.mrxiaom.pluginbase.utils.Pair;
+import top.mrxiaom.pluginbase.utils.Util;
 import top.mrxiaom.qrcode.QRCode;
 import top.mrxiaom.qrcode.enums.ErrorCorrectionLevel;
 import top.mrxiaom.sweet.checkout.Errors;
@@ -33,9 +35,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Consumer;
 
-import static top.mrxiaom.sweet.checkout.utils.Utils.readBase64;
-import static top.mrxiaom.sweet.checkout.utils.Utils.writeBase64;
-import static top.mrxiaom.sweet.checkout.utils.Utils.random;
+import static top.mrxiaom.sweet.checkout.utils.Utils.*;
 
 @AutoRegister
 public class CommandMain extends AbstractModule implements CommandExecutor, TabCompleter, Listener {
@@ -227,6 +227,25 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
             }
             return Messages.commands__rank__success.tm(sender, replacements);
         }
+        if (args.length >= 4 && "log".equalsIgnoreCase(args[0]) && sender.isOp()) {
+            OfflinePlayer player = Util.getOfflinePlayer(args[1]).orElse(null);
+            if (player == null) {
+                return Messages.commands__log__no_player.tm(sender);
+            }
+            String type = args[1];
+            double money = Util.parseDouble(args[2]).orElse(0.0);
+            if (money <= 0) {
+                return Messages.commands__log__no_number.tm(sender);
+            }
+            String moneyStr = String.format("%.2f", money);
+            String reason = consume(args, 3, " ");
+            plugin.getTradeDatabase().log(player, LocalDateTime.now(), type, moneyStr, reason);
+            return Messages.commands__log__success.tm(sender,
+                    Pair.of("%name%", player.getName()),
+                    Pair.of("%type%", type),
+                    Pair.of("%money%", moneyStr),
+                    Pair.of("%reason%", reason));
+        }
 		if (args.length >= 1 && "reload".equalsIgnoreCase(args[0]) && sender.isOp()) {
             if (args.length == 2 && "database".equalsIgnoreCase(args[1])) {
                 plugin.options.database().reloadConfig();
@@ -244,9 +263,9 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
 
     private static final List<String> emptyList = Lists.newArrayList();
     private static final List<String> listArg0 = Lists.newArrayList(
-            "points", "buy");
+            "points", "buy", "rank");
     private static final List<String> listOpArg0 = Lists.newArrayList(
-            "points", "buy", "map", "reload");
+            "points", "buy", "rank", "log", "map", "reload");
     @Nullable
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
@@ -262,6 +281,11 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
             }
             if ("buy".equalsIgnoreCase(args[0])) {
                 return startsWith(ShopManager.inst().shops(sender), args[1]);
+            }
+            if ("log".equalsIgnoreCase(args[0]) && sender.isOp()) {
+                if (args[1].length() > 2) {
+                    startsWith(Util.players.keySet(), args[1]);
+                }
             }
         }
         if (args.length == 3) {

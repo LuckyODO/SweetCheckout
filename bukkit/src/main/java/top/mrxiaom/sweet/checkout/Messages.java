@@ -78,6 +78,10 @@ public enum Messages implements IHolderAccessor {
     rank__not_found__player("&7虚位以待"),
     rank__not_found__money(""),
 
+    commands__log__no_player("&e找不到该玩家"),
+    commands__log__no_number("&e你输入的不是一个正确的金额"),
+    commands__log__success("&a你已为玩家&e %name% &a添加一条交易记录，使用&e %type% &a支付 &e￥%money%&a，理由为&e %reason%"),
+
     commands__help__normal(
             "&e&lSweetCheckout&r &b支付系统",
             "&f/checkout points <类型> <金额> &7通过微信(wechat)或支付宝(alipay)下单指定金额的点券",

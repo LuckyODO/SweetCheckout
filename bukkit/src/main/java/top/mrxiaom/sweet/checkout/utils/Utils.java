@@ -44,4 +44,14 @@ public class Utils {
             return null;
         }
     }
+
+    public static String consume(String[] args, int startIndex, String spliter) {
+        StringBuilder sb = new StringBuilder();
+        int last = args.length - 1;
+        for (int i = startIndex; i < args.length; i++) {
+            sb.append(args[i]);
+            if (i < last) sb.append(spliter);
+        }
+        return sb.toString();
+    }
 }
