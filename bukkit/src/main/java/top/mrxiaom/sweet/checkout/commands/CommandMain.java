@@ -32,6 +32,7 @@ import top.mrxiaom.sweet.checkout.packets.common.IPacket;
 import top.mrxiaom.sweet.checkout.packets.plugin.PacketPluginRequestOrder;
 
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -116,6 +117,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                         // 支付成功操作，给予玩家点券
                         int points = (int) Math.round(money * pointsScale);
                         info("玩家 " + player.getName() + " 通过 " + type  + " 支付 ￥" + money + " 获得了 " + points + " 点券 --" + productName + " " + orderId);
+                        plugin.getTradeDatabase().log(player, LocalDateTime.now(), type, moneyStr, "points:" + points);
                         plugin.run(player, pointsCommands, Pair.of("%points%", points));
                     });
                 });
@@ -170,6 +172,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                     manager.requireScan(player, code, orderId, outdateTime, money -> {
                         // 支付成功操作，给予玩家奖励
                         info("玩家 " + player.getName() + " 通过 " + type + " 支付 ￥" + money + " 购买了商品 " + shop.display + " (" + shop.id + ") --" + productName + " " + orderId);
+                        plugin.getTradeDatabase().log(player, LocalDateTime.now(), type, shop.price, "buy:" + shop.id);
                         plugin.run(player, shop.rewards);
                     });
                 });

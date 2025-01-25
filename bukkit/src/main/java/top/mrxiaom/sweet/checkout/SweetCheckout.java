@@ -9,6 +9,7 @@ import top.mrxiaom.pluginbase.utils.AdventureUtil;
 import top.mrxiaom.pluginbase.utils.PAPI;
 import top.mrxiaom.pluginbase.utils.Pair;
 import top.mrxiaom.pluginbase.utils.Util;
+import top.mrxiaom.sweet.checkout.database.TradeDatabase;
 import top.mrxiaom.sweet.checkout.nms.NMS;
 
 import java.util.ArrayList;
@@ -30,6 +31,11 @@ public class SweetCheckout extends BukkitPlugin {
         );
     }
     public boolean processingLogs;
+    private TradeDatabase tradeDatabase;
+
+    public TradeDatabase getTradeDatabase() {
+        return tradeDatabase;
+    }
 
     @Override
     protected void beforeEnable() {
@@ -42,7 +48,7 @@ public class SweetCheckout extends BukkitPlugin {
                 .register(Errors.class, Errors::holder)
                 .register(CancelReasons.class, CancelReasons::holder);
         options.registerDatabase(
-                // TODO: 添加数据库，以记录每一条成功的交易
+                tradeDatabase = new TradeDatabase(this)
         );
     }
 
@@ -84,7 +90,7 @@ public class SweetCheckout extends BukkitPlugin {
                 Long delay = Util.parseLong(s.substring(7)).orElse(null);
                 int index = i + 1;
                 if (delay == null) continue;
-                Bukkit.getScheduler().runTaskLater(getInstance(), () -> run0(player, commands, index), delay);
+                Bukkit.getScheduler().runTaskLater(this, () -> run0(player, commands, index), delay);
             }
         }
     }
