@@ -62,6 +62,13 @@ SweetCheckout 目录结构
 | `/checkout reload database`  | 重新连接数据库                                                  | OP/控制台                  |
 | `/checkout reload`           | 重载配置文件                                                   | OP/控制台                  |
 
+## 变量 (PAPI)
+
+```
+%sweetcheckour_rank_<第几名>_name% 充值排行榜第几名的玩家名
+%sweetcheckour_rank_<第几名>_money% 充值排行榜第几名的金额
+```
+
 ## 鸣谢
 
 + [alipay/alipay-sdk-java-all](https://github.com/alipay/alipay-sdk-java-all): 支付宝官方SDK(v2) —— Apache-2.0 License

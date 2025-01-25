@@ -3,6 +3,7 @@ package top.mrxiaom.sweet.checkout.func;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.Nullable;
 import top.mrxiaom.pluginbase.func.AutoRegister;
 import top.mrxiaom.sweet.checkout.SweetCheckout;
 
@@ -29,6 +30,10 @@ public class RankManager extends AbstractModule {
     Map<Integer, Rank> rankMap = new HashMap<>();
     public RankManager(SweetCheckout plugin) {
         super(plugin);
+    }
+
+    public int getTop() {
+        return top;
     }
 
     @Override
@@ -59,5 +64,14 @@ public class RankManager extends AbstractModule {
     @Override
     public void onDisable() {
         cancelTask();
+    }
+
+    @Nullable
+    public Rank get(int num) {
+        return rankMap.get(num);
+    }
+
+    public static RankManager inst() {
+        return instanceOf(RankManager.class);
     }
 }

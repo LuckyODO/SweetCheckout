@@ -59,6 +59,11 @@ public enum Messages implements IHolderAccessor {
     commands__map__given("&e已开启二维码扫描模拟"),
     cancelled("已取消付款，原因: %reason%"),
 
+    rank__exist__player("&e%name%"),
+    rank__exist__money("&f&l%money%"),
+    rank__not_found__player("&7虚位以待"),
+    rank__not_found__money(""),
+
     commands__help__normal(
             "&e&lSweetCheckout&r &b支付系统",
             "&f/checkout points <类型> <金额> &7通过微信(wechat)或支付宝(alipay)下单指定金额的点券",

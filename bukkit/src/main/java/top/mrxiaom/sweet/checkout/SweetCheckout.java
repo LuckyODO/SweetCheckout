@@ -54,6 +54,9 @@ public class SweetCheckout extends BukkitPlugin {
 
     @Override
     protected void afterEnable() {
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            new Placeholders(this).register();
+        }
         getLogger().info("SweetCheckout 加载完毕");
     }
 
