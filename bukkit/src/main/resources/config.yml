@@ -73,3 +73,11 @@ points:
   # 全部支持 PAPI 变量，同时可以使用 %points% 代表充值的点数
   commands:
     - '[console]points give %player_name% %points%'
+
+# 排行榜设置
+rank:
+  # 排行榜显示前多少位
+  # 设置为 0 关闭排行榜
+  top: 10
+  # 多少秒刷新一次排行榜
+  refresh-interval: 60

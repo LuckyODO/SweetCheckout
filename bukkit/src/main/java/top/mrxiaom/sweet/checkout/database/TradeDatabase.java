@@ -8,6 +8,7 @@ import top.mrxiaom.pluginbase.database.IDatabase;
 import top.mrxiaom.pluginbase.utils.Util;
 import top.mrxiaom.sweet.checkout.SweetCheckout;
 import top.mrxiaom.sweet.checkout.func.AbstractPluginHolder;
+import top.mrxiaom.sweet.checkout.func.RankManager;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -43,6 +44,7 @@ public class TradeDatabase extends AbstractPluginHolder implements IDatabase {
         }
     }
     private String TABLE_TRADE_LOG;
+    private boolean supportAnyValue;
     public TradeDatabase(SweetCheckout plugin) {
         super(plugin);
     }
@@ -61,6 +63,21 @@ public class TradeDatabase extends AbstractPluginHolder implements IDatabase {
                 ");"
         )) {
             ps.execute();
+        }
+        supportAnyValue = false;
+        if (plugin.options.database().isMySQL()) {
+            try (PreparedStatement ps = conn.prepareStatement("SELECT VERSION();");
+                 ResultSet result = ps.executeQuery()) {
+                if (result.next()) {
+                    List<String> version = Util.split(result.getString(1), '.');
+                    if (version.size() >= 2) {
+                        int major = Util.parseInt(version.get(0)).orElse(0);
+                        int minor = Util.parseInt(version.get(1)).orElse(0);
+                        // MySQL 5.7 开始支持 ANY_VALUE() 函数
+                        supportAnyValue = major > 5 || (major == 5 && minor >= 7);
+                    }
+                }
+            }
         }
     }
 
@@ -104,6 +121,33 @@ public class TradeDatabase extends AbstractPluginHolder implements IDatabase {
                 Collections.sort(list);
                 return list;
             }
+        } catch (SQLException e) {
+            warn(e);
+            return null;
+        }
+    }
+
+    public List<RankManager.Rank> calculateRank(int top) {
+        String selection = supportAnyValue
+                ? "ANY_VALUE(`uuid`) AS `uuid`,ANY_VALUE(`name`) AS `name`,"
+                : "`uuid`,`name`,";
+        try (Connection conn = plugin.getConnection();
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT " + selection +
+                        "SUM(`money`) AS `total_money` " +
+                    "FROM `" + TABLE_TRADE_LOG + "` " +
+                    "GROUP BY `uuid` " +
+                    "ORDER BY `total_money` DESC " +
+                    "LIMIT " + top + ";");
+            ResultSet result = ps.executeQuery()) {
+            List<RankManager.Rank> list = new ArrayList<>();
+            while (result.next()) {
+                String uuid = result.getString("uuid");
+                String name = result.getString("name");
+                double totalMoney = result.getDouble("total_money");
+                list.add(new RankManager.Rank(UUID.fromString(uuid), name, totalMoney));
+            }
+            return list;
         } catch (SQLException e) {
             warn(e);
             return null;
