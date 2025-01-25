@@ -22,10 +22,7 @@ import top.mrxiaom.qrcode.enums.ErrorCorrectionLevel;
 import top.mrxiaom.sweet.checkout.Errors;
 import top.mrxiaom.sweet.checkout.Messages;
 import top.mrxiaom.sweet.checkout.SweetCheckout;
-import top.mrxiaom.sweet.checkout.func.AbstractModule;
-import top.mrxiaom.sweet.checkout.func.PaymentAPI;
-import top.mrxiaom.sweet.checkout.func.PaymentsAndQRCodeManager;
-import top.mrxiaom.sweet.checkout.func.ShopManager;
+import top.mrxiaom.sweet.checkout.func.*;
 import top.mrxiaom.sweet.checkout.func.entry.ShopItem;
 import top.mrxiaom.sweet.checkout.nms.NMS;
 import top.mrxiaom.sweet.checkout.packets.common.IPacket;
@@ -209,6 +206,26 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                 writeBase64(new File(plugin.getDataFolder(), "output.map"), colors);
                 return Messages.commands__map__success.tm(player);
             }
+        }
+        if (args.length == 1 && "rank".equalsIgnoreCase(args[0]) && sender.hasPermission("sweet.checkout.rank")) {
+            List<Pair<String, Object>> replacements = new ArrayList<>();
+            RankManager manager = RankManager.inst();
+            for (int i = 1; i <= manager.getTop(); i++) {
+                RankManager.Rank rank = manager.get(i);
+                String name = rank == null
+                        ? Messages.rank__not_found__player.str()
+                        : Messages.rank__exist__player.str(Pair.of("%name%", rank.name));
+                String money;
+                if (rank == null) {
+                    money = Messages.rank__not_found__money.str();
+                } else {
+                    String s = String.format("%.2f", rank.money).replace(".00", "");
+                    money = Messages.rank__exist__money.str(Pair.of("%money%", s));
+                }
+                replacements.add(Pair.of("%player_" + i + "%", name));
+                replacements.add(Pair.of("%money_" + i + "%", money));
+            }
+            return Messages.commands__rank__success.tm(sender, replacements);
         }
 		if (args.length >= 1 && "reload".equalsIgnoreCase(args[0]) && sender.isOp()) {
             if (args.length == 2 && "database".equalsIgnoreCase(args[1])) {

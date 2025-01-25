@@ -17,6 +17,7 @@ subprojects {
         maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
         maven("https://jitpack.io")
         maven("https://repo.rosewooddev.io/repository/public/")
+        maven("https://s01.oss.sonatype.org/content/groups/public/")
         maven("https://oss.sonatype.org/content/groups/public/")
     }
 

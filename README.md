@@ -58,6 +58,7 @@ SweetCheckout 目录结构
 |------------------------------|----------------------------------------------------------|-------------------------|
 | `/checkout points <类型> <金额>` | 通过微信(wechat)或支付宝(alipay)下单指定金额的点券                        | `sweet.checkout.points` |
 | `/checkout buy <商品ID> <类型>`  | 通过微信(wechat)或支付宝(alipay)下单指定商品                           | 在商品配置定义                 |
+| `/checkout rank`             | 查看充值排行榜                                                  | `sweet.checkout.rank`   |
 | `/checkout map [文件名]`        | 不输入文件名时，将手中的地图保存到`output.map`文件；输入文件名时，通过地图预览文件以测试文件是否正常 | OP                      |
 | `/checkout reload database`  | 重新连接数据库                                                  | OP/控制台                  |
 | `/checkout reload`           | 重载配置文件                                                   | OP/控制台                  |

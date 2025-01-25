@@ -59,8 +59,22 @@ public enum Messages implements IHolderAccessor {
     commands__map__given("&e已开启二维码扫描模拟"),
     cancelled("已取消付款，原因: %reason%"),
 
+    commands__rank__success("",
+            "&e&l充值排行榜&r",
+            " &c1. %player_1%    %money_1%&r",
+            " &c2. %player_2%    %money_2%&r",
+            " &c3. %player_3%    %money_3%&r",
+            " &c4. %player_4%    %money_4%&r",
+            " &c5. %player_5%    %money_5%&r",
+            " &c6. %player_6%    %money_6%&r",
+            " &c7. %player_7%    %money_7%&r",
+            " &c8. %player_8%    %money_8%&r",
+            " &c9. %player_9%    %money_9%&r",
+            "&c10. %player_10%    %money_10%&r",
+            "&b排行榜每隔&e1&b分钟刷新一次", ""),
+
     rank__exist__player("&e%name%"),
-    rank__exist__money("&f&l%money%"),
+    rank__exist__money("&f&l￥%money%"),
     rank__not_found__player("&7虚位以待"),
     rank__not_found__money(""),
 
