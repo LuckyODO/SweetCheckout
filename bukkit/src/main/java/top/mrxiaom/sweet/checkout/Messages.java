@@ -92,6 +92,7 @@ public enum Messages implements IHolderAccessor {
             "&f/checkout points <类型> <金额> &7通过微信(wechat)或支付宝(alipay)下单指定金额的点券",
             "&f/checkout buy <商品ID> <类型> &7通过微信(wechat)或支付宝(alipay)下单指定商品",
             "&f/checkout map [文件名] &7不输入文件名时，将手中的地图保存到&f output.map &7文件；输入文件名时，通过地图预览文件以测试文件是否正常",
+            "&f/checkout log <玩家> <类型> <金额> <原因...> &7手动添加充值记录",
             "&f/checkout reload database &7重新连接数据库",
             "&f/checkout reload &7重载配置文件",
             ""),
