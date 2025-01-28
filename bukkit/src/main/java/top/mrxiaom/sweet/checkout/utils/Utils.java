@@ -1,5 +1,10 @@
 package top.mrxiaom.sweet.checkout.utils;
 
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.MapMeta;
+import org.bukkit.map.MapRenderer;
+import org.bukkit.map.MapView;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.mrxiaom.sweet.checkout.SweetCheckout;
@@ -53,5 +58,20 @@ public class Utils {
             if (i < last) sb.append(spliter);
         }
         return sb.toString();
+    }
+
+    public static MapRenderer getMapRenderer(ItemStack item) {
+        ItemMeta meta = item == null ? null : item.getItemMeta();
+        if (meta instanceof MapMeta) {
+            MapMeta map = (MapMeta) meta;
+            MapView mapView = map.getMapView();
+            if (mapView != null) {
+                List<MapRenderer> renderers = mapView.getRenderers();
+                if (!renderers.isEmpty()) {
+                    return renderers.get(0);
+                }
+            }
+        }
+        return null;
     }
 }

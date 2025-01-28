@@ -9,11 +9,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.map.MapRenderer;
-import org.bukkit.map.MapView;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.mrxiaom.pluginbase.func.AutoRegister;
@@ -29,6 +25,7 @@ import top.mrxiaom.sweet.checkout.func.entry.ShopItem;
 import top.mrxiaom.sweet.checkout.nms.NMS;
 import top.mrxiaom.sweet.checkout.packets.common.IPacket;
 import top.mrxiaom.sweet.checkout.packets.plugin.PacketPluginRequestOrder;
+import top.mrxiaom.sweet.checkout.utils.Utils;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -186,19 +183,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                     manager.requireScan(player, colors, null, outdateTime, null);
                     return Messages.commands__map__given.tm(player);
                 }
-                ItemStack item = player.getItemInHand();
-                ItemMeta meta = item.getItemMeta();
-                MapRenderer renderer = null;
-                if (meta instanceof MapMeta) {
-                    MapMeta map = (MapMeta) meta;
-                    MapView mapView = map.getMapView();
-                    if (mapView != null) {
-                        List<MapRenderer> renderers = mapView.getRenderers();
-                        if (!renderers.isEmpty()) {
-                            renderer = renderers.get(0);
-                        }
-                    }
-                }
+                MapRenderer renderer = Utils.getMapRenderer(player.getItemInHand());
                 if (renderer == null) {
                     return Messages.commands__map__not_found.tm(player);
                 }
