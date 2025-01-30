@@ -32,7 +32,7 @@ SweetCheckout 目录结构
 
 将后端部署在服务器上，使用 `java -jar backend-x.x.x.jar` 的方式启动后端，编辑 `config.json`，输入各支付方案的参数，保存并重载后端。
 
-在 [docs](/docs) 目录中有一些支付方案的配置教程，自行查阅。
+在 [MCIO Plugins](https://plugins.mcio.dev/docs/checkout/install/backend) 文档中有一些支付方案的配置教程，自行查阅。
 
 后端部署完成后，在 Minecraft 服务端上安装 Bukkit 插件，安装后在 `config.yml` 中配置后端地址，使得插件可以与后端通讯。使用 `/cz points` 命令来测试是否可以下单、收款即可。
 
