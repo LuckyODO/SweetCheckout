@@ -7,6 +7,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import top.mrxiaom.pluginbase.func.AutoRegister;
 import top.mrxiaom.sweet.checkout.SweetCheckout;
 
@@ -17,6 +20,18 @@ public class MapListener extends AbstractModule implements Listener {
     public MapListener(SweetCheckout plugin) {
         super(plugin);
         registerEvents();
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent e) {
+        PlayerInventory inv = e.getPlayer().getInventory();
+        for (int i = 0; i < inv.getSize(); i++) {
+            ItemStack item = inv.getItem(i);
+            // 上线自动没收二维码地图
+            if (isMap(item)) {
+                inv.setItem(i, null);
+            }
+        }
     }
 
     @EventHandler
