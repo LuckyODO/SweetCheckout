@@ -8,9 +8,11 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import top.mrxiaom.pluginbase.func.AutoRegister;
+import top.mrxiaom.pluginbase.utils.Util;
 import top.mrxiaom.sweet.checkout.SweetCheckout;
 
 import static top.mrxiaom.sweet.checkout.func.PaymentsAndQRCodeManager.isMap;
@@ -20,6 +22,11 @@ public class MapListener extends AbstractModule implements Listener {
     public MapListener(SweetCheckout plugin) {
         super(plugin);
         registerEvents();
+        if (Util.isPresent("org.bukkit.event.entity.EntityPickupItemEvent")) {
+            registerEvents(new HigherVersion());
+        } else {
+            registerEvents(new LowerVersion());
+        }
     }
 
     @EventHandler
@@ -63,11 +70,24 @@ public class MapListener extends AbstractModule implements Listener {
         }
     }
 
-    @EventHandler
-    public void onPickup(EntityPickupItemEvent e) {
-        if (isMap(e.getItem().getItemStack())) {
-            e.setCancelled(true);
-            e.getItem().remove();
+    public static class LowerVersion implements Listener {
+        @EventHandler
+        @SuppressWarnings({"deprecation"})
+        public void onPickup(PlayerPickupItemEvent e) { // 在 1.12 弃用
+            if (isMap(e.getItem().getItemStack())) {
+                e.setCancelled(true);
+                e.getItem().remove();
+            }
+        }
+    }
+
+    public static class HigherVersion implements Listener {
+        @EventHandler
+        public void onPickup(EntityPickupItemEvent e) { // 在 1.12 加入
+            if (isMap(e.getItem().getItemStack())) {
+                e.setCancelled(true);
+                e.getItem().remove();
+            }
         }
     }
 }

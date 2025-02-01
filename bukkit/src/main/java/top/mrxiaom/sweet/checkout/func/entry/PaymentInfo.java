@@ -34,7 +34,8 @@ public class PaymentInfo {
         NMS.sendPacket(player, packet);
     }
 
+    @SuppressWarnings({"deprecation"})
     public void giveItemBack() {
-        player.getInventory().setItemInMainHand(original);
+        player.getInventory().setItemInHand(original);
     }
 }

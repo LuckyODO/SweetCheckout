@@ -169,6 +169,8 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
     public void requireScan(Player player, QRCode code, String orderId, long outdateTime, Consumer<Double> done) {
         requireScan(player, generateMapColors(code), orderId, outdateTime, done);
     }
+
+    @SuppressWarnings({"deprecation"})
     public void requireScan(Player player, byte[] colors, String orderId, long outdateTime, Consumer<Double> done) {
         ItemStack item = AdventureItemStack.buildItem(filledMap, mapName, mapLore);
         boolean component = MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_20_R4);
@@ -190,10 +192,10 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
             });
         }
         UUID uuid = player.getUniqueId();
-        ItemStack old = player.getInventory().getItemInMainHand();
+        ItemStack old = player.getInventory().getItemInHand();
         putProcess(player);
         players.put(uuid, new PaymentInfo(mapId, player, colors, old, item, orderId, outdateTime, done));
-        player.getInventory().setItemInMainHand(item);
+        player.getInventory().setItemInHand(item);
     }
 
     public PaymentInfo remove(String orderId) {

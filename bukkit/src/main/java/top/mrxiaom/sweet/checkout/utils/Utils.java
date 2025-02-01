@@ -64,12 +64,15 @@ public class Utils {
         ItemMeta meta = item == null ? null : item.getItemMeta();
         if (meta instanceof MapMeta) {
             MapMeta map = (MapMeta) meta;
-            MapView mapView = map.getMapView();
-            if (mapView != null) {
-                List<MapRenderer> renderers = mapView.getRenderers();
-                if (!renderers.isEmpty()) {
-                    return renderers.get(0);
+            try { // getMapView 在 1.13 加入
+                MapView mapView = map.getMapView();
+                if (mapView != null) {
+                    List<MapRenderer> renderers = mapView.getRenderers();
+                    if (!renderers.isEmpty()) {
+                        return renderers.get(0);
+                    }
                 }
+            } catch (NoSuchMethodError ignored) {
             }
         }
         return null;

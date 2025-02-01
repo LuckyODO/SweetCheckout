@@ -53,7 +53,7 @@ public enum Messages implements IHolderAccessor {
             "&b 支付此订单，即代表你已同意服务器的相关条款",
             "&7&m-----------------------------&r",
             "", ""),
-    commands__map__not_found("&e请手持一张有效的地图"),
+    commands__map__not_found("&e请手持一张有效的地图&7（注：1.13 以下无法使用导出功能）"),
     commands__map__success("&a地图数据已导出到 output.map 文件"),
     commands__map__invalid("&e该文件不是有效的地图文件"),
     commands__map__given("&e已开启二维码扫描模拟"),

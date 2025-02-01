@@ -1,7 +1,6 @@
 package top.mrxiaom.sweet.checkout.database;
 
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.mrxiaom.pluginbase.database.IDatabase;
