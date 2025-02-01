@@ -14,7 +14,6 @@ dependencies {
     compileOnly("org.spigotmc:spigot-api:1.20-R0.1-SNAPSHOT")
 
     compileOnly("me.clip:placeholderapi:2.11.6")
-    compileOnly("org.black_ixx:playerpoints:3.2.7")
 
     implementation("top.mrxiaom:qrcode-encoder:1.0.0")
     implementation("net.kyori:adventure-api:4.17.0")
