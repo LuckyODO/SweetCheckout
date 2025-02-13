@@ -1,0 +1,51 @@
+name: build
+
+on:
+  push:
+    branches: [ "main" ]
+    paths-ignore:
+      - '*.md'
+  pull_request:
+    branches: [ "main" ]
+    paths-ignore:
+      - '*.md'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Java 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.0.3
+      - name: Setup NuGet
+        uses: nuget/setup-nuget@v1
+        with:
+          nuget-version: '5.x'
+      - name: Build wechat-hook
+        run: |
+          mkdir out
+          cd wechat-hook
+          nuget restore Hook.sln
+          msbuild Hook.sln /p:Configuration=Release
+          echo "# Hook 终结点地址">>Out/config.properties
+          echo "api_url=http://127.0.0.1:62233/api/hook/receive">>Out/config.properties
+          cp LICENSE Out/LICENSE
+          cd Out
+          zip -r ../../out/WeChat-Hook.zip ./
+          cd ../../
+      - name: Build plugin and backend
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: build
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: SweetCheckout
+          path: out/*
+          if-no-files-found: error

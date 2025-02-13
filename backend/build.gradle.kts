@@ -47,6 +47,7 @@ fun Jar.setupManifest() {
 tasks {
     shadowJar {
         archiveClassifier.set("")
+        destinationDirectory.set(rootProject.file("out"))
         minimize {
             val dependencies = listOf(
                 "org.bouncycastle:bcprov-jdk15on",
