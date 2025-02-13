@@ -38,7 +38,7 @@ jobs:
           echo "api_url=http://127.0.0.1:62233/api/hook/receive">>Out/config.properties
           cp LICENSE Out/LICENSE
           cd Out
-          zip -r ../../out/WeChat-Hook.zip ./
+          Compress-Archive -Path '*' -DestinationPath '../../out/Hook.zip'
           cd ../../
       - name: Build plugin and backend
         uses: gradle/gradle-build-action@v2
