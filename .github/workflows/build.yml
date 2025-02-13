@@ -26,11 +26,12 @@ jobs:
       - name: Setup NuGet
         uses: nuget/setup-nuget@v1
         with:
-          nuget-version: '5.x'
+          nuget-version: '6.x'
       - name: Build wechat-hook
         run: |
           mkdir out
           cd wechat-hook
+          mkdir Out
           nuget restore Hook.sln
           msbuild Hook.sln /p:Configuration=Release
           echo "# Hook 终结点地址">>Out/config.properties
