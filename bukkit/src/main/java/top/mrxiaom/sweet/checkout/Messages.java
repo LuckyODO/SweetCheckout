@@ -82,15 +82,23 @@ public enum Messages implements IHolderAccessor {
     commands__log__no_number("&e你输入的不是一个正确的金额"),
     commands__log__success("&a你已为玩家&e %name% &a添加一条交易记录，使用&e %type% &a支付 &e￥%money%&a，理由为&e %reason%"),
 
+    commands__check__no_player("&e找不到该玩家"),
+
+    no_permission("&c你没有进行此操作的权限"),
+
     commands__help__normal(
             "&e&lSweetCheckout&r &b支付系统",
             "&f/checkout points <类型> <金额> &7通过微信(wechat)或支付宝(alipay)下单指定金额的点券",
             "&f/checkout buy <商品ID> <类型> &7通过微信(wechat)或支付宝(alipay)下单指定商品",
+            "&f/checkout check &7查看充值记录",
+            "&f/checkout rank &7查看充值排行榜",
             ""),
     commands__help__admin(
             "&e&lSweetCheckout&r &b支付系统",
             "&f/checkout points <类型> <金额> &7通过微信(wechat)或支付宝(alipay)下单指定金额的点券",
             "&f/checkout buy <商品ID> <类型> &7通过微信(wechat)或支付宝(alipay)下单指定商品",
+            "&f/checkout check [玩家] &7查看自己或某人的充值记录",
+            "&f/checkout rank &7查看充值排行榜",
             "&f/checkout map [文件名] &7不输入文件名时，将手中的地图保存到&f output.map &7文件；输入文件名时，通过地图预览文件以测试文件是否正常",
             "&f/checkout log <玩家> <类型> <金额> <原因...> &7手动添加充值记录",
             "&f/checkout reload database &7重新连接数据库",

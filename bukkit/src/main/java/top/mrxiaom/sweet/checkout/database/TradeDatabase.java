@@ -1,5 +1,8 @@
 package top.mrxiaom.sweet.checkout.database;
 
+import net.kyori.adventure.inventory.Book;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -7,7 +10,9 @@ import top.mrxiaom.pluginbase.database.IDatabase;
 import top.mrxiaom.pluginbase.utils.Util;
 import top.mrxiaom.sweet.checkout.SweetCheckout;
 import top.mrxiaom.sweet.checkout.func.AbstractPluginHolder;
+import top.mrxiaom.sweet.checkout.func.LogBookManager;
 import top.mrxiaom.sweet.checkout.func.RankManager;
+import top.mrxiaom.sweet.checkout.func.ShopManager;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -98,14 +103,41 @@ public class TradeDatabase extends AbstractPluginHolder implements IDatabase {
         }
     }
 
-    public List<Log> get(OfflinePlayer player) {
-        return get(player.getUniqueId());
+    public Book generateBook(OfflinePlayer player) {
+        LogBookManager bookManager = LogBookManager.inst();
+        ShopManager shopManager = ShopManager.inst();
+        Book.Builder builder = Book.builder();
+        // 高版本有字数限制，反正玩家看不见标题，就不搞花里胡哨的了
+        builder.title(Component.text("logs"));
+        builder.author(Component.text("SweetCheckout"));
+        List<Log> logs = get(player, 600);
+        TextComponent.Builder page = Component.text();
+        page.append(bookManager.header(player)); // 添加页面头部
+        for (int i = 0, j = 0; i < logs.size(); i++, j++) {
+            if (j >= 12) { // 如果已经往这一页添加了 12 条
+                j = 0;
+                // 切换下一页，并添加页面头部
+                builder.addPage(page.build());
+                page = Component.text();
+                page.append(bookManager.header(player));
+            }
+            Log log = logs.get(i);
+            page.appendNewline(); // 添加一行
+            page.append(bookManager.generateLine(shopManager, log, player));
+        }
+        // 将最后一页添加到页面
+        builder.addPage(page.build());
+        return builder.build();
     }
 
-    public List<Log> get(UUID uuid) {
+    public List<Log> get(OfflinePlayer player, int limit) {
+        return get(player.getUniqueId(), limit);
+    }
+
+    public List<Log> get(UUID uuid, int limit) {
         try (Connection conn = plugin.getConnection();
             PreparedStatement ps = conn.prepareStatement(
-                    "SELECT * FROM `" + TABLE_TRADE_LOG + "` WHERE `uuid`=?;"
+                    "SELECT * FROM `" + TABLE_TRADE_LOG + "` WHERE `uuid`=? ORDER BY `time` DESC LIMIT " + limit + ";"
             )) {
             ps.setString(1, uuid.toString());
             try (ResultSet result = ps.executeQuery()) {

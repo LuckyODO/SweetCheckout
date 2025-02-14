@@ -1,6 +1,7 @@
 package top.mrxiaom.sweet.checkout.commands;
 		
 import com.google.common.collect.Lists;
+import net.kyori.adventure.inventory.Book;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -13,6 +14,7 @@ import org.bukkit.map.MapRenderer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.mrxiaom.pluginbase.func.AutoRegister;
+import top.mrxiaom.pluginbase.utils.AdventureUtil;
 import top.mrxiaom.pluginbase.utils.Pair;
 import top.mrxiaom.pluginbase.utils.Util;
 import top.mrxiaom.qrcode.QRCode;
@@ -191,7 +193,26 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                 writeBase64(new File(plugin.getDataFolder(), "output.map"), colors);
                 return Messages.commands__map__success.tm(player);
             }
+            if (args.length >= 1 && "check".equalsIgnoreCase(args[0]) && sender.hasPermission("sweet.checkout.check")) {
+                OfflinePlayer target;
+                if (args.length == 2) {
+                    if (!sender.hasPermission("sweet.checkout.check.other")) {
+                        return Messages.no_permission.tm(player);
+                    }
+                    target = Util.getOfflinePlayer(args[1]).orElse(null);
+                    if (target == null) {
+                        return Messages.commands__check__no_player.tm(player);
+                    }
+                } else {
+                    target = player;
+                }
+                Book book = plugin.getTradeDatabase().generateBook(target);
+                AdventureUtil.of(player).openBook(book);
+                return true;
+            }
         }
+        // (sender instanceof Player) end
+
         if (args.length == 1 && "rank".equalsIgnoreCase(args[0]) && sender.hasPermission("sweet.checkout.rank")) {
             List<Pair<String, Object>> replacements = new ArrayList<>();
             RankManager manager = RankManager.inst();
@@ -248,9 +269,9 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
 
     private static final List<String> emptyList = Lists.newArrayList();
     private static final List<String> listArg0 = Lists.newArrayList(
-            "points", "buy", "rank");
+            "points", "buy", "check", "rank");
     private static final List<String> listOpArg0 = Lists.newArrayList(
-            "points", "buy", "rank", "log", "map", "reload");
+            "points", "buy", "check", "rank", "log", "map", "reload");
     @Nullable
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
