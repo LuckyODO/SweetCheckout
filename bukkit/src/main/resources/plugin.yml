@@ -6,6 +6,7 @@ depend: []
 softdepend:
   - PlaceholderAPI
 authors: [ MrXiaoM ]
+folia-supported: true
 commands:
   sweetcheckout:
     description: 'The main command of SweetCheckout'
