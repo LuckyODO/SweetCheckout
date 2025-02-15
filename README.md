@@ -69,8 +69,8 @@ SweetCheckout 目录结构
 ## 变量 (PAPI)
 
 ```
-%sweetcheckour_rank_<第几名>_name% 充值排行榜第几名的玩家名
-%sweetcheckour_rank_<第几名>_money% 充值排行榜第几名的金额
+%sweetcheckout_rank_<第几名>_name% 充值排行榜第几名的玩家名
+%sweetcheckout_rank_<第几名>_money% 充值排行榜第几名的金额
 ```
 
 ## 鸣谢
