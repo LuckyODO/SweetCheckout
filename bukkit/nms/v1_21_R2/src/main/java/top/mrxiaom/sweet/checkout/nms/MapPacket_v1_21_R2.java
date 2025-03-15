@@ -5,9 +5,13 @@ import net.minecraft.network.protocol.game.PacketPlayOutMap;
 import net.minecraft.world.level.saveddata.maps.MapIcon;
 import net.minecraft.world.level.saveddata.maps.MapId;
 import net.minecraft.world.level.saveddata.maps.WorldMap;
+import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_21_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapRenderer;
+import org.bukkit.map.MapView;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -43,5 +47,11 @@ public class MapPacket_v1_21_R2 implements IMapPacket {
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(type.getName(), e);
         }
+    }
+
+    @Override
+    @SuppressWarnings({"deprecation"})
+    public @Nullable MapView getMap(@NotNull Integer mapId) {
+        return Bukkit.getMap(mapId);
     }
 }

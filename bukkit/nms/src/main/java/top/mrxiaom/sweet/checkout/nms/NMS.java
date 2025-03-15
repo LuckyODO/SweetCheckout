@@ -1,8 +1,12 @@
 package top.mrxiaom.sweet.checkout.nms;
 
+import com.google.common.collect.Iterables;
 import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapRenderer;
+import org.bukkit.map.MapView;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static de.tr7zw.changeme.nbtapi.utils.MinecraftVersion.*;
 
@@ -102,5 +106,17 @@ public class NMS {
 
     public static byte[] getColors(MapRenderer renderer) {
         return mapPacket.getColors(renderer);
+    }
+
+    public static @Nullable MapView getMap(@NotNull Integer mapId) {
+        return mapPacket.getMap(mapId);
+    }
+
+    public static @Nullable MapRenderer getFirstRenderer(@NotNull Integer mapId) {
+        MapView mapView = getMap(mapId);
+        if (mapView != null) {
+            return Iterables.getFirst(mapView.getRenderers(), null);
+        }
+        return null;
     }
 }

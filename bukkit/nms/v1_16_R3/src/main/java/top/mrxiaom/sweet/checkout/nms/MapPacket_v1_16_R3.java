@@ -4,9 +4,13 @@ import net.minecraft.server.v1_16_R3.MapIcon;
 import net.minecraft.server.v1_16_R3.Packet;
 import net.minecraft.server.v1_16_R3.PacketPlayOutMap;
 import net.minecraft.server.v1_16_R3.WorldMap;
+import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapRenderer;
+import org.bukkit.map.MapView;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -36,5 +40,11 @@ public class MapPacket_v1_16_R3 implements IMapPacket {
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(type.getName(), e);
         }
+    }
+
+    @Override
+    @SuppressWarnings({"deprecation"})
+    public @Nullable MapView getMap(@NotNull Integer mapId) {
+        return Bukkit.getMap(mapId);
     }
 }
