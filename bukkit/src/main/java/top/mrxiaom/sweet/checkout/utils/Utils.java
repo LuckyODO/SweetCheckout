@@ -1,5 +1,6 @@
 package top.mrxiaom.sweet.checkout.utils;
 
+import com.google.common.collect.Iterables;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.MapMeta;
@@ -8,6 +9,7 @@ import org.bukkit.map.MapView;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.mrxiaom.sweet.checkout.SweetCheckout;
+import top.mrxiaom.sweet.checkout.nms.NMS;
 
 import java.io.File;
 import java.io.FileReader;
@@ -60,6 +62,7 @@ public class Utils {
         return sb.toString();
     }
 
+    @SuppressWarnings({"deprecation"})
     public static MapRenderer getMapRenderer(ItemStack item) {
         ItemMeta meta = item == null ? null : item.getItemMeta();
         if (meta instanceof MapMeta) {
@@ -67,12 +70,12 @@ public class Utils {
             try { // getMapView 在 1.13 加入
                 MapView mapView = map.getMapView();
                 if (mapView != null) {
-                    List<MapRenderer> renderers = mapView.getRenderers();
-                    if (!renderers.isEmpty()) {
-                        return renderers.get(0);
-                    }
+                    return Iterables.getFirst(mapView.getRenderers(), null);
                 }
-            } catch (NoSuchMethodError ignored) {
+            } catch (LinkageError ignored) {
+                if (map.hasMapId()) { // 旧版本解决方案
+                    return NMS.getFirstRenderer(map.getMapId());
+                }
             }
         }
         return null;
