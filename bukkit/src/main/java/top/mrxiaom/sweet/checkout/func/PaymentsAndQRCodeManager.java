@@ -44,6 +44,8 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
     private String paymentActionBarCancel;
     private byte mapDarkColor, mapLightColor;
     private byte[] mapDarkPattern, mapLightPattern;
+    private final boolean useComponent = MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_20_R4);
+    private final boolean useLegacyMapId = !MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_13_R1);
     public PaymentsAndQRCodeManager(SweetCheckout plugin) {
         super(plugin);
         filledMap = Util.valueOr(Material.class, "FILLED_MAP", Material.MAP);
@@ -86,9 +88,9 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
 
     @Override
     public void reloadConfig(MemoryConfiguration config) {
-        mapId = config.getInt("map-item.id", 20070831);
-        if (!MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_13_R1)) {
-            mapId = Math.min(32767, mapId);
+        mapId = Math.max(0, config.getInt("map-item.id", 20070831));
+        if (useLegacyMapId && mapId > 32767) {
+            mapId = 0;
         }
         mapName = config.getString("map-item.name");
         mapLore = config.getStringList("map-item.lore");
@@ -173,17 +175,19 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
     @SuppressWarnings({"deprecation"})
     public void requireScan(Player player, byte[] colors, String orderId, long outdateTime, Consumer<Double> done) {
         ItemStack item = AdventureItemStack.buildItem(filledMap, mapName, mapLore);
-        boolean component = MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_20_R4);
         NBT.modify(item, nbt -> {
             nbt.setBoolean(FLAG_SWEET_CHECKOUT_MAP, true);
-            if (!component) { // 1.8-1.20.4
+            if (!useComponent) { // 1.8-1.20.4
                 if (mapCustomModelData != null) {
                     nbt.setInteger("CustomModelData", mapCustomModelData);
                 }
                 nbt.setInteger("map", mapId);
             }
         });
-        if (component) { // 1.20.5+
+        if (useLegacyMapId) { // 1.8 - 1.12.2
+            item.setDurability((short) mapId);
+        }
+        if (useComponent) { // 1.20.5+
             NBT.modifyComponents(item, nbt -> {
                 if (mapCustomModelData != null) {
                     nbt.setInteger("minecraft:custom_model_data", mapCustomModelData);
