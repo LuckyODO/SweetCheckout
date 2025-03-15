@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.map.MapRenderer;
 import top.mrxiaom.pluginbase.func.AutoRegister;
 import top.mrxiaom.pluginbase.utils.AdventureItemStack;
 import top.mrxiaom.pluginbase.utils.AdventureUtil;
@@ -20,6 +21,7 @@ import top.mrxiaom.pluginbase.utils.Util;
 import top.mrxiaom.qrcode.QRCode;
 import top.mrxiaom.sweet.checkout.SweetCheckout;
 import top.mrxiaom.sweet.checkout.func.entry.PaymentInfo;
+import top.mrxiaom.sweet.checkout.nms.NMS;
 import top.mrxiaom.sweet.checkout.packets.plugin.PacketPluginCancelOrder;
 import top.mrxiaom.sweet.checkout.utils.Utils;
 
@@ -165,6 +167,16 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
             if (paymentActionBarCancel != null) {
                 AdventureUtil.sendActionBar(player, PAPI.setPlaceholders(player, paymentActionBarCancel));
             }
+            restoreMap(player, mapId);
+        }
+    }
+
+    public void restoreMap(Player player, int mapId) {
+        MapRenderer renderer = NMS.getFirstRenderer(mapId);
+        if (renderer != null) {
+            byte[] colors = NMS.getColors(renderer);
+            Object packet = NMS.createMapPacket(mapId, colors);
+            NMS.sendPacket(player, packet);
         }
     }
 
