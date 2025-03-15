@@ -173,6 +173,18 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                     });
                 });
             }
+            if (args.length > 1 && "qrcode".equalsIgnoreCase(args[0]) && sender.isOp()) {
+                StringBuilder content = new StringBuilder(args[1]);
+                for (int i = 2; i < args.length; i++) {
+                    content.append(" ").append(args[i]);
+                }
+                PaymentsAndQRCodeManager manager = PaymentsAndQRCodeManager.inst();
+                long now = System.currentTimeMillis();
+                long outdateTime = now + (paymentTimeout * 1000L) + 500L;
+                QRCode code = QRCode.create(content.toString(), ErrorCorrectionLevel.H);
+                manager.requireScan(player, code, null, outdateTime, null);
+                return true;
+            }
             if (args.length >= 1 && "map".equalsIgnoreCase(args[0]) && sender.isOp()) {
                 if (args.length == 2) {
                     byte[] colors = readBase64(new File(plugin.getDataFolder(), args[1]), 16384);
@@ -271,7 +283,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
     private static final List<String> listArg0 = Lists.newArrayList(
             "points", "buy", "check", "rank");
     private static final List<String> listOpArg0 = Lists.newArrayList(
-            "points", "buy", "check", "rank", "log", "map", "reload");
+            "points", "buy", "check", "rank", "log", "map", "qrcode", "reload");
     @Nullable
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
