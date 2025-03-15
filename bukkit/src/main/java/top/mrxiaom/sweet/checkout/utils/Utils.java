@@ -73,9 +73,8 @@ public class Utils {
                     return Iterables.getFirst(mapView.getRenderers(), null);
                 }
             } catch (LinkageError ignored) {
-                if (map.hasMapId()) { // 旧版本解决方案
-                    return NMS.getFirstRenderer(map.getMapId());
-                }
+                // 旧版本解决方案
+                return NMS.getFirstRenderer((int) item.getDurability());
             }
         }
         return null;
