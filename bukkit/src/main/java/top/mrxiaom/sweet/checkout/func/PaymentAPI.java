@@ -108,12 +108,17 @@ public class PaymentAPI extends AbstractModule {
             json.addProperty("echo", echo);
             responseMap.put(echo, resp);
         }
-        if (client == null || !client.isOpen()) {
+        if (!isConnected()) {
             warn("请求失败: 未连接到后端");
             return false;
         }
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> client.send(json.toString()));
         return true;
+    }
+
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public boolean isConnected() {
+        return client != null && client.isOpen();
     }
 
     private void onReceivePaymentConfirm(PacketBackendPaymentConfirm packet) {

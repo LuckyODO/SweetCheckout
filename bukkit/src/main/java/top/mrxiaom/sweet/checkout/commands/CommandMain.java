@@ -68,6 +68,9 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
         if (sender instanceof Player) {
             Player player = (Player) sender;
             if (args.length == 3 && "points".equalsIgnoreCase(args[0]) && player.hasPermission("sweet.checkout.points")) {
+                if (!PaymentAPI.inst().isConnected()) {
+                    return Messages.not_connect.tm(player);
+                }
                 PaymentsAndQRCodeManager manager = PaymentsAndQRCodeManager.inst();
                 String type = args[1];
                 String moneyStr = args[2];
@@ -119,6 +122,9 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                 });
             }
             if (args.length == 3 && "buy".equalsIgnoreCase(args[0])) {
+                if (!PaymentAPI.inst().isConnected()) {
+                    return Messages.not_connect.tm(player);
+                }
                 String shopId = args[1];
                 ShopItem shop = ShopManager.inst().get(shopId);
                 if (shop == null) {
