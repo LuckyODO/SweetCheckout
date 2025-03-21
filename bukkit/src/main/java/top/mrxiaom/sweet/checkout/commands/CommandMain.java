@@ -346,6 +346,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
         t(player, msg);
         if (!PaymentAPI.inst().send(packet, resp)) {
             Messages.not_connect.tm(player);
+            PaymentsAndQRCodeManager.inst().remove(player);
         }
         return true;
     }
