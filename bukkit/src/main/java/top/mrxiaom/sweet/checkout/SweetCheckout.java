@@ -11,6 +11,7 @@ import top.mrxiaom.pluginbase.utils.Pair;
 import top.mrxiaom.pluginbase.utils.Util;
 import top.mrxiaom.sweet.checkout.database.TradeDatabase;
 import top.mrxiaom.sweet.checkout.nms.NMS;
+import top.mrxiaom.sweet.checkout.utils.FoliaScheduler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,7 @@ public class SweetCheckout extends BukkitPlugin {
                 .vaultEconomy(false)
                 .scanIgnore("top.mrxiaom.sweet.checkout.libs")
         );
+        scheduler = new FoliaScheduler(this);
     }
     public boolean processingLogs;
     private TradeDatabase tradeDatabase;
@@ -93,7 +95,7 @@ public class SweetCheckout extends BukkitPlugin {
                 Long delay = Util.parseLong(s.substring(7)).orElse(null);
                 int index = i + 1;
                 if (delay == null) continue;
-                Bukkit.getScheduler().runTaskLater(this, () -> run0(player, commands, index), delay);
+                getScheduler().runTaskLater(() -> run0(player, commands, index), delay);
             }
         }
     }

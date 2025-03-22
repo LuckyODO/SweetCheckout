@@ -52,7 +52,7 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
         super(plugin);
         filledMap = Util.valueOr(Material.class, "FILLED_MAP", Material.MAP);
         registerEvents();
-        Bukkit.getScheduler().runTaskTimer(plugin, this::everySecond, 20L, 20L);
+        plugin.getScheduler().runTaskTimer(this::everySecond, 20L, 20L);
     }
 
     private void everySecond() {

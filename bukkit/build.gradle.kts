@@ -19,10 +19,11 @@ dependencies {
     implementation("net.kyori:adventure-api:4.17.0")
     implementation("net.kyori:adventure-platform-bukkit:4.3.4")
     implementation("net.kyori:adventure-text-minimessage:4.17.0")
+    implementation("com.github.technicallycoded:FoliaLib:0.4.3")
     implementation("com.zaxxer:HikariCP:4.0.3")
     implementation("org.slf4j:slf4j-nop:2.0.16")
-    implementation("org.jetbrains:annotations:21.0.0")
-    implementation("top.mrxiaom:PluginBase:1.3.0")
+    implementation("org.jetbrains:annotations:24.0.0")
+    implementation("top.mrxiaom:PluginBase:1.3.5")
     implementation("top.mrxiaom:Java-WebSocket:1.5.8")
     implementation(project(":bukkit:nms"))
     implementation(project(":packets"))
@@ -45,6 +46,7 @@ tasks {
             "net.kyori" to "kyori",
             "top.mrxiaom.qrcode" to "qrcode",
             "org.java_websocket" to "websocket",
+            "com.tcoded.folialib" to "folialib",
         ).forEach { (original, target) ->
             relocate(original, "$shadowGroup.$target")
         }

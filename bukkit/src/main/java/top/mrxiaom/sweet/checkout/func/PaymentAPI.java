@@ -52,7 +52,7 @@ public class PaymentAPI extends AbstractModule {
                 Consumer resp = responseMap.remove(echoProperty.getAsLong());
                 if (resp != null) try {
                     IPacket packet = PacketSerializer.deserialize(json);
-                    if (packet != null) Bukkit.getScheduler().runTask(plugin, () -> resp.accept(packet));
+                    if (packet != null) plugin.getScheduler().runTask(() -> resp.accept(packet));
                 } catch (Throwable t) {
                     warn("接收数据包时出现错误", t);
                 }
@@ -61,7 +61,7 @@ public class PaymentAPI extends AbstractModule {
                 if (packet != null) {
                     Consumer consumer = eventMap.get(packet.getClass().getName());
                     if (consumer != null) {
-                        Bukkit.getScheduler().runTask(plugin, () -> consumer.accept(packet));
+                        plugin.getScheduler().runTask(() -> consumer.accept(packet));
                     }
                 }
             }
@@ -112,7 +112,7 @@ public class PaymentAPI extends AbstractModule {
             warn("请求失败: 未连接到后端");
             return false;
         }
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> client.send(json.toString()));
+        plugin.getScheduler().runTaskAsync(() -> client.send(json.toString()));
         return true;
     }
 

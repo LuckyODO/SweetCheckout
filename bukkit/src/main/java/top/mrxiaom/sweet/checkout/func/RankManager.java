@@ -1,9 +1,8 @@
 package top.mrxiaom.sweet.checkout.func;
 
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.MemoryConfiguration;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.Nullable;
+import top.mrxiaom.pluginbase.api.IRunTask;
 import top.mrxiaom.pluginbase.func.AutoRegister;
 import top.mrxiaom.sweet.checkout.SweetCheckout;
 
@@ -26,7 +25,7 @@ public class RankManager extends AbstractModule {
         }
     }
     int top;
-    BukkitTask task;
+    IRunTask task;
     Map<Integer, Rank> rankMap = new HashMap<>();
     public RankManager(SweetCheckout plugin) {
         super(plugin);
@@ -42,7 +41,7 @@ public class RankManager extends AbstractModule {
         long refreshInterval = config.getLong("rank.refresh-interval") * 20L;
         cancelTask();
         if (top > 0 && refreshInterval > 0) {
-            task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+            task = plugin.getScheduler().runTaskTimerAsync(() -> {
                 List<Rank> ranks = plugin.getTradeDatabase().calculateRank(top);
                 rankMap.clear();
                 for (int i = 0; i < ranks.size() && i < top;) {
