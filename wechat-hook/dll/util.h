@@ -23,7 +23,7 @@ typedef struct PortPath {
 DWORD GetWeChatPid();
 BOOL IsProcessX64(DWORD pid);
 std::map<std::string, std::string> read_properties(const std::string file_path);
-int OpenWeChat(DWORD *pid, bool *firstOpen);
+int OpenWeChat(DWORD *pid, bool *firstOpen, bool startNew);
 int GetWeChatVersion(wchar_t *version);
 size_t GetWstringByAddress(UINT64 address, wchar_t *buffer, UINT64 buffer_size);
 UINT32 GetMemoryIntByAddress(HANDLE hProcess, UINT64 address);

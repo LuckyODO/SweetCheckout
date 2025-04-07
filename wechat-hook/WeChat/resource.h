@@ -7,6 +7,7 @@
 #define UN_DLL                          1001
 #define INJECT_DLL                      1002
 #define ID_DLL_NAME                     1003
+#define INJECT_DLL_NEW                  1004
 
 // Next default values for new objects
 // 

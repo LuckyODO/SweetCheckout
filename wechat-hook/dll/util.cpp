@@ -281,13 +281,15 @@ BOOL IsProcessX64(DWORD pid)
         return true;
 }
 
-int OpenWeChat(DWORD *pid, bool *firstOpen)
+int OpenWeChat(DWORD *pid, bool *firstOpen, bool startNew)
 {
-    *pid = GetWeChatPid();
-    if (*pid) {
-        *firstOpen = false;
-        LOG_INFO("微信已启动，使用微信进程");
-        return ERROR_SUCCESS;
+    if (!startNew) {
+        *pid = GetWeChatPid();
+        if (*pid) {
+            *firstOpen = false;
+            LOG_INFO("WeChat has started, re-using process");
+            return ERROR_SUCCESS;
+        }
     }
     *firstOpen = true;
 
@@ -300,7 +302,11 @@ int OpenWeChat(DWORD *pid, bool *firstOpen)
     if (ERROR_SUCCESS != ret) {
         return ret;
     }
-    LOG_INFO("微信未启动，正在启动微信: {}", Wstring2String(Path));
+    if (startNew) {
+        LOG_INFO("Starting WeChat from: {}", Wstring2String(Path));
+    } else {
+        LOG_INFO("WeChat not started, Starting from: {}", Wstring2String(Path));
+    }
 
     if (!CreateProcess(NULL, Path, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi)) {
         return GetLastError();

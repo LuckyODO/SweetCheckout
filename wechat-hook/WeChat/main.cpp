@@ -74,7 +74,7 @@ static int GetDllPath(wchar_t *dllPath)
     return 0;
 }
 
-int WxInitInject(bool debug)
+int WxInitInject(bool debug, bool startNew)
 {
     bool firstOpen = true;
     int status  = 0;
@@ -95,7 +95,7 @@ int WxInitInject(bool debug)
     
     LOG_INFO("[WxInitInject] 已找到 spy.dll 路径: {}", Wstring2String(spyDllPath));
 
-    status = OpenWeChat(&wcPid, &firstOpen);
+    status = OpenWeChat(&wcPid, &firstOpen, startNew);
     if (status != 0) {
         LOG_WARN("[WxInitInject] 微信打开失败");
         MessageBox(NULL, L"打开微信失败", L"WxInitInject", 0);
@@ -175,9 +175,16 @@ INT_PTR CALLBACK DialogProc(HWND hwndDlg, UINT   uMsg, WPARAM wParam, LPARAM lPa
     case WM_COMMAND:
         if (wParam == INJECT_DLL && !injected)
         {
-            WxInitInject(false);
+            WxInitInject(false, false);
             if (injected) {
-                SetDlgItemTextA(hwndDlg, ID_DLL_NAME, "已注入到 WeChatWin.dll");
+                SetDlgItemTextA(hwndDlg, ID_DLL_NAME, "Injected WeChatWin.dll");
+            }
+        }
+        if (wParam == INJECT_DLL_NEW && !injected)
+        {
+            WxInitInject(false, true);
+            if (injected) {
+                SetDlgItemTextA(hwndDlg, ID_DLL_NAME, "Injected WeChatWin.dll");
             }
         }
         if (wParam == UN_DLL && injected)
