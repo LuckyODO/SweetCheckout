@@ -200,13 +200,13 @@ static QWORD DispatchMsg(QWORD arg1, QWORD arg2)
             std::string content = isGB2312(wxMsg.content)
                 ? GB2312ToUtf8(wxMsg.content.c_str())
                 : wxMsg.content;
-            if (wxMsg.content.find(u8"<appname><![CDATA[微信收款助手]]></appname>") != string::npos)
+            if (content.find(u8"<appname><![CDATA[微信收款助手]]></appname>") != string::npos)
             {
                 // 同时满足 微信支付收款 和 店员消息 的格式
                 std::string pattern = u8"收款(到账)?(\\d+\\.\\d{2})元";
                 std::regex pat(pattern);
                 std::match_results<std::string::iterator> group;
-                if (std::regex_search(wxMsg.content.begin(), wxMsg.content.end(), group, pat) && group.size() > 1)
+                if (std::regex_search(content.begin(), content.end(), group, pat) && group.size() > 1)
                 {
                     std::string money = group[2].str();
                     nlohmann::json j = {
