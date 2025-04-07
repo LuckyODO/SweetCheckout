@@ -13,8 +13,7 @@ void InitLogger(std::string loggerName, std::string path)
     if (logger != nullptr) {
         return;
     }
-
-    setlocale(LC_ALL, "zh_CN.utf8");
+    setlocale(LC_ALL, "en_US.utf8");
     auto filename = std::filesystem::path(path).make_preferred().string();
     try {
         logger = spdlog::rotating_logger_mt(loggerName, filename, LOGGER_MAX_SIZE, LOGGER_MAX_FILES);
