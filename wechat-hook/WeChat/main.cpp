@@ -58,16 +58,16 @@ static int GetDllPath(wchar_t *dllPath)
     PathAppend(temp_file_path, L"SweetCheckout.Hook.WeChat.dll");
 
     if (!SaveSpyDll(temp_file_path)) {
-        LOG_WARN("DLL 保存失败");
-        MessageBox(NULL, L"DLL保存失败", L"错误", 0);
+        LOG_WARN("Failed to save DLL.");
+        MessageBox(NULL, L"Failed to save DLL.", L"错误", 0);
         return ERROR_FILE_NOT_SUPPORTED;
     }
 
     lstrcpy(dllPath, temp_file_path);
 
     if (!PathFileExists(dllPath)) {
-        LOG_WARN("DLL 文件不存在: {}", Wstring2String(dllPath));
-        MessageBox(NULL, dllPath, L"文件不存在", 0);
+        LOG_WARN("DLL not exists: {}", Wstring2String(dllPath));
+        MessageBox(NULL, dllPath, L"DLL not exists!", 0);
         return ERROR_FILE_NOT_FOUND;
     }
 
@@ -83,8 +83,8 @@ int WxInitInject(bool debug, bool startNew)
 
     if (properties.count("api_url") == 0)
     {
-        LOG_WARN("[WxInitInject] 无法读取到配置");
-        MessageBox(NULL, L"无法读取到配置", L"WxInitInject", 0);
+        LOG_WARN("[WxInitInject] Failed to read app_url from config.properties");
+        MessageBox(NULL, L"Property api_url not found!", L"WxInitInject", 0);
         return -1;
     }
 
@@ -93,32 +93,32 @@ int WxInitInject(bool debug, bool startNew)
         return status;
     }
     
-    LOG_INFO("[WxInitInject] 已找到 spy.dll 路径: {}", Wstring2String(spyDllPath));
+    LOG_INFO("[WxInitInject] File spy.dll found: {}", Wstring2String(spyDllPath));
 
     status = OpenWeChat(&wcPid, &firstOpen, startNew);
     if (status != 0) {
-        LOG_WARN("[WxInitInject] 微信打开失败");
-        MessageBox(NULL, L"打开微信失败", L"WxInitInject", 0);
+        LOG_WARN("[WxInitInject] Failed to open WeChat.");
+        MessageBox(NULL, L"Failed to open WeChat.", L"WxInitInject", 0);
         return status;
     }
 
     LOG_INFO("微信 PID: {}", to_string(wcPid));
 
     if (!IsProcessX64(wcPid)) {
-        LOG_WARN("[WxInitInject] 只支持 64 位微信");
-        MessageBox(NULL, L"只支持 64 位微信", L"WxInitInject", 0);
+        LOG_WARN("[WxInitInject] Only 64-bit WeChat is supported.");
+        MessageBox(NULL, L"Only 64-bit WeChat is supported.", L"WxInitInject", 0);
         return -1;
     }
 
     if (firstOpen) {
-        LOG_INFO("[WxInitInject] 正在等待微信启动");
-        if (dlg != NULL) SetDlgItemTextA(dlg, ID_DLL_NAME, "正在等待微信启动");
+        LOG_INFO("[WxInitInject] Waiting for WeChat starting...");
+        if (dlg != NULL) SetDlgItemTextA(dlg, ID_DLL_NAME, "Waiting for WeChat starting...");
         Sleep(2000);
     }
     wcProcess = InjectDll(wcPid, spyDllPath, &spyBase);
     if (wcProcess == NULL) {
-        LOG_WARN("[WxInitInject] 注入失败");
-        MessageBox(NULL, L"注入失败", L"WxInitInject", 0);
+        LOG_WARN("[WxInitInject] Inject failed.");
+        MessageBox(NULL, L"Inject failed.", L"WxInitInject", 0);
         return -1;
     }
 
@@ -127,12 +127,12 @@ int WxInitInject(bool debug, bool startNew)
     sprintf_s(pp.path, MAX_PATH, "%s", std::filesystem::current_path().string().c_str());
 
     if (!CallDllFuncEx(wcProcess, spyDllPath, spyBase, "InitSpy", (LPVOID)&pp, sizeof(PortPath_t), NULL)) {
-        LOG_WARN("[WxInitInject] 初始化失败");
-        MessageBox(NULL, L"初始化失败", L"WxInitInject", 0);
+        LOG_WARN("[WxInitInject] Initialize spy failed.");
+        MessageBox(NULL, L"Initialize spy failed.", L"WxInitInject", 0);
         return -1;
     }
 
-    LOG_INFO("注入完成! 详细信息请见 spy.dll 输出日志");
+    LOG_INFO("Inject successfully! For details, see spy.log");
 
     injected = true;
     return 0;
@@ -152,7 +152,7 @@ int WxDestroyInject()
         return -3; // TODO: Unify error codes
     }
 
-    LOG_INFO("[WxDestroyInject] 已取消注入并卸载 DLL");
+    LOG_INFO("[WxDestroyInject] Ejected and uninstalled DLL");
     injected = false;
     return 0;
 }
@@ -168,7 +168,7 @@ INT_PTR CALLBACK DialogProc(HWND hwndDlg, UINT   uMsg, WPARAM wParam, LPARAM lPa
         dlg = hwndDlg;
         wcscat_s(title, SUPPORT_VERSION);
         SetWindowTextW(hwndDlg, title);
-        SetDlgItemTextA(hwndDlg, ID_DLL_NAME, "软件已启动");
+        SetDlgItemTextA(hwndDlg, ID_DLL_NAME, "Idle");
         GetDllPath(spyDllPath);
         break;
         //按钮点击事件 处理
@@ -191,10 +191,10 @@ INT_PTR CALLBACK DialogProc(HWND hwndDlg, UINT   uMsg, WPARAM wParam, LPARAM lPa
         {
             i = WxDestroyInject();
             if (i == 0) {
-                SetDlgItemTextA(hwndDlg, ID_DLL_NAME, "已取消注入");
+                SetDlgItemTextA(hwndDlg, ID_DLL_NAME, "Ejected");
             }
             if (i == -1) {
-                LOG_WARN("[WxDestroyInject] 当前没有被注入，无需取消注入");
+                LOG_WARN("[WxDestroyInject] No WeChat injected currently, No need to eject.");
             }
         }
         break;

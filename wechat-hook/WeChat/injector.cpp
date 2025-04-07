@@ -15,13 +15,13 @@ HMODULE GetTargetModuleBase(HANDLE process, string dll)
     HMODULE moduleHandleList[512];
     BOOL ret = EnumProcessModulesEx(process, moduleHandleList, sizeof(moduleHandleList), &cbNeeded, LIST_MODULES_64BIT);
     if (!ret) {
-        LOG_WARN("[GetTargetModuleBase] 获取模块失败");
+        LOG_WARN("[GetTargetModuleBase] Failed to get target module.");
         // MessageBox(NULL, L"获取模块失败", L"GetTargetModuleBase", 0);
         return NULL;
     }
 
     if (cbNeeded > sizeof(moduleHandleList)) {
-        LOG_WARN("[GetTargetModuleBase] 模块数量过多");
+        LOG_WARN("[GetTargetModuleBase] Target module is too much.");
         // MessageBox(NULL, L"模块数量过多", L"GetTargetModuleBase", 0);
         return NULL;
     }
@@ -45,7 +45,7 @@ HANDLE InjectDll(DWORD pid, LPCWSTR dllPath, HMODULE *injectedBase)
     // 1. 打开目标进程
     HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
     if (hProcess == NULL) {
-        LOG_WARN("[InjectDll] 打开进程失败");
+        LOG_WARN("[InjectDll] Failed to open process.");
         // MessageBox(NULL, L"打开进程失败", L"InjectDll", 0);
         return NULL;
     }
@@ -53,7 +53,7 @@ HANDLE InjectDll(DWORD pid, LPCWSTR dllPath, HMODULE *injectedBase)
     // 2. 在目标进程的内存里开辟空间
     LPVOID pRemoteAddress = VirtualAllocEx(hProcess, NULL, cszDLL, MEM_COMMIT, PAGE_READWRITE);
     if (pRemoteAddress == NULL) {
-        LOG_WARN("[InjectDll] DLL 路径写入失败");
+        LOG_WARN("[InjectDll] Failed to alloc visual memory.");
         // MessageBox(NULL, L"DLL 路径写入失败", L"InjectDll", 0);
         return NULL;
     }
@@ -64,14 +64,14 @@ HANDLE InjectDll(DWORD pid, LPCWSTR dllPath, HMODULE *injectedBase)
     // 3. 创建一个远程线程，让目标进程调用 LoadLibrary
     HMODULE k32 = GetModuleHandle(L"kernel32.dll");
     if (k32 == NULL) {
-        LOG_WARN("[InjectDll] 获取 kernel32 失败");
+        LOG_WARN("[InjectDll] Failed to get kernel32.dll module.");
         // MessageBox(NULL, L"获取 kernel32 失败", L"InjectDll", 0);
         return NULL;
     }
 
     FARPROC libAddr = GetProcAddress(k32, "LoadLibraryW");
     if (!libAddr) {
-        LOG_WARN("[InjectDll] 获取 LoadLibaray 失败");
+        LOG_WARN("[InjectDll] Failed to get address of LoadLibarayW.");
         // MessageBox(NULL, L"获取 LoadLibrary 失败", L"InjectDll", 0);
         return NULL;
     }
@@ -80,7 +80,7 @@ HANDLE InjectDll(DWORD pid, LPCWSTR dllPath, HMODULE *injectedBase)
     if (hThread == NULL) {
         VirtualFreeEx(hProcess, pRemoteAddress, 0, MEM_RELEASE);
         CloseHandle(hProcess);
-        LOG_WARN("[InjectDll] 创建远程线程失败");
+        LOG_WARN("[InjectDll] Failed to create remote thread.");
         // MessageBox(NULL, L"CreateRemoteThread 失败", L"InjectDll", 0);
         return NULL;
     }
@@ -103,20 +103,20 @@ bool EjectDll(HANDLE process, HMODULE dllBase)
     // 使目标进程调用 FreeLibrary，卸载 DLL
     HMODULE k32 = GetModuleHandle(L"kernel32.dll");
     if (k32 == NULL) {
-        LOG_WARN("[EjectDll] 获取 kernel32 失败");
+        LOG_WARN("[EjectDll] Failed to get kernel32.dll module.");
         // MessageBox(NULL, L"获取 kernel32 失败", L"EjectDll", 0);
         return NULL;
     }
 
     FARPROC libAddr = GetProcAddress(k32, "FreeLibraryAndExitThread");
     if (!libAddr) {
-        LOG_WARN("[EjectDll] 获取 FreeLibrary 失败");
+        LOG_WARN("[EjectDll] Failed to get address of FreeLibraryAndExitThread.");
         // MessageBox(NULL, L"获取 FreeLibrary 失败", L"EjectDll", 0);
         return NULL;
     }
     hThread = CreateRemoteThread(process, NULL, 0, (LPTHREAD_START_ROUTINE)libAddr, (LPVOID)dllBase, 0, NULL);
     if (hThread == NULL) {
-        LOG_WARN("[EjectDll] FreeLibrary 调用失败");
+        LOG_WARN("[EjectDll] Failed to invoke FreeLibrary.");
         // MessageBox(NULL, L"FreeLibrary 调用失败!", L"EjectDll", 0);
         return false;
     }
@@ -133,7 +133,7 @@ static UINT64 GetFuncOffset(LPCWSTR dllPath, LPCSTR funcName)
     DWORD err;
     if (dll == NULL) {
         err = GetLastError();
-        LOG_WARN("[GetFuncOffset] LoadLibaray 获取 DLL 失败，err={}", to_string(err));
+        LOG_WARN("[GetFuncOffset] Failed to LoadLibaray and get func offset，err={}", to_string(err));
         // MessageBox(NULL, L"获取 DLL 失败", L"GetFuncOffset", 0);
         return 0;
     }
@@ -183,7 +183,7 @@ bool CallDllFuncEx(HANDLE process, LPCWSTR dllPath, HMODULE dllBase, LPCSTR func
 
     LPVOID pRemoteAddress = VirtualAllocEx(process, NULL, sz, MEM_COMMIT, PAGE_READWRITE);
     if (pRemoteAddress == NULL) {
-        LOG_WARN("[CallDllFuncEx] 申请内存失败");
+        LOG_WARN("[CallDllFuncEx] Failed to alloc memory.");
         // MessageBox(NULL, L"申请内存失败", L"CallDllFuncEx", 0);
         return NULL;
     }
@@ -193,7 +193,7 @@ bool CallDllFuncEx(HANDLE process, LPCWSTR dllPath, HMODULE dllBase, LPCSTR func
     HANDLE hThread = CreateRemoteThread(process, NULL, 0, (LPTHREAD_START_ROUTINE)pFunc, pRemoteAddress, 0, NULL);
     if (hThread == NULL) {
         VirtualFree(pRemoteAddress, 0, MEM_RELEASE);
-        LOG_WARN("[CallDllFuncEx] 远程调用失败");
+        LOG_WARN("[CallDllFuncEx] Failed to call remote function.");
         // MessageBox(NULL, L"远程调用失败", L"CallDllFuncEx", 0);
         return false;
     }

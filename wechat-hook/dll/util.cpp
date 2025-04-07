@@ -115,7 +115,7 @@ static int GetWeChatPath0(wchar_t* path, HKEY parent, string parentStr, WCHAR *p
             goto __exit;
         }
     }
-    if (prefix == NULL) LOG_WARN("从注册表 ({}) 读取微信路径失败", parentStr);
+    if (prefix == NULL) LOG_WARN("Failed to get WeChat path from Registry ({})", parentStr);
     ret = GetLastError();
 __exit:
     if (ret == ERROR_SUCCESS && path != NULL) {
@@ -136,7 +136,7 @@ static int GetWeChatPath(wchar_t* path)
     DWORD cchName = MAX_PATH;
 
     if (ERROR_SUCCESS != RegOpenKey(HKEY_USERS, L"", &hUsers)) {
-        LOG_WARN("读取注册表 (HKEY_USERS) 失败，正在尝试使用旧方法读取微信路径");
+        LOG_WARN("Failed to read from Registry (HKEY_USERS)，Trying old methods to get WeChat path.");
         return GetWeChatPath0(path, HKEY_CURRENT_USER, "HKEY_CURRENT_USER", NULL);
     }
     if (hUsers)

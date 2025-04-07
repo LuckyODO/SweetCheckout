@@ -23,28 +23,28 @@ void InitSpy(LPVOID args)
     InitLogger("Sweet", path + "/logs/spy.log");
     g_WeChatWinDllAddr = (UINT64)GetModuleHandle(L"WeChatWin.dll"); // 获取wechatWin模块地址
     if (g_WeChatWinDllAddr == 0) {
-        LOG_ERROR("获取 WeChatWin.dll 模块地址失败");
+        LOG_ERROR("Failed to get address of module WeChatWin.dll");
         return; // TODO: 退出进程，避免后面操作失败
     }
 
     if (!GetWeChatVersion(version)) { // 获取微信版本
-        LOG_ERROR("获取微信版本失败");
+        LOG_ERROR("Failed to get WeChat version.");
         return;
     }
     LOG_INFO("WeChat version: {}", Wstring2String(version).c_str());
     if (!IsWxVersionMatched(version)) {
-        LOG_ERROR("不支持当前版本");
+        LOG_ERROR("It is not supported by injector yet.");
         // MessageBox(NULL, L"不支持当前版本", L"错误", 0);
         return;
     }
 
     ListenMessage(pp);
-    LOG_INFO("注入成功");
+    LOG_INFO("Inject successfully.");
 }
 
 void CleanupSpy()
 {
     LOG_DEBUG("CleanupSpy");
     UnListenMessage();
-    LOG_INFO("卸载成功");
+    LOG_INFO("Eject successfully.");
 }
