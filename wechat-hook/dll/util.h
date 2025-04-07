@@ -31,6 +31,7 @@ std::wstring GetUnicodeInfoByAddress(HANDLE hProcess, UINT64 address);
 std::wstring String2Wstring(std::string s);
 std::string Wstring2String(std::wstring ws);
 std::string GB2312ToUtf8(const char *gb2312);
+bool isGB2312(const std::string& gb2312);
 std::string GetStringByAddress(UINT64 address);
 std::string GetStringByStrAddr(UINT64 addr);
 std::string GetStringByWstrAddr(UINT64 addr);

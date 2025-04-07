@@ -53,6 +53,40 @@ string GB2312ToUtf8(const char *gb2312)
 
     return s;
 }
+/*
+ * https://blog.csdn.net/qq_19875391/article/details/136057578
+ */
+bool isGB2312(const std::string& strIn)
+{
+    unsigned int nBytes = 0;
+    unsigned char chr = strIn.at(0);
+    bool bAllAscii = true; 
+    for (unsigned int i = 0; strIn[i] != '\0'; ++i) {
+        chr = strIn.at(i);
+        if ((chr & 0x80) != 0 && nBytes == 0) {
+            bAllAscii = false;
+        }
+        if (nBytes == 0) {
+            if (chr >= 0x80) {
+                if (chr >= 0x81 && chr <= 0xFE) {
+                    nBytes = +2;
+                } else {
+                    return false;
+                }
+                nBytes--;
+            }
+        }
+        else {
+            if (chr < 0x40 || chr>0xFE) {
+                return false;
+            }
+            nBytes--;
+        }
+    }
+    if (nBytes != 0) return false;
+    if (bAllAscii) return true;
+    return true;
+}
 std::map<std::string, std::string> read_properties(const std::string file_path) {
     std::map<std::string, std::string> properties;
     std::ifstream file(file_path);

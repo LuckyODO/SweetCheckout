@@ -195,21 +195,26 @@ static QWORD DispatchMsg(QWORD arg1, QWORD arg2)
         wxMsg.extra = GetStringByWstrAddr(arg2 + OS_RECV_MSG_EXTRA);
 
         // 微信收款助手 消息
-        if (wxMsg.roomid == "gh_f0a92aa7146c" && wxMsg.type == 0x31
-            && wxMsg.content.find("<appname><![CDATA[微信收款助手]]></appname>") != string::npos)
+        if (wxMsg.roomid == "gh_f0a92aa7146c" && wxMsg.type == 0x31)
         {
-            // 同时满足 微信支付收款 和 店员消息 的格式
-            std::string pattern = "收款(到账)?(\\d+\\.\\d{2})元";
-            std::regex pat(pattern);
-            std::match_results<std::string::iterator> group;
-            if (std::regex_search(wxMsg.content.begin(), wxMsg.content.end(), group, pat) && group.size() > 1)
+            std::string content = isGB2312(wxMsg.content)
+                ? GB2312ToUtf8(wxMsg.content.c_str())
+                : wxMsg.content;
+            if (wxMsg.content.find(u8"<appname><![CDATA[微信收款助手]]></appname>") != string::npos)
             {
-                std::string money = group[2].str();
-                nlohmann::json j = {
-                    { "type", "wechat" },
-                    { "money", money }
-                };
-                notice(j.dump(4));
+                // 同时满足 微信支付收款 和 店员消息 的格式
+                std::string pattern = u8"收款(到账)?(\\d+\\.\\d{2})元";
+                std::regex pat(pattern);
+                std::match_results<std::string::iterator> group;
+                if (std::regex_search(wxMsg.content.begin(), wxMsg.content.end(), group, pat) && group.size() > 1)
+                {
+                    std::string money = group[2].str();
+                    nlohmann::json j = {
+                        { "type", "wechat" },
+                        { "money", money }
+                    };
+                    notice(j.dump(4));
+                }
             }
         }
     } catch (const std::exception &e) {
