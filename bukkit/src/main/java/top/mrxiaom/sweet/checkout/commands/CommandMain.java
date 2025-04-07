@@ -117,7 +117,10 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                         int points = (int) Math.round(money * pointsScale);
                         info("玩家 " + player.getName() + " 通过 " + type  + " 支付 ￥" + money + " 获得了 " + points + " 点券 --" + productName + " " + orderId);
                         plugin.getTradeDatabase().log(player, LocalDateTime.now(), type, moneyStr, "points:" + points);
-                        plugin.run(player, pointsCommands, Pair.of("%points%", points));
+                        plugin.run(player, pointsCommands,
+                            Pair.of("%points%", points),
+                            Pair.of("%money%", money),
+                            Pair.of("%money_round%", (int) Math.round(money)));
                     });
                 });
             }
