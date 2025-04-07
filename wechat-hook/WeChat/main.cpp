@@ -102,7 +102,7 @@ int WxInitInject(bool debug, bool startNew)
         return status;
     }
 
-    LOG_INFO("微信 PID: {}", to_string(wcPid));
+    LOG_INFO("WeChat PID: {}", to_string(wcPid));
 
     if (!IsProcessX64(wcPid)) {
         LOG_WARN("[WxInitInject] Only 64-bit WeChat is supported.");
@@ -215,6 +215,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_ int       nCmdShow)
 {
     InitLogger("Sweet", std::filesystem::current_path().string() + "/logs/injector.log");
+
+    LOG_INFO("Injector window initializing...");
 
     DialogBox(hInstance, MAKEINTRESOURCE(ID_MAIN), NULL, &DialogProc);
 
