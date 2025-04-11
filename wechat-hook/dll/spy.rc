@@ -69,9 +69,9 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Hook.Container.WeChat"
             VALUE "FileDescription", "Hook.Container.WeChat"
-            VALUE "FileVersion", "1.0.0.0"
+            VALUE "FileVersion", "1.0.1.0"
             VALUE "InternalName", "spy.dll"
-            VALUE "LegalCopyright", "Copyright (C) 2024"
+            VALUE "LegalCopyright", "Copyright (C) MrXiaoM 2025"
             VALUE "OriginalFilename", "spy.dll"
             VALUE "ProductName", "Hook.Container.WeChat"
             VALUE "ProductVersion", "3.9.12.17"

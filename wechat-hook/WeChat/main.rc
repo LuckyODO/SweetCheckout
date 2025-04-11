@@ -70,9 +70,9 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "SweetCheckout.Hook.WeChat"
             VALUE "FileDescription", "SweetCheckout.Hook.WeChat"
-            VALUE "FileVersion", "1.0.0.0"
+            VALUE "FileVersion", "1.0.1.0"
             VALUE "InternalName", "SweetCheckout.Hook.WeChat.exe"
-            VALUE "LegalCopyright", "Copyright (C) 2024"
+            VALUE "LegalCopyright", "Copyright (C) MrXiaoM 2025"
             VALUE "OriginalFilename", "SweetCheckout.Hook.WeChat.exe"
             VALUE "ProductName", "SweetCheckout.Hook.WeChat"
             VALUE "ProductVersion", "3.9.12.17"
