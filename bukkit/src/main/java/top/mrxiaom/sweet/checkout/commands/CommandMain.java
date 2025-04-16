@@ -13,6 +13,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.map.MapRenderer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import top.mrxiaom.pluginbase.actions.ActionProviders;
+import top.mrxiaom.pluginbase.api.IAction;
 import top.mrxiaom.pluginbase.func.AutoRegister;
 import top.mrxiaom.pluginbase.utils.AdventureUtil;
 import top.mrxiaom.pluginbase.utils.Pair;
@@ -43,7 +45,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
     private int paymentTimeout;
     private int pointsScale;
     private List<String> pointsNames;
-    private List<String> pointsCommands;
+    private List<IAction> pointsCommands;
     public CommandMain(SweetCheckout plugin) {
         super(plugin);
         registerCommand("sweetcheckout", this);
@@ -59,7 +61,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
 
         pointsScale = config.getInt("points.scale");
         pointsNames = config.getStringList("points.names");
-        pointsCommands = config.getStringList("points.commands");
+        pointsCommands = ActionProviders.loadActions(config.getStringList("points.commands"));
     }
 
     @Override

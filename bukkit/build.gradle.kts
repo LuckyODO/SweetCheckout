@@ -23,7 +23,7 @@ dependencies {
     implementation("com.zaxxer:HikariCP:4.0.3")
     implementation("org.slf4j:slf4j-nop:2.0.16")
     implementation("org.jetbrains:annotations:24.0.0")
-    implementation("top.mrxiaom:PluginBase:1.3.8")
+    implementation("top.mrxiaom:PluginBase:1.3.9")
     implementation("top.mrxiaom:Java-WebSocket:1.5.8")
     implementation(project(":bukkit:nms"))
     implementation(project(":packets"))

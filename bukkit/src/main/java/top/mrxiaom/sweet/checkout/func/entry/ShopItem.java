@@ -2,6 +2,8 @@ package top.mrxiaom.sweet.checkout.func.entry;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.Nullable;
+import top.mrxiaom.pluginbase.actions.ActionProviders;
+import top.mrxiaom.pluginbase.api.IAction;
 import top.mrxiaom.sweet.checkout.SweetCheckout;
 
 import java.util.List;
@@ -13,9 +15,9 @@ public class ShopItem {
     public final List<String> names;
     public final boolean paymentAlipay, paymentWeChat;
     public final String price;
-    public final List<String> rewards;
+    public final List<IAction> rewards;
 
-    public ShopItem(String id, String display, @Nullable String permission, List<String> names, boolean paymentAlipay, boolean paymentWeChat, String price, List<String> rewards) {
+    public ShopItem(String id, String display, @Nullable String permission, List<String> names, boolean paymentAlipay, boolean paymentWeChat, String price, List<IAction> rewards) {
         this.id = id;
         this.display = display;
         this.permission = permission;
@@ -41,9 +43,9 @@ public class ShopItem {
             plugin.getLogger().warning("[shops] 加载 " + id + " 失败: 商品名称为空");
             return null;
         }
-        List<String> rewards = config.getStringList("rewards");
+        List<IAction> rewards = ActionProviders.loadActions(config.getStringList("rewards"));
         if (rewards.isEmpty()) {
-            plugin.getLogger().warning("[shops] 加载 " + id + " 失败: 奖励命令列表为空");
+            plugin.getLogger().warning("[shops] 加载 " + id + " 失败: 加载后的奖励命令列表为空");
             return null;
         }
         String permission = config.getString("permission", null);

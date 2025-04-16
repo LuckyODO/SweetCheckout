@@ -1,19 +1,17 @@
 package top.mrxiaom.sweet.checkout;
 
+import com.google.common.collect.Lists;
 import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import top.mrxiaom.pluginbase.BukkitPlugin;
+import top.mrxiaom.pluginbase.api.IAction;
 import top.mrxiaom.pluginbase.func.LanguageManager;
-import top.mrxiaom.pluginbase.utils.AdventureUtil;
-import top.mrxiaom.pluginbase.utils.PAPI;
 import top.mrxiaom.pluginbase.utils.Pair;
-import top.mrxiaom.pluginbase.utils.Util;
 import top.mrxiaom.pluginbase.utils.scheduler.FoliaLibScheduler;
 import top.mrxiaom.sweet.checkout.database.TradeDatabase;
 import top.mrxiaom.sweet.checkout.nms.NMS;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SweetCheckout extends BukkitPlugin {
@@ -27,7 +25,6 @@ public class SweetCheckout extends BukkitPlugin {
                 .adventure(true)
                 .database(true)
                 .reconnectDatabaseWhenReloadConfig(false)
-                .vaultEconomy(false)
                 .scanIgnore("top.mrxiaom.sweet.checkout.libs")
         );
         scheduler = new FoliaLibScheduler(this);
@@ -63,39 +60,20 @@ public class SweetCheckout extends BukkitPlugin {
     }
 
     @SafeVarargs
-    public final void run(Player player, List<String> commands, Pair<String, Object>... replacements) {
-        List<String> list = new ArrayList<>();
-        if (replacements.length == 0) list.addAll(commands);
-        else for (String s : commands) {
-            list.add(Pair.replace(s, replacements));
-        }
-        run0(player, PAPI.setPlaceholders(player, list), 0);
+    public final void run(Player player, List<IAction> commands, Pair<String, Object>... replacements) {
+        List<Pair<String, Object>> list = replacements.length == 0 ? null : Lists.newArrayList(replacements);
+        run0(this, player, commands, list, 0);
     }
 
-    private void run0(Player player, List<String> commands, int startIndex) {
-        for (int i = startIndex; i < commands.size(); i++) {
-            String s = commands.get(i);
-            if (s.startsWith("[console]")) {
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), s.substring(9));
-                continue;
-            }
-            if (s.startsWith("[player]")) {
-                Bukkit.dispatchCommand(player, s.substring(8));
-                continue;
-            }
-            if (s.startsWith("[message]")) {
-                AdventureUtil.sendMessage(player, s.substring(9));
-                continue;
-            }
-            if (s.startsWith("[actionbar]")) {
-                AdventureUtil.sendActionBar(player, s.substring(11));
-                continue;
-            }
-            if (s.startsWith("[delay]")) {
-                Long delay = Util.parseLong(s.substring(7)).orElse(null);
+    private static void run0(BukkitPlugin plugin, Player player, List<IAction> actions, List<Pair<String, Object>> replacements, int startIndex) {
+        for (int i = startIndex; i < actions.size(); i++) {
+            IAction action = actions.get(i);
+            action.run(player);
+            long delay = action.delayAfterRun();
+            if (delay > 0) {
                 int index = i + 1;
-                if (delay == null) continue;
-                getScheduler().runTaskLater(() -> run0(player, commands, index), delay);
+                plugin.getScheduler().runTaskLater(() -> run0(plugin, player, actions, replacements, index), delay);
+                return;
             }
         }
     }
