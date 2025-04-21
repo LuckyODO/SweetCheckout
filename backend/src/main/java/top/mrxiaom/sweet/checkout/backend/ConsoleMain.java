@@ -80,6 +80,7 @@ public class ConsoleMain extends SimpleTerminalConsole {
     @Override
     protected void runCommand(String s) {
         if ("reload".equals(s)) {
+            reloadConfig();
             logger.info("配置文件已重载.");
             return;
         }
