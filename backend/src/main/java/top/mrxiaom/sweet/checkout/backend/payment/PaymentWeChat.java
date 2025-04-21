@@ -27,7 +27,7 @@ public class PaymentWeChat {
         Configuration.WeChatHook hook = config.getHook().getWeChat();
         String requireProcess = hook.getRequireProcess();
         if (!requireProcess.isEmpty()) {
-            if (ProcessHandle.allProcesses().noneMatch(it -> it.info().command().map(name -> name.endsWith(File.pathSeparator + requireProcess)).orElse(false))) {
+            if (ProcessHandle.allProcesses().noneMatch(it -> it.info().command().map(name -> name.endsWith(File.separator + requireProcess)).orElse(false))) {
                 return new PacketPluginRequestOrder.Response("payment.hook-not-running");
             }
         }
