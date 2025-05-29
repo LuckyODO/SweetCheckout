@@ -130,6 +130,32 @@ public class TradeDatabase extends AbstractPluginHolder implements IDatabase {
         return builder.build();
     }
 
+    public List<Log> get(String startDate, String endDate) {
+        try (Connection conn = plugin.getConnection();
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT * FROM `" + TABLE_TRADE_LOG + "` WHERE `time` BETWEEN ? AND ?;"
+            )) {
+            ps.setString(1, startDate);
+            ps.setString(2, endDate);
+            try (ResultSet result = ps.executeQuery()) {
+                List<Log> list = new ArrayList<>();
+                while (result.next()) {
+                    UUID uuid = UUID.fromString(result.getString("uuid"));
+                    String name = result.getString("name");
+                    Timestamp time = result.getTimestamp("time");
+                    String type = result.getString("type");
+                    String money = result.getString("money");
+                    String reason = result.getString("reason");
+                    list.add(new Log(uuid, name, time.toLocalDateTime(), type, money, reason));
+                }
+                return list;
+            }
+        } catch (SQLException e) {
+            warn(e);
+            return new ArrayList<>();
+        }
+    }
+
     public List<Log> get(OfflinePlayer player, int limit) {
         return get(player.getUniqueId(), limit);
     }

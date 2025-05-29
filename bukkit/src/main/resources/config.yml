@@ -80,3 +80,8 @@ rank:
   top: 10
   # 多少秒刷新一次排行榜
   refresh-interval: 60
+
+# 交易统计设置
+stats:
+  # 贡献排行显示前多少位
+  top: 5

@@ -57,6 +57,10 @@ public class LogBookManager extends AbstractModule {
         reasonBuy = config.getString("reasons-convert.buy");
     }
 
+    public String getPayment(String raw) {
+        return paymentTypes.getOrDefault(raw, raw);
+    }
+
     public Component header(OfflinePlayer player) {
         String s = PAPI.setPlaceholders(player, headerText);
         return miniMessage(s);
@@ -67,7 +71,7 @@ public class LogBookManager extends AbstractModule {
         replacements.add(Pair.of("%name%", log.name));
         replacements.add(Pair.of("%money%", log.money));
         replacements.add(Pair.of("%time%", log.time.format(lineTimeFormat)));
-        replacements.add(Pair.of("%type%", paymentTypes.getOrDefault(log.type, log.type)));
+        replacements.add(Pair.of("%type%", getPayment(log.type)));
         String reasonStr = log.reason;
         String reason = reasonStr;
         if (reasonStr.startsWith("points:")) {

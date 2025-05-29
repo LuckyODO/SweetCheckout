@@ -24,6 +24,7 @@ import top.mrxiaom.qrcode.enums.ErrorCorrectionLevel;
 import top.mrxiaom.sweet.checkout.Errors;
 import top.mrxiaom.sweet.checkout.Messages;
 import top.mrxiaom.sweet.checkout.SweetCheckout;
+import top.mrxiaom.sweet.checkout.database.TradeDatabase;
 import top.mrxiaom.sweet.checkout.func.*;
 import top.mrxiaom.sweet.checkout.func.entry.ShopItem;
 import top.mrxiaom.sweet.checkout.nms.NMS;
@@ -32,7 +33,9 @@ import top.mrxiaom.sweet.checkout.packets.plugin.PacketPluginRequestOrder;
 import top.mrxiaom.sweet.checkout.utils.Utils;
 
 import java.io.File;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -40,12 +43,14 @@ import static top.mrxiaom.sweet.checkout.utils.Utils.*;
 
 @AutoRegister
 public class CommandMain extends AbstractModule implements CommandExecutor, TabCompleter, Listener {
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private boolean useWeChat;
     private boolean useAlipay;
     private int paymentTimeout;
     private int pointsScale;
     private List<String> pointsNames;
     private List<IAction> pointsCommands;
+    private int statsTop;
     public CommandMain(SweetCheckout plugin) {
         super(plugin);
         registerCommand("sweetcheckout", this);
@@ -62,6 +67,8 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
         pointsScale = config.getInt("points.scale");
         pointsNames = config.getStringList("points.names");
         pointsCommands = ActionProviders.loadActions(config.getStringList("points.commands"));
+
+        statsTop = config.getInt("stats.top", 5);
     }
 
     @Override
@@ -236,6 +243,95 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
         }
         // (sender instanceof Player) end
 
+        if (args.length >= 1 && "stats".equalsIgnoreCase(args[0]) && sender.hasPermission("sweet.checkout.stats")) {
+            LocalDate startDate, endDate;
+            if (args.length == 2) {
+                startDate = parseDate(args[1]);
+                if (startDate == null) {
+                    return Messages.commands__stats__wrong_start_date.tm(sender);
+                }
+                endDate = clone(startDate).plusMonths(1);
+            } else if (args.length == 3) {
+                startDate = parseDate(args[1]);
+                if (startDate == null) {
+                    return Messages.commands__stats__wrong_start_date.tm(sender);
+                }
+                endDate = parseDate(args[1]);
+                if (endDate == null) {
+                    return Messages.commands__stats__wrong_end_date.tm(sender);
+                }
+            } else {
+                return Messages.commands__stats__wrong_format.tm(sender);
+            }
+            String start = startDate.format(formatter);
+            String end = endDate.format(formatter);
+            List<TradeDatabase.Log> logs = plugin.getTradeDatabase().get(start, end);
+            double sum = 0.0;
+            Map<String, Double> sumPlatform = new HashMap<>();
+            Map<UUID, Pair<String, Double>> sumPlayer = new HashMap<>();
+            for (TradeDatabase.Log log : logs) {
+                double money = Util.parseDouble(log.money).orElse(0.0);
+                if (money <= 0) continue;
+                // 按玩家求和
+                Pair<String, Double> pair = sumPlayer.computeIfAbsent(log.uuid, k -> Pair.of("", 0.0));
+                pair.key(log.name); // 玩家最后使用的名字
+                pair.value(pair.value() + money);
+                // 按平台求和
+                sumPlatform.put(log.type, sumPlatform.getOrDefault(log.type, 0.0) + money);
+                // 总求和
+                sum += money;
+            }
+            List<Pair<String, Double>> pairs = Lists.newArrayList(sumPlayer.values());
+            pairs.sort(Comparator.comparingDouble(Pair<String, Double>::value));
+            Collections.reverse(pairs);
+            LogBookManager manager = LogBookManager.inst();
+            List<String> message = new ArrayList<>();
+
+            String numberFormat = "%" + String.valueOf(statsTop).length() + "d";
+
+            for (String s : Messages.commands__stats__success__messages.list(
+                    Pair.of("%start_date%", start),
+                    Pair.of("%end_date%", end),
+                    Pair.of("%money%", formatMoney(sum)),
+                    Pair.of("%top%", statsTop)
+            )) {
+                if (s.equals("platform sum")) {
+                    for (Map.Entry<String, Double> entry : sumPlatform.entrySet()) {
+                        String platform = manager.getPayment(entry.getKey());
+                        String money = formatMoney(entry.getValue());
+                        message.addAll(Messages.commands__stats__success__platform.list(
+                                Pair.of("%platform%", platform),
+                                Pair.of("%money%", money)
+                        ));
+                    }
+                    continue;
+                }
+                if (s.equals("player sum")) {
+                    for (int i = 0; i < statsTop; i++) {
+                        String number = String.format(numberFormat, i + 1);
+                        if (i >= pairs.size()) {
+                            message.addAll(Messages.commands__stats__success__player_none.list(
+                                    Pair.of("%number%", number)
+                            ));
+                        } else {
+                            Pair<String, Double> pair = pairs.get(i);
+                            String money = formatMoney(pair.value());
+                            message.addAll(Messages.commands__stats__success__player_exists.list(
+                                    Pair.of("%number%", number),
+                                    Pair.of("%player%", pair.key()),
+                                    Pair.of("%money%", money)
+                            ));
+                        }
+                    }
+                    continue;
+                }
+                message.add(s);
+            }
+            for (String s : message) {
+                AdventureUtil.sendMessage(sender, s);
+            }
+            return true;
+        }
         if (args.length == 1 && "rank".equalsIgnoreCase(args[0]) && sender.hasPermission("sweet.checkout.rank")) {
             List<Pair<String, Object>> replacements = new ArrayList<>();
             RankManager manager = RankManager.inst();
@@ -288,6 +384,36 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                 ? Messages.commands__help__admin
                 : Messages.commands__help__normal
         ).tm(sender);
+    }
+
+    private static String formatMoney(double money) {
+        return String.format("%.2f", money).replace(".00", "");
+    }
+    private static LocalDate clone(LocalDate date) {
+        return LocalDate.of(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
+    }
+    @Nullable
+    private static LocalDate parseDate(String input) {
+        String[] split = input.split("-", 3);
+        if (split.length == 1) {
+            Integer month = Util.parseInt(split[0]).orElse(null);
+            if (month == null) return null;
+            return LocalDate.of(LocalDate.now().getYear(), month, 1);
+        }
+        if (split.length == 2) {
+            Integer year = Util.parseInt(split[0]).orElse(null);
+            Integer month = Util.parseInt(split[1]).orElse(null);
+            if (year == null || month == null) return null;
+            return LocalDate.of(year, month, 1);
+        }
+        if (split.length == 3) {
+            Integer year = Util.parseInt(split[0]).orElse(null);
+            Integer month = Util.parseInt(split[1]).orElse(null);
+            Integer date = Util.parseInt(split[2]).orElse(null);
+            if (year == null || month == null || date == null) return null;
+            return LocalDate.of(year, month, date);
+        }
+        return null;
     }
 
     private static final List<String> emptyList = Lists.newArrayList();
