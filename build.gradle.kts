@@ -1,3 +1,5 @@
+import java.util.Locale
+
 plugins {
     id ("com.github.johnrengelman.shadow") version "7.0.0" apply false
 }
@@ -10,15 +12,16 @@ subprojects {
     val targetJavaVersion = 8
     
     repositories {
-        mavenLocal()
+        if (Locale.getDefault().country == "CN") {
+            maven("https://mirrors.huaweicloud.com/repository/maven/")
+        }
         mavenCentral()
         maven("https://repo.codemc.io/repository/maven-public/")
         maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
-        maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+        maven("https://repo.helpch.at/releases/")
         maven("https://jitpack.io")
+        maven("https://repo.papermc.io/repository/maven-public/")
         maven("https://repo.rosewooddev.io/repository/public/")
-        maven("https://s01.oss.sonatype.org/content/groups/public/")
-        maven("https://oss.sonatype.org/content/groups/public/")
     }
 
     project.extensions.configure<JavaPluginExtension> {
