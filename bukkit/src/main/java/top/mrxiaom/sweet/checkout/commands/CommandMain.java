@@ -416,19 +416,26 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
         return null;
     }
 
-    private static final List<String> emptyList = Lists.newArrayList();
-    private static final List<String> listArg0 = Lists.newArrayList(
-            "points", "buy", "check", "rank");
-    private static final List<String> listOpArg0 = Lists.newArrayList(
-            "points", "buy", "check", "rank", "log", "map", "qrcode", "reload");
-    @Nullable
+    private static final List<String> emptyList = Collections.emptyList();
     @Override
-    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         if (args.length == 1) {
-            return startsWith(sender.isOp() ? listOpArg0 : listArg0, args[0]);
+            List<String> list = new ArrayList<>();
+            if (sender.hasPermission("sweet.checkout.points")) list.add("points");
+            list.add("buy");
+            if (sender.hasPermission("sweet.checkout.check")) list.add("check");
+            if (sender.hasPermission("sweet.checkout.stats")) list.add("stats");
+            if (sender.hasPermission("sweet.checkout.rank")) list.add("rank");
+            if (sender.isOp()) {
+                list.add("log");
+                list.add("map");
+                list.add("qrcode");
+                list.add("reload");
+            }
+            return list;
         }
         if (args.length == 2) {
-            if ("points".equalsIgnoreCase(args[0])) {
+            if ("points".equalsIgnoreCase(args[0]) && sender.hasPermission("sweet.checkout.points")) {
                 List<String> list = new ArrayList<>();
                 if (useAlipay) list.add("alipay");
                 if (useWeChat) list.add("wechat");
@@ -437,9 +444,30 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
             if ("buy".equalsIgnoreCase(args[0])) {
                 return startsWith(ShopManager.inst().shops(sender), args[1]);
             }
-            if ("log".equalsIgnoreCase(args[0]) && sender.isOp()) {
+            if ("check".equalsIgnoreCase(args[0]) && sender.hasPermission("sweet.checkout.check.other")) {
                 if (args[1].length() > 2) {
                     startsWith(Util.players.keySet(), args[1]);
+                }
+                return null;
+            }
+            if (sender.isOp()) {
+                if ("log".equalsIgnoreCase(args[0])) {
+                    if (args[1].length() > 2) {
+                        startsWith(Util.players.keySet(), args[1]);
+                    }
+                    return null;
+                }
+                if ("map".equalsIgnoreCase(args[0])) {
+                    List<String> fileList = new ArrayList<>();
+                    String lower = args[1].toLowerCase();
+                    File[] files = plugin.getDataFolder().listFiles((dir, name) -> name.endsWith(".map"));
+                    if (files != null) for (File file : files) {
+                        String name = file.getName();
+                        if (name.toLowerCase().startsWith(lower)) {
+                            fileList.add(name);
+                        }
+                    }
+                    return fileList;
                 }
             }
         }
