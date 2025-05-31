@@ -5,7 +5,7 @@ plugins {
 }
 allprojects {
     group = "top.mrxiaom.sweet.checkout"
-    version = "1.0.1"
+    version = "1.0.2"
 }
 subprojects {
     apply(plugin = "java")
