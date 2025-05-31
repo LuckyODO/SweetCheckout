@@ -68,7 +68,7 @@ public class SweetCheckout extends BukkitPlugin {
     private static void run0(BukkitPlugin plugin, Player player, List<IAction> actions, List<Pair<String, Object>> replacements, int startIndex) {
         for (int i = startIndex; i < actions.size(); i++) {
             IAction action = actions.get(i);
-            action.run(player);
+            action.run(player, replacements);
             long delay = action.delayAfterRun();
             if (delay > 0) {
                 int index = i + 1;
