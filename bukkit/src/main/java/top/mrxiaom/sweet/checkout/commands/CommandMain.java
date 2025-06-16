@@ -256,7 +256,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                 if (startDate == null) {
                     return Messages.commands__stats__wrong_start_date.tm(sender);
                 }
-                endDate = parseDate(args[1]);
+                endDate = parseDate(args[2]);
                 if (endDate == null) {
                     return Messages.commands__stats__wrong_end_date.tm(sender);
                 }
