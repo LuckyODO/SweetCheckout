@@ -198,7 +198,7 @@ static QWORD DispatchMsg(QWORD arg1, QWORD arg2)
                     std::match_results<std::string::iterator> group;
                     if (std::regex_search(content.begin(), content.end(), group, pat) && group.size() > 1)
                     {
-                        std::string money = group[2].str();
+                        std::string money = group[1].str();
                         nlohmann::json j = {
                             { "type", "wechat" },
                             { "money", money }
