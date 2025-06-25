@@ -208,7 +208,7 @@ static QWORD DispatchMsg(QWORD arg1, QWORD arg2)
                         std::string money = group[1].str();
                         nlohmann::json j = {
                             { "type", "wechat" },
-                            { "flags", "reawrd-code" },
+                            { "flags", "reward-code" },
                             { "money", money }
                         };
                         notice(j.dump(4));
