@@ -8,8 +8,6 @@ typedef uint64_t QWORD;
 
 using namespace std;
 
-typedef map<int, string> MsgTypes_t;
-
 typedef struct {
     bool is_self;
     bool is_group;
