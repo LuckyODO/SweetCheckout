@@ -19,14 +19,13 @@ import top.mrxiaom.pluginbase.func.AutoRegister;
 import top.mrxiaom.pluginbase.utils.AdventureUtil;
 import top.mrxiaom.pluginbase.utils.Pair;
 import top.mrxiaom.pluginbase.utils.Util;
-import top.mrxiaom.qrcode.QRCode;
-import top.mrxiaom.qrcode.enums.ErrorCorrectionLevel;
 import top.mrxiaom.sweet.checkout.Errors;
 import top.mrxiaom.sweet.checkout.Messages;
 import top.mrxiaom.sweet.checkout.SweetCheckout;
 import top.mrxiaom.sweet.checkout.database.TradeDatabase;
 import top.mrxiaom.sweet.checkout.func.*;
 import top.mrxiaom.sweet.checkout.func.entry.ShopItem;
+import top.mrxiaom.sweet.checkout.map.IMapSource;
 import top.mrxiaom.sweet.checkout.nms.NMS;
 import top.mrxiaom.sweet.checkout.packets.common.IPacket;
 import top.mrxiaom.sweet.checkout.packets.plugin.PacketPluginRequestOrder;
@@ -120,8 +119,8 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                             Pair.of("%money%", moneyStr),
                             Pair.of("%timeout%", paymentTimeout));
                     // 向玩家展示二维码地图
-                    QRCode code = QRCode.create(resp.getPaymentUrl(), ErrorCorrectionLevel.H);
-                    manager.requireScan(player, code, orderId, outdateTime, money -> {
+                    IMapSource source = IMapSource.fromUrl(plugin, resp.getPaymentUrl());
+                    manager.requireScan(player, source, orderId, outdateTime, money -> {
                         // 支付成功操作，给予玩家点券
                         int points = (int) Math.round(money * pointsScale);
                         info("玩家 " + player.getName() + " 通过 " + type  + " 支付 ￥" + money + " 获得了 " + points + " 点券 --" + productName + " " + orderId);
@@ -182,8 +181,8 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                             Pair.of("%money%", shop.price),
                             Pair.of("%timeout%", paymentTimeout));
                     // 向玩家展示二维码地图
-                    QRCode code = QRCode.create(resp.getPaymentUrl(), ErrorCorrectionLevel.H);
-                    manager.requireScan(player, code, orderId, outdateTime, money -> {
+                    IMapSource source = IMapSource.fromUrl(plugin, resp.getPaymentUrl());
+                    manager.requireScan(player, source, orderId, outdateTime, money -> {
                         // 支付成功操作，给予玩家奖励
                         info("玩家 " + player.getName() + " 通过 " + type + " 支付 ￥" + money + " 购买了商品 " + shop.display + " (" + shop.id + ") --" + productName + " " + orderId);
                         plugin.getTradeDatabase().log(player, LocalDateTime.now(), type, shop.price, "buy:" + shop.id);
@@ -199,8 +198,8 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                 PaymentsAndQRCodeManager manager = PaymentsAndQRCodeManager.inst();
                 long now = System.currentTimeMillis();
                 long outdateTime = now + (paymentTimeout * 1000L) + 500L;
-                QRCode code = QRCode.create(content.toString(), ErrorCorrectionLevel.H);
-                manager.requireScan(player, code, null, outdateTime, null);
+                IMapSource source = IMapSource.fromUrl(plugin, content.toString());
+                manager.requireScan(player, source, null, outdateTime, null);
                 return true;
             }
             if (args.length >= 1 && "map".equalsIgnoreCase(args[0]) && sender.isOp()) {

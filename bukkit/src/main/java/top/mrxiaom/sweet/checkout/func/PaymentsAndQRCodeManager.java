@@ -21,12 +21,15 @@ import top.mrxiaom.pluginbase.utils.Util;
 import top.mrxiaom.qrcode.QRCode;
 import top.mrxiaom.sweet.checkout.SweetCheckout;
 import top.mrxiaom.sweet.checkout.func.entry.PaymentInfo;
+import top.mrxiaom.sweet.checkout.map.IMapSource;
+import top.mrxiaom.sweet.checkout.map.MapQRCode;
 import top.mrxiaom.sweet.checkout.nms.NMS;
 import top.mrxiaom.sweet.checkout.packets.plugin.PacketPluginCancelOrder;
 import top.mrxiaom.sweet.checkout.utils.Utils;
 
 import java.io.File;
 import java.util.*;
+import java.util.List;
 import java.util.function.Consumer;
 
 @AutoRegister
@@ -180,8 +183,14 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
         }
     }
 
+    @Deprecated
     public void requireScan(Player player, QRCode code, String orderId, long outdateTime, Consumer<Double> done) {
-        requireScan(player, generateMapColors(code), orderId, outdateTime, done);
+        requireScan(player, new MapQRCode(code), orderId, outdateTime, done);
+    }
+
+    public void requireScan(Player player, IMapSource source, String orderId, long outdateTime, Consumer<Double> done) {
+        byte[] colors = source.generate(this);
+        requireScan(player, colors, orderId, outdateTime, done);
     }
 
     @SuppressWarnings({"deprecation"})
@@ -275,34 +284,20 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
         });
     }
 
-    public byte[] generateMapColors(QRCode code) {
-        int widthAndHeight = code.getModuleCount();
-        // 如果二维码放大2倍，都比128还小，那应该缩放2倍显示
-        boolean scaling = widthAndHeight * 2 < 128;
-        if (scaling) widthAndHeight *= 2;
-        // 左上角起始坐标
-        int start = (128 - widthAndHeight) / 2;
-        byte[] colors = new byte[16384];
-        // 先把地图填满亮色（背景色）
-        if (mapLightPattern != null) {
-            System.arraycopy(mapLightPattern, 0, colors, 0, colors.length);
-        } else {
-            Arrays.fill(colors, mapLightColor);
-        }
-        for (int z = 0; z < widthAndHeight; z++) {
-            for (int x = 0; x < widthAndHeight; x++) {
-                // 再画上暗色（前景色）
-                if (scaling ? code.isDark(z / 2,x / 2) : code.isDark(z, x)) {
-                    int index = (start + x) + 128 * (start + z);
-                    if (mapDarkPattern != null) {
-                        colors[index] = mapDarkPattern[index];
-                    } else {
-                        colors[index] = mapDarkColor;
-                    }
-                }
-            }
-        }
-        return colors;
+    public byte getMapDarkColor() {
+        return mapDarkColor;
+    }
+
+    public byte getMapLightColor() {
+        return mapLightColor;
+    }
+
+    public byte[] getMapDarkPattern() {
+        return mapDarkPattern;
+    }
+
+    public byte[] getMapLightPattern() {
+        return mapLightPattern;
     }
 
     /**
