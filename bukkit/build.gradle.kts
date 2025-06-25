@@ -16,9 +16,9 @@ dependencies {
     compileOnly("me.clip:placeholderapi:2.11.6")
 
     implementation("top.mrxiaom:qrcode-encoder:1.0.0")
-    implementation("net.kyori:adventure-api:4.21.0")
+    implementation("net.kyori:adventure-api:4.22.0")
     implementation("net.kyori:adventure-platform-bukkit:4.4.0")
-    implementation("net.kyori:adventure-text-minimessage:4.21.0")
+    implementation("net.kyori:adventure-text-minimessage:4.22.0")
     implementation("com.github.technicallycoded:FoliaLib:0.4.4")
     implementation("com.zaxxer:HikariCP:4.0.3")
     implementation("org.slf4j:slf4j-nop:2.0.16")
