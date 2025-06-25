@@ -6,7 +6,7 @@ val shadowGroup = "top.mrxiaom.sweet.checkout.libs"
 
 allprojects {
     dependencies {
-        implementation("de.tr7zw:item-nbt-api:2.15.0")
+        implementation("de.tr7zw:item-nbt-api:2.15.1-SNAPSHOT")
     }
 }
 
@@ -23,7 +23,7 @@ dependencies {
     implementation("com.zaxxer:HikariCP:4.0.3")
     implementation("org.slf4j:slf4j-nop:2.0.16")
     implementation("org.jetbrains:annotations:24.0.0")
-    implementation("top.mrxiaom:PluginBase:1.4.4")
+    implementation("top.mrxiaom:PluginBase:1.4.9")
     implementation("top.mrxiaom:Java-WebSocket:1.5.8")
     implementation(project(":bukkit:nms"))
     implementation(project(":packets"))
