@@ -20,7 +20,11 @@ jobs:
         uses: microsoft/setup-msbuild@v2
         with:
           msbuild-architecture: x64
-          vs-version: '[15.2,16.0)'
+      - name: Setup MSVC
+        uses: TheMrMilchmann/setup-msvc-dev@v3
+        with:
+          arch: x64
+          toolset: '15.9'
       - name: Setup NuGet
         uses: nuget/setup-nuget@v1
         with:
