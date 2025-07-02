@@ -20,9 +20,7 @@ jobs:
         uses: microsoft/setup-msbuild@v2
         with:
           msbuild-architecture: x64
-      - name: Setup Platform Toolset
-        run: |
-          choco install -y visualstudio2017buildtools --package-parameters "--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64"
+          vs-version: '[15.9,16.0)'
       - name: Setup NuGet
         uses: nuget/setup-nuget@v1
         with:
