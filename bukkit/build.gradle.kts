@@ -6,7 +6,7 @@ val shadowGroup = "top.mrxiaom.sweet.checkout.libs"
 
 allprojects {
     dependencies {
-        implementation("de.tr7zw:item-nbt-api:2.15.1-SNAPSHOT")
+        implementation("de.tr7zw:item-nbt-api:2.15.1")
     }
 }
 
