@@ -2,8 +2,8 @@ plugins {
     id ("com.gradleup.shadow")
 }
 
+java.withJavadocJar()
 val shadowGroup = "top.mrxiaom.sweet.checkout.libs"
-
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.20-R0.1-SNAPSHOT")
 

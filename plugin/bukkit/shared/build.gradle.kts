@@ -1,3 +1,5 @@
+
+java.withJavadocJar()
 val shadowGroup = "top.mrxiaom.sweet.checkout.libs"
 
 dependencies {
