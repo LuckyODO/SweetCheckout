@@ -43,6 +43,11 @@ public abstract class PluginCommon extends BukkitPlugin {
     public abstract PaymentClient handlePaymentReload(PaymentAPI parent, @Nullable String url) throws URISyntaxException;
 
     @Override
+    public Class<?> getConstructorType() {
+        return PluginCommon.class;
+    }
+
+    @Override
     protected void beforeEnable() {
         if (!NMS.init()) {
             throw new IllegalStateException("不支持的游戏版本 " + MinecraftVersion.getVersion().name());

@@ -1,5 +1,5 @@
 subprojects {
-    val pluginBase = "1.5.1"
+    val pluginBase = "1.5.2"
     extra["pluginBase"] = pluginBase
     extra["dependencies"] = listOf(
         "top.mrxiaom:qrcode-encoder:1.0.0",
