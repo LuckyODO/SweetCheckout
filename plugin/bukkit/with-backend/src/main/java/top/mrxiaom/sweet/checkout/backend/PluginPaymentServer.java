@@ -1,6 +1,5 @@
 package top.mrxiaom.sweet.checkout.backend;
 
-import com.google.common.collect.Lists;
 import com.sun.net.httpserver.HttpServer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -75,6 +74,7 @@ public class PluginPaymentServer extends AbstractPaymentServer<LocalClientInfo> 
                     os.close();
                 });
                 server.start();
+                logger.info("[Hook] HTTP 服务器已在 {} 端口启动", config.getPort());
             } catch (Throwable t) {
                 logger.warn("开启 HTTP 服务器时出现一个异常", t);
             }
