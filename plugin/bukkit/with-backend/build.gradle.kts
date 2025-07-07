@@ -33,7 +33,17 @@ tasks {
         configurations.add(shadowLink)
         val shadowRelocations: Map<String, String> by project.extra
         val shadowExcludes: List<String> by project.extra
-        shadowRelocations.forEach { (original, target) ->
+        mapOf(
+            "com.google.gson" to "gson",
+            "com.wechat" to "payment.wechat",
+            "com.alipay" to "payment.alipay",
+            "okhttp3" to "okhttp3",
+            "okio" to "okio",
+            "javax.xml" to "xml.javax",
+            "org.dom4j" to "xml.dom4j",
+            "org.w3c.dom" to "xml.w3c.dom",
+            "org.xml.sax" to "xml.sax",
+        ).plus(shadowRelocations).forEach { (original, target) ->
             relocate(original, "$shadowGroup.$target")
         }
         shadowExcludes.forEach(this::exclude)
