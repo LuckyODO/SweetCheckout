@@ -266,7 +266,7 @@ public class Configuration {
 
         public String getPaymentUrl(String price) {
             String trim = getPaymentUrls().getOrDefault(price, "").trim();
-            if (trim.isEmpty()) {
+            if (trim.isEmpty() || trim.contains("示例，")) {
                 return getPaymentUrl();
             } else {
                 return trim;
