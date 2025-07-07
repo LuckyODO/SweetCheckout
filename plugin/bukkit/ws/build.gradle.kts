@@ -14,7 +14,7 @@ dependencies {
         implementation(dependency)
     }
     implementation("top.mrxiaom:Java-WebSocket:1.5.8")
-    implementation(project(":plugin:bukkit:common"))
+    implementation(project(":plugin:bukkit:shared"))
     implementation(project(":plugin:nms"))
     implementation(project(":packets"))
 }

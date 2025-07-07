@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 import top.mrxiaom.pluginbase.BukkitPlugin;
 import top.mrxiaom.pluginbase.api.IAction;
 import top.mrxiaom.pluginbase.func.LanguageManager;
@@ -35,7 +36,7 @@ public abstract class PluginCommon extends BukkitPlugin {
         return tradeDatabase;
     }
 
-    public abstract PaymentClient createPaymentClient(PaymentAPI parent, String url) throws URISyntaxException;
+    public abstract PaymentClient handlePaymentReload(PaymentAPI parent, @Nullable String url) throws URISyntaxException;
 
     @Override
     protected void beforeEnable() {

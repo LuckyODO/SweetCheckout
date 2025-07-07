@@ -123,24 +123,16 @@ public class PaymentAPI extends AbstractModule {
     }
 
     private void reload(@Nullable String url) {
-        if (client != null && client.isOpen()) {
-            // 已连接地址与配置文件地址相同时，不断开重连
-            if (client.getUrl().equals(url)) {
-                info("重载时，配置中的后端地址无变动，保持连接");
-                return;
-            }
-            client.close();
-            client = null;
-        }
-        if (url != null) try {
-            info("正在连接到后端 " + url);
-            client = plugin.createPaymentClient(this, url);
-            client.connect();
+        try {
+            client = plugin.handlePaymentReload(this, url);
         } catch (Throwable t) {
             warn("连接后端服务器时出现异常", t);
-        } else {
-            warn("未配置后端地址，请在配置文件进行配置");
         }
+    }
+
+    @Nullable
+    public PaymentClient getClient() {
+        return client;
     }
 
     @Override
