@@ -33,6 +33,12 @@ public class SweetCheckout extends PluginCommon {
     }
 
     @Override
+    protected void afterDisable() {
+        super.afterDisable();
+        main.getServer().stop();
+    }
+
+    @Override
     public PaymentClient handlePaymentReload(PaymentAPI parent, @Nullable String url) {
         return main.getClient();
     }

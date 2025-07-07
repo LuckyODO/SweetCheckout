@@ -31,7 +31,7 @@ public class PluginPaymentServer extends AbstractPaymentServer<LocalClientInfo> 
         this.java9ProcessGetter = java9ProcessGetter;
     }
 
-    protected void stop() {
+    public void stop() {
         if (server != null) {
             server.stop(0);
             server = null;
