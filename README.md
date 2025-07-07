@@ -85,7 +85,7 @@ SweetCheckout 目录结构
 
 ## 开发者
 
-对于想要添加支付方案支持者，请参见 `backend` 模块的 [top.mrxiaom.sweet.checkout.backend.payment](https://github.com/MrXiaoM/SweetCheckout/tree/main/backend%2Fsrc%2Fmain%2Fjava%2Ftop%2Fmrxiaom%2Fsweet%2Fcheckout%2Fbackend%2Fpayment) 包。支付订单下单逻辑、支付成功事件广播逻辑、取消支付逻辑等等，都在这里，请按自身需求进行增改。  
+对于想要添加支付方案支持者，请参见 `:backend:common` 模块的 [top.mrxiaom.sweet.checkout.backend.payment](https://github.com/MrXiaoM/SweetCheckout/tree/main/backend/common/src/main/java/top/mrxiaom/sweet/checkout/backend/payment) 包。支付订单下单逻辑、支付成功事件广播逻辑、取消支付逻辑等等，都在这里，请按自身需求进行增改。  
 基本上，经过这一层接口的抽象，我们需要传递的信息大约只有：商品名（可选）、金额、订单号、支付二维码。
 
 注意：由于本项目的目标是尽可能减少中间商，会造成**增加中间商**的拉取请求将被**拒绝**。
