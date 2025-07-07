@@ -48,6 +48,14 @@ public abstract class PluginCommon extends BukkitPlugin {
     }
 
     @Override
+    protected void beforeLoad() {
+        MinecraftVersion.replaceLogger(getLogger());
+        MinecraftVersion.disableUpdateCheck();
+        MinecraftVersion.disableBStats();
+        MinecraftVersion.getVersion();
+    }
+
+    @Override
     protected void beforeEnable() {
         if (!NMS.init()) {
             throw new IllegalStateException("不支持的游戏版本 " + MinecraftVersion.getVersion().name());
