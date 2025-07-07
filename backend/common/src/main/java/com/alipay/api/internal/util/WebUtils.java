@@ -3,24 +3,12 @@ package com.alipay.api.internal.util;
 import com.alipay.api.AlipayConstants;
 import com.alipay.api.FileItem;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.*;
 import java.io.*;
 import java.lang.reflect.Field;
-import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
+import java.net.*;
 import java.net.Proxy.Type;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.security.SecureRandom;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,8 +24,8 @@ import java.util.Set;
 public class WebUtils {
 
     private static final String DEFAULT_CHARSET = AlipayConstants.CHARSET_UTF8;
-    private static final String METHOD_POST     = "POST";
-    private static final String METHOD_GET      = "GET";
+    private static final String METHOD_POST = "POST";
+    private static final String METHOD_GET = "GET";
 
     private static SSLContext ctx = null;
 
@@ -56,7 +44,7 @@ public class WebUtils {
 
         try {
             ctx = SSLContext.getInstance("TLS");
-            ctx.init(new KeyManager[0], new TrustManager[] {new DefaultTrustManager()},
+            ctx.init(new KeyManager[0], new TrustManager[]{new DefaultTrustManager()},
                     new SecureRandom());
 
             ctx.getClientSessionContext().setSessionTimeout(15);
@@ -290,7 +278,7 @@ public class WebUtils {
     }
 
     public static byte[] getTextEntry(String fieldName, String fieldValue,
-                                       String charset) throws IOException {
+                                      String charset) throws IOException {
         StringBuilder entry = new StringBuilder();
         entry.append("Content-Disposition:form-data;name=\"");
         entry.append(fieldName);
@@ -299,8 +287,8 @@ public class WebUtils {
         return entry.toString().getBytes(charset);
     }
 
-    public static  byte[] getFileEntry(String fieldName, String fileName, String mimeType,
-                                       String charset) throws IOException {
+    public static byte[] getFileEntry(String fieldName, String fileName, String mimeType,
+                                      String charset) throws IOException {
         StringBuilder entry = new StringBuilder();
         entry.append("Content-Disposition:form-data;name=\"");
         entry.append(fieldName);

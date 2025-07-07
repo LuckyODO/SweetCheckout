@@ -1,9 +1,9 @@
 package com.alipay.api.domain;
 
-import java.util.Date;
-
 import com.alipay.api.AlipayObject;
 import com.alipay.api.internal.mapping.ApiField;
+
+import java.util.Date;
 
 /**
  * 交易单明细
@@ -13,101 +13,108 @@ import com.alipay.api.internal.mapping.ApiField;
  */
 public class TradeFundBillDetail extends AlipayObject {
 
-	private static final long serialVersionUID = 1336332562147746364L;
+    private static final long serialVersionUID = 1336332562147746364L;
 
-	/**
-	 * 交易金额
-	 */
-	@ApiField("amount")
-	private String amount;
+    /**
+     * 交易金额
+     */
+    @ApiField("amount")
+    private String amount;
 
-	/**
-	 * 资产类型编码
-	 */
-	@ApiField("asset_type_code")
-	private String assetTypeCode;
+    /**
+     * 资产类型编码
+     */
+    @ApiField("asset_type_code")
+    private String assetTypeCode;
 
-	/**
-	 * 资产的属主
-	 */
-	@ApiField("asset_user_id")
-	private String assetUserId;
+    /**
+     * 资产的属主
+     */
+    @ApiField("asset_user_id")
+    private String assetUserId;
 
-	/**
-	 * 资产的属主openid
-	 */
-	@ApiField("asset_user_open_id")
-	private String assetUserOpenId;
+    /**
+     * 资产的属主openid
+     */
+    @ApiField("asset_user_open_id")
+    private String assetUserOpenId;
 
-	/**
-	 * 支付业务类型
+    /**
+     * 支付业务类型
+     * <p>
+     * PAY-支付
+     * <p>
+     * REFUND-退款
+     */
+    @ApiField("biz_pay_type")
+    private String bizPayType;
 
-PAY-支付
+    /**
+     * 创建时间
+     */
+    @ApiField("create_time")
+    private Date createTime;
 
-REFUND-退款
-	 */
-	@ApiField("biz_pay_type")
-	private String bizPayType;
+    /**
+     * 支付单据号
+     */
+    @ApiField("payment_no")
+    private String paymentNo;
 
-	/**
-	 * 创建时间
-	 */
-	@ApiField("create_time")
-	private Date createTime;
+    public String getAmount() {
+        return this.amount;
+    }
 
-	/**
-	 * 支付单据号
-	 */
-	@ApiField("payment_no")
-	private String paymentNo;
+    public void setAmount(String amount) {
+        this.amount = amount;
+    }
 
-	public String getAmount() {
-		return this.amount;
-	}
-	public void setAmount(String amount) {
-		this.amount = amount;
-	}
+    public String getAssetTypeCode() {
+        return this.assetTypeCode;
+    }
 
-	public String getAssetTypeCode() {
-		return this.assetTypeCode;
-	}
-	public void setAssetTypeCode(String assetTypeCode) {
-		this.assetTypeCode = assetTypeCode;
-	}
+    public void setAssetTypeCode(String assetTypeCode) {
+        this.assetTypeCode = assetTypeCode;
+    }
 
-	public String getAssetUserId() {
-		return this.assetUserId;
-	}
-	public void setAssetUserId(String assetUserId) {
-		this.assetUserId = assetUserId;
-	}
+    public String getAssetUserId() {
+        return this.assetUserId;
+    }
 
-	public String getAssetUserOpenId() {
-		return this.assetUserOpenId;
-	}
-	public void setAssetUserOpenId(String assetUserOpenId) {
-		this.assetUserOpenId = assetUserOpenId;
-	}
+    public void setAssetUserId(String assetUserId) {
+        this.assetUserId = assetUserId;
+    }
 
-	public String getBizPayType() {
-		return this.bizPayType;
-	}
-	public void setBizPayType(String bizPayType) {
-		this.bizPayType = bizPayType;
-	}
+    public String getAssetUserOpenId() {
+        return this.assetUserOpenId;
+    }
 
-	public Date getCreateTime() {
-		return this.createTime;
-	}
-	public void setCreateTime(Date createTime) {
-		this.createTime = createTime;
-	}
+    public void setAssetUserOpenId(String assetUserOpenId) {
+        this.assetUserOpenId = assetUserOpenId;
+    }
 
-	public String getPaymentNo() {
-		return this.paymentNo;
-	}
-	public void setPaymentNo(String paymentNo) {
-		this.paymentNo = paymentNo;
-	}
+    public String getBizPayType() {
+        return this.bizPayType;
+    }
+
+    public void setBizPayType(String bizPayType) {
+        this.bizPayType = bizPayType;
+    }
+
+    public Date getCreateTime() {
+        return this.createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getPaymentNo() {
+        return this.paymentNo;
+    }
+
+    public void setPaymentNo(String paymentNo) {
+        this.paymentNo = paymentNo;
+    }
 
 }

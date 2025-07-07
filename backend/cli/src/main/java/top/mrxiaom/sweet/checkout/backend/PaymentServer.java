@@ -1,6 +1,6 @@
 package top.mrxiaom.sweet.checkout.backend;
 
-import com.google.gson.*;
+import com.google.gson.JsonObject;
 import org.java_websocket.IDecodeInjector;
 import org.java_websocket.WebSocket;
 import org.java_websocket.WebSocketImpl;
@@ -16,7 +16,9 @@ import top.mrxiaom.sweet.checkout.packets.common.IPacket;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * 后端 WebSocket/Http 路由
@@ -25,6 +27,7 @@ import java.util.*;
 public class PaymentServer extends AbstractPaymentServer<WebSocketClientInfo> {
     private final ConsoleMain console;
     private final WS webSocketServer;
+
     public PaymentServer(ConsoleMain console, Logger logger, int port) {
         super(logger);
         this.console = console;

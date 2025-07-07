@@ -20,6 +20,7 @@ public class PluginPaymentServer extends AbstractPaymentServer<LocalClientInfo> 
     private final BukkitMain main;
     private HttpServer server;
     private Supplier<List<String>> java9ProcessGetter;
+
     public PluginPaymentServer(BukkitMain main, Logger logger) {
         super(logger);
         this.main = main;

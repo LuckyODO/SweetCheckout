@@ -24,6 +24,7 @@ public abstract class CommonMain<C extends ClientInfo<C>, S extends AbstractPaym
                 public boolean shouldSkipField(FieldAttributes fieldAttributes) {
                     return false;
                 }
+
                 @Override
                 public boolean shouldSkipClass(Class<?> aClass) {
                     String name = aClass.getName();
@@ -32,6 +33,7 @@ public abstract class CommonMain<C extends ClientInfo<C>, S extends AbstractPaym
             })
             .setPrettyPrinting()
             .create();
+
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public CommonMain(Logger logger, File dataFolder) {
         this.logger = logger;

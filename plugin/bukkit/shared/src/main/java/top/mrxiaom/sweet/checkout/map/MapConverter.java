@@ -9,7 +9,8 @@ import java.awt.image.BufferedImage;
  * sources from <a href="https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/browse/src/main/java/org/bukkit/map/MapPalette.java">SpigotMC</a>
  */
 public class MapConverter {
-    private MapConverter() {}
+    private MapConverter() {
+    }
 
     @NotNull
     private static Color c(int r, int g, int b) {

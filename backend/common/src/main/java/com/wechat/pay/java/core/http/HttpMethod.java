@@ -1,14 +1,16 @@
 package com.wechat.pay.java.core.http;
 
-/** HTTP方法 */
+/**
+ * HTTP方法
+ */
 public enum HttpMethod {
-  GET,
+    GET,
 
-  PUT,
+    PUT,
 
-  POST,
+    POST,
 
-  PATCH,
+    PATCH,
 
-  DELETE
+    DELETE
 }

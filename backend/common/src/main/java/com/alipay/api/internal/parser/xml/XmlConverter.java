@@ -30,7 +30,9 @@ public class XmlConverter implements Converter {
     }
 
     private <T> T getModelFromXML(final Element element, Class<T> clazz) throws AlipayApiException {
-        if (element == null) { return null; }
+        if (element == null) {
+            return null;
+        }
 
         return Converters.convert(clazz, new Reader() {
             public boolean hasReturnField(Object name) {
@@ -82,7 +84,9 @@ public class XmlConverter implements Converter {
                         } else {
                             obj = getModelFromXML(itemE, subType);
                         }
-                        if (obj != null) { list.add(obj); }
+                        if (obj != null) {
+                            list.add(obj);
+                        }
                     }
                 }
                 return list;
@@ -143,6 +147,7 @@ public class XmlConverter implements Converter {
     }
 
     /**
+     *
      */
     private String getSignSourceData(AlipayRequest<?> request, String body) {
 
@@ -169,7 +174,6 @@ public class XmlConverter implements Converter {
 
     /**
      * 获取签名
-     *
      */
     private String getSign(String body) {
 
@@ -189,7 +193,6 @@ public class XmlConverter implements Converter {
 
     /**
      * 获取证书序列号
-     *
      */
     private String getCert(String body) {
 
@@ -209,7 +212,6 @@ public class XmlConverter implements Converter {
 
     /**
      * 签名源串
-     *
      */
     private String parseSignSourceData(String body, String rootNode, int indexOfRootNode) {
 
@@ -244,6 +246,7 @@ public class XmlConverter implements Converter {
     }
 
     /**
+     *
      */
     private ResponseParseItem getXMLSignSourceData(AlipayRequest<?> request, String body) {
         String rootNode = request.getApiMethodName().replace('.', '_')
@@ -267,7 +270,6 @@ public class XmlConverter implements Converter {
 
     /**
      * 绛惧��婧�涓�
-     *
      */
     private ResponseParseItem parseXMLSignSourceData(String body, String rootNode,
                                                      int indexOfRootNode) {

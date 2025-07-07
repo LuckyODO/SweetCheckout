@@ -21,8 +21,8 @@ public class AlipayLogger {
     private static final Logger blog = LoggerFactory.getLogger("sdk.biz.err");
     private static final Logger ilog = LoggerFactory.getLogger("sdk.biz.info");
 
-    private static String  osName           = System.getProperties().getProperty("os.name");
-    private static String  ip               = null;
+    private static String osName = System.getProperties().getProperty("os.name");
+    private static String ip = null;
     private static boolean needEnableLogger = false;
 
     public static void setNeedEnableLogger(boolean needEnableLogger) {

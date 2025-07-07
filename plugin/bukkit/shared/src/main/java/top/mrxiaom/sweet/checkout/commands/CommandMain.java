@@ -1,5 +1,5 @@
 package top.mrxiaom.sweet.checkout.commands;
-		
+
 import com.google.common.collect.Lists;
 import net.kyori.adventure.inventory.Book;
 import org.bukkit.OfflinePlayer;
@@ -50,6 +50,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
     private List<String> pointsNames;
     private List<IAction> pointsCommands;
     private int statsTop;
+
     public CommandMain(PluginCommon plugin) {
         super(plugin);
         registerCommand("sweetcheckout", this);
@@ -113,7 +114,8 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                     String orderId = resp.getOrderId();
                     long now = System.currentTimeMillis();
                     long outdateTime = now + (paymentTimeout * 1000L) + 500L;
-                    if (plugin.processingLogs) info("玩家 " + player.getName() + " 通过 " + type + " 下单点券 (￥" + moneyStr + ") 成功，订单号为 " + orderId);
+                    if (plugin.processingLogs)
+                        info("玩家 " + player.getName() + " 通过 " + type + " 下单点券 (￥" + moneyStr + ") 成功，订单号为 " + orderId);
                     Messages.commands__points__sent.tm(player,
                             Pair.of("%order_id%", orderId),
                             Pair.of("%money%", moneyStr),
@@ -123,12 +125,12 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                     manager.requireScan(player, source, orderId, outdateTime, money -> {
                         // 支付成功操作，给予玩家点券
                         int points = (int) Math.round(money * pointsScale);
-                        info("玩家 " + player.getName() + " 通过 " + type  + " 支付 ￥" + money + " 获得了 " + points + " 点券 --" + productName + " " + orderId);
+                        info("玩家 " + player.getName() + " 通过 " + type + " 支付 ￥" + money + " 获得了 " + points + " 点券 --" + productName + " " + orderId);
                         plugin.getTradeDatabase().log(player, LocalDateTime.now(), type, moneyStr, "points:" + points);
                         plugin.run(player, pointsCommands,
-                            Pair.of("%points%", points),
-                            Pair.of("%money%", money),
-                            Pair.of("%money_round%", (int) Math.round(money)));
+                                Pair.of("%points%", points),
+                                Pair.of("%money%", money),
+                                Pair.of("%money_round%", (int) Math.round(money)));
                     });
                 });
             }
@@ -174,7 +176,8 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                     String orderId = resp.getOrderId();
                     long now = System.currentTimeMillis();
                     long outdateTime = now + (paymentTimeout * 1000L) + 500L;
-                    if (plugin.processingLogs) info("玩家 " + player.getName() + " 通过 " + type + " 下单商品 " + shop.display + " (" + shop.id + ") 成功，订单号为 " + orderId);
+                    if (plugin.processingLogs)
+                        info("玩家 " + player.getName() + " 通过 " + type + " 下单商品 " + shop.display + " (" + shop.id + ") 成功，订单号为 " + orderId);
                     Messages.commands__buy__sent.tm(player,
                             Pair.of("%order_id%", orderId),
                             Pair.of("%display%", shop.display),
@@ -370,15 +373,15 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                     Pair.of("%money%", moneyStr),
                     Pair.of("%reason%", reason));
         }
-		if (args.length >= 1 && "reload".equalsIgnoreCase(args[0]) && sender.isOp()) {
+        if (args.length >= 1 && "reload".equalsIgnoreCase(args[0]) && sender.isOp()) {
             if (args.length == 2 && "database".equalsIgnoreCase(args[1])) {
                 plugin.options.database().reloadConfig();
                 plugin.options.database().reconnect();
                 return Messages.commands__reload_database.tm(sender);
             }
-			plugin.reloadConfig();
-			return Messages.commands__reload.tm(sender);
-		}
+            plugin.reloadConfig();
+            return Messages.commands__reload.tm(sender);
+        }
         return (sender.isOp()
                 ? Messages.commands__help__admin
                 : Messages.commands__help__normal
@@ -388,9 +391,11 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
     private static String formatMoney(double money) {
         return String.format("%.2f", money).replace(".00", "");
     }
+
     private static LocalDate clone(LocalDate date) {
         return LocalDate.of(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
     }
+
     @Nullable
     private static LocalDate parseDate(String input) {
         String[] split = input.split("-", 3);
@@ -416,6 +421,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
     }
 
     private static final List<String> emptyList = Collections.emptyList();
+
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         if (args.length == 1) {
@@ -491,6 +497,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
     public List<String> startsWith(Collection<String> list, String s) {
         return startsWith(null, list, s);
     }
+
     public List<String> startsWith(String[] addition, Collection<String> list, String s) {
         String s1 = s.toLowerCase();
         List<String> stringList = new ArrayList<>(list);

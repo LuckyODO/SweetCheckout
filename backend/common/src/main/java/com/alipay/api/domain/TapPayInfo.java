@@ -11,19 +11,20 @@ import com.alipay.api.internal.mapping.ApiField;
  */
 public class TapPayInfo extends AlipayObject {
 
-	private static final long serialVersionUID = 2672288892546386141L;
+    private static final long serialVersionUID = 2672288892546386141L;
 
-	/**
-	 * 碰一下支付的支付介质类型，标识当前支付为碰一下支付
-	 */
-	@ApiField("payment_medium_type")
-	private String paymentMediumType;
+    /**
+     * 碰一下支付的支付介质类型，标识当前支付为碰一下支付
+     */
+    @ApiField("payment_medium_type")
+    private String paymentMediumType;
 
-	public String getPaymentMediumType() {
-		return this.paymentMediumType;
-	}
-	public void setPaymentMediumType(String paymentMediumType) {
-		this.paymentMediumType = paymentMediumType;
-	}
+    public String getPaymentMediumType() {
+        return this.paymentMediumType;
+    }
+
+    public void setPaymentMediumType(String paymentMediumType) {
+        this.paymentMediumType = paymentMediumType;
+    }
 
 }

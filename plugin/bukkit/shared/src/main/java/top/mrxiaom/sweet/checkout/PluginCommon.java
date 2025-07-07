@@ -33,6 +33,7 @@ public abstract class PluginCommon extends BukkitPlugin {
         );
         scheduler = new FoliaLibScheduler(this);
     }
+
     public boolean processingLogs;
     private TradeDatabase tradeDatabase;
 

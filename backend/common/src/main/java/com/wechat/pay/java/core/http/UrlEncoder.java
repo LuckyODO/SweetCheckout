@@ -60,6 +60,7 @@ public class UrlEncoder {
         DONT_NEED_ENCODING.set('.');
         DONT_NEED_ENCODING.set('*');
     }
+
     /**
      * 对参数进行url编码
      *
@@ -81,7 +82,7 @@ public class UrlEncoder {
      * World Wide Web Consortium Recommendation</a> states that
      * UTF-8 should be used. Not doing so may introduce incompatibilities.</em>
      *
-     * @param   s   {@code String} to be translated.
+     * @param s       {@code String} to be translated.
      * @param charset the given charset
      * @return the translated {@code String}.
      * @throws NullPointerException if {@code s} or {@code charset} is {@code null}.
@@ -93,7 +94,7 @@ public class UrlEncoder {
         StringBuilder out = new StringBuilder(s.length());
         CharArrayWriter charArrayWriter = new CharArrayWriter();
 
-        for (int i = 0; i < s.length();) {
+        for (int i = 0; i < s.length(); ) {
             int c = s.charAt(i);
             //System.out.println("Examining character: " + c);
             if (DONT_NEED_ENCODING.get(c)) {
@@ -102,7 +103,7 @@ public class UrlEncoder {
                     needToChange = true;
                 }
                 //System.out.println("Storing: " + c);
-                out.append((char)c);
+                out.append((char) c);
                 i++;
             } else {
                 // convert to external encoding before hex conversion
@@ -121,8 +122,8 @@ public class UrlEncoder {
                           System.out.println(Integer.toHexString(c)
                           + " is high surrogate");
                         */
-                        if ( (i+1) < s.length()) {
-                            int d = s.charAt(i+1);
+                        if ((i + 1) < s.length()) {
+                            int d = s.charAt(i + 1);
                             /*
                               System.out.println("\tExamining "
                               + Integer.toHexString(d));
@@ -164,6 +165,6 @@ public class UrlEncoder {
             }
         }
 
-        return (needToChange? out.toString() : s);
+        return (needToChange ? out.toString() : s);
     }
 }

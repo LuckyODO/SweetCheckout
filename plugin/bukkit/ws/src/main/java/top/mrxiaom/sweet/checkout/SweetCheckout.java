@@ -12,6 +12,7 @@ public class SweetCheckout extends PluginCommon {
     public static SweetCheckout getInstance() {
         return (SweetCheckout) BukkitPlugin.getInstance();
     }
+
     @Override
     public PaymentClient handlePaymentReload(PaymentAPI parent, @Nullable String url) throws URISyntaxException {
         PaymentClient client = parent.getClient();

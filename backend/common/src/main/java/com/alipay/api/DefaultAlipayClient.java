@@ -14,14 +14,14 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DefaultAlipayClient extends AbstractAlipayClient {
 
-    private String                                     privateKey;
-    private String                                     encryptKey;
-    private String                                     alipayPublicKey;
-    private Signer                                     signer;
-    private SignChecker                                signChecker;
-    private Encryptor                                  encryptor;
-    private Decryptor                                  decryptor;
-    private X509Certificate                            cert;
+    private String privateKey;
+    private String encryptKey;
+    private String alipayPublicKey;
+    private Signer signer;
+    private SignChecker signChecker;
+    private Encryptor encryptor;
+    private Decryptor decryptor;
+    private X509Certificate cert;
     private ConcurrentHashMap<String, X509Certificate> alipayPublicCertMap;
 
     /**

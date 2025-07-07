@@ -15,8 +15,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ProtocolData {
 
-    private static final AtomicInteger seq        = new AtomicInteger(0);
-    private static final String        RANDOM_NUM = AlipayUtils.toRadix62Str(
+    private static final AtomicInteger seq = new AtomicInteger(0);
+    private static final String RANDOM_NUM = AlipayUtils.toRadix62Str(
             new Random().nextInt((int) AlipayUtils.fromRadix62Str("zz")), 2);
 
     private String fromSys;

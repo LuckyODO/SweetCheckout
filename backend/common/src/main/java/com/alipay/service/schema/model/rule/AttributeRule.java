@@ -17,9 +17,9 @@ import org.dom4j.Element;
  */
 public class AttributeRule {
 
-    private String           name;
+    private String name;
     private AttrRuleTypeEnum type;
-    private String           value;
+    private String value;
 
     public Element toElement(String attributeId) throws SchemaException {
         Element rule = XmlUtils.createRootElement("rule");

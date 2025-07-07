@@ -1,7 +1,6 @@
 package top.mrxiaom.sweet.checkout;
 
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.plugin.PluginBase;
 import org.jetbrains.annotations.Nullable;
 import top.mrxiaom.pluginbase.BukkitPlugin;
 import top.mrxiaom.sweet.checkout.api.PaymentClient;
@@ -14,6 +13,7 @@ public class SweetCheckout extends PluginCommon {
     public static SweetCheckout getInstance() {
         return (SweetCheckout) BukkitPlugin.getInstance();
     }
+
     private BukkitMain main;
 
     public BukkitMain getBackend() {

@@ -5,7 +5,10 @@ import com.alipay.api.internal.mapping.ApiField;
 import com.alipay.api.internal.mapping.ApiListField;
 import com.alipay.api.internal.util.AlipayLogger;
 
-import java.beans.*;
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -18,10 +21,10 @@ import java.util.*;
 
 public class JSONWriter {
 
-    private StringBuffer  buf           = new StringBuffer();
-    private Stack<Object> calls         = new Stack<>();
-    private boolean       emitClassName = true;
-    private DateFormat    format;
+    private StringBuffer buf = new StringBuffer();
+    private Stack<Object> calls = new Stack<>();
+    private boolean emitClassName = true;
+    private DateFormat format;
     private static final String GET_PREFIX = "get";
     private static final String SET_PREFIX = "set";
     private static final String IS_PREFIX = "is";
@@ -74,7 +77,9 @@ public class JSONWriter {
             add(null);
         } else {
             calls.push(object);
-            if (object instanceof Class<?>) { string(object); } else if (object instanceof Boolean) {
+            if (object instanceof Class<?>) {
+                string(object);
+            } else if (object instanceof Boolean) {
                 bool((Boolean) object);
             } else if (object instanceof Number) {
                 add(object);
@@ -90,8 +95,14 @@ public class JSONWriter {
                 array((Iterator<?>) object, isApiModel);
             } else if (object instanceof Collection<?>) {
                 array(((Collection<?>) object).iterator(), isApiModel);
-            } else if (object instanceof Date) { date((Date) object); } else {
-                if (isApiModel) { model(object); } else { bean(object); }
+            } else if (object instanceof Date) {
+                date((Date) object);
+            } else {
+                if (isApiModel) {
+                    model(object);
+                } else {
+                    bean(object);
+                }
             }
             calls.pop();
         }
@@ -256,7 +267,9 @@ public class JSONWriter {
             value(e.getKey());
             add(":");
             value(e.getValue());
-            if (it.hasNext()) { add(','); }
+            if (it.hasNext()) {
+                add(',');
+            }
         }
         add("}");
     }
@@ -269,7 +282,9 @@ public class JSONWriter {
         add("[");
         while (it.hasNext()) {
             value(it.next(), isApiModel);
-            if (it.hasNext()) { add(","); }
+            if (it.hasNext()) {
+                add(",");
+            }
         }
         add("]");
     }
@@ -283,7 +298,9 @@ public class JSONWriter {
         int length = Array.getLength(object);
         for (int i = 0; i < length; ++i) {
             value(Array.get(object, i), isApiModel);
-            if (i < length - 1) { add(','); }
+            if (i < length - 1) {
+                add(',');
+            }
         }
         add("]");
     }
@@ -306,14 +323,26 @@ public class JSONWriter {
         add('"');
         CharacterIterator it = new StringCharacterIterator(obj.toString());
         for (char c = it.first(); c != CharacterIterator.DONE; c = it.next()) {
-            if (c == '"') { add("\\\""); } else if (c == '\\') { add("\\\\"); } else if (c == '/') { add("\\/"); } else if (c == '\b') {
+            if (c == '"') {
+                add("\\\"");
+            } else if (c == '\\') {
+                add("\\\\");
+            } else if (c == '/') {
+                add("\\/");
+            } else if (c == '\b') {
                 add("\\b");
             } else if (c
-                    == '\f') { add("\\f"); } else if (c == '\n') {
+                    == '\f') {
+                add("\\f");
+            } else if (c == '\n') {
                 add("\\n");
             } else if (c
-                    == '\r') { add("\\r"); } else if (c
-                    == '\t') { add("\\t"); } else if (Character
+                    == '\r') {
+                add("\\r");
+            } else if (c
+                    == '\t') {
+                add("\\t");
+            } else if (Character
                     .isISOControl(c)) {
                 unicode(c);
             } else {

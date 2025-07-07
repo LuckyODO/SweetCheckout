@@ -11,30 +11,34 @@
 
 package com.wechat.pay.java.service.partnerpayments.nativepay.model;
 
-import static com.wechat.pay.java.core.util.StringUtil.toIndentedString;
-
 import com.google.gson.annotations.SerializedName;
 
-/** PrepayResponse */
+import static com.wechat.pay.java.core.util.StringUtil.toIndentedString;
+
+/**
+ * PrepayResponse
+ */
 public class PrepayResponse {
-  /** codeUrl 说明：二维码链接 */
-  @SerializedName("code_url")
-  private String codeUrl;
+    /**
+     * codeUrl 说明：二维码链接
+     */
+    @SerializedName("code_url")
+    private String codeUrl;
 
-  public String getCodeUrl() {
-    return codeUrl;
-  }
+    public String getCodeUrl() {
+        return codeUrl;
+    }
 
-  public void setCodeUrl(String codeUrl) {
-    this.codeUrl = codeUrl;
-  }
+    public void setCodeUrl(String codeUrl) {
+        this.codeUrl = codeUrl;
+    }
 
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class PrepayResponse {\n");
-    sb.append("    codeUrl: ").append(toIndentedString(codeUrl)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("class PrepayResponse {\n");
+        sb.append("    codeUrl: ").append(toIndentedString(codeUrl)).append("\n");
+        sb.append("}");
+        return sb.toString();
+    }
 }

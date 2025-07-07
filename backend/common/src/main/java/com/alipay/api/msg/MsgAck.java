@@ -9,11 +9,11 @@ package com.alipay.api.msg;
  */
 public class MsgAck {
 
-    private String        xCmd;
+    private String xCmd;
     private MsgStatusEnum xStatus;
-    private String        xCode;
-    private String        xError;
-    private String        xMessageId;
+    private String xCode;
+    private String xError;
+    private String xMessageId;
 
     /**
      * Getter method for property <tt>xCmd</tt>.

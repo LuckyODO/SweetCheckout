@@ -11,19 +11,20 @@ import com.alipay.api.internal.mapping.ApiField;
  */
 public class TradePrecreateConfirmExtendParam extends AlipayObject {
 
-	private static final long serialVersionUID = 2377396791112645869L;
+    private static final long serialVersionUID = 2377396791112645869L;
 
-	/**
-	 * 发码站点
-	 */
-	@ApiField("precreate_code_from")
-	private String precreateCodeFrom;
+    /**
+     * 发码站点
+     */
+    @ApiField("precreate_code_from")
+    private String precreateCodeFrom;
 
-	public String getPrecreateCodeFrom() {
-		return this.precreateCodeFrom;
-	}
-	public void setPrecreateCodeFrom(String precreateCodeFrom) {
-		this.precreateCodeFrom = precreateCodeFrom;
-	}
+    public String getPrecreateCodeFrom() {
+        return this.precreateCodeFrom;
+    }
+
+    public void setPrecreateCodeFrom(String precreateCodeFrom) {
+        this.precreateCodeFrom = precreateCodeFrom;
+    }
 
 }

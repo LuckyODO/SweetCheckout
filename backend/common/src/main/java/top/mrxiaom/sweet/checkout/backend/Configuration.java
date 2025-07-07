@@ -27,10 +27,11 @@ public class Configuration {
 
     /**
      * 从配置或者文件读取字符串
-     * @param logger 日志记录器，用于警告
+     *
+     * @param logger     日志记录器，用于警告
      * @param dataFolder 数据文件夹
-     * @param name 配置名，用于警告
-     * @param str 输入的字符串
+     * @param name       配置名，用于警告
+     * @param str        输入的字符串
      * @return 如果输入的字符串以 <code>file:</code> 开头，则读取文件内容，反之返回输入的字符串
      */
     private static String parseString(Logger logger, File dataFolder, String name, String str) {
@@ -93,6 +94,7 @@ public class Configuration {
 
         @Expose(serialize = false, deserialize = false)
         private Config config;
+
         private void postLoad(File dataFolder) {
             if (isEnable()) {
                 String privateKeyStr = getPrivateKey();
@@ -106,6 +108,7 @@ public class Configuration {
                         .build();
             }
         }
+
         public boolean isEnable() {
             return enable;
         }
@@ -146,6 +149,7 @@ public class Configuration {
             return config;
         }
     }
+
     @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
     public static class AlipayFaceToFace {
         private boolean enable = false;
@@ -160,6 +164,7 @@ public class Configuration {
 
         @Expose(serialize = false, deserialize = false)
         private AlipayConfig config;
+
         private void postLoad(File dataFolder) {
             if (isEnable()) {
                 String privateKeyStr = getPrivateKey();
@@ -179,6 +184,7 @@ public class Configuration {
                 this.config = alipayConfig;
             }
         }
+
         public boolean isEnable() {
             return enable;
         }
@@ -203,6 +209,7 @@ public class Configuration {
             return config;
         }
     }
+
     @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
     public static class Hook {
         private boolean enable = true;
@@ -229,6 +236,7 @@ public class Configuration {
             return alipay;
         }
     }
+
     @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
     public static class WeChatHook extends HookProperties {
         @SerializedName("require_process")
@@ -238,10 +246,12 @@ public class Configuration {
             return requireProcess;
         }
     }
+
     @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
     public static class AlipayHook extends HookProperties {
 
     }
+
     @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
     public static abstract class HookProperties {
         private boolean enable = false;

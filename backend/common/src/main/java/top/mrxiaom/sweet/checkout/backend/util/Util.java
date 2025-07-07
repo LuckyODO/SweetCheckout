@@ -1,6 +1,5 @@
 package top.mrxiaom.sweet.checkout.backend.util;
 
-import java.util.List;
 import java.util.Optional;
 
 public class Util {

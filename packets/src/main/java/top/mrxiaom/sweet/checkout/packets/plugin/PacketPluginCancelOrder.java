@@ -25,6 +25,7 @@ public class PacketPluginCancelOrder implements IPacket<PacketPluginCancelOrder.
     public Class<Response> getResponsePacket() {
         return Response.class;
     }
+
     @SuppressWarnings("FieldMayBeFinal")
     public static class Response implements IResponsePacket {
         /**

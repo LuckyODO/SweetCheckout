@@ -1,4 +1,3 @@
-
 java.withJavadocJar()
 
 dependencies {

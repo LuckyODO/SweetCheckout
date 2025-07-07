@@ -3,7 +3,7 @@ package com.alipay.api.internal.util.json;
 public class BufferErrorListener implements JSONErrorListener {
 
     protected StringBuffer buffer;
-    private   String       input;
+    private String input;
 
     public BufferErrorListener(StringBuffer buffer) {
         this.buffer = buffer;

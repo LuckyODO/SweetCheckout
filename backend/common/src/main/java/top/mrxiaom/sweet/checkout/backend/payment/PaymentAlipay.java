@@ -24,6 +24,7 @@ import java.util.*;
 public class PaymentAlipay<C extends ClientInfo<C>> {
     AbstractPaymentServer<C> server;
     public Map<String, ClientInfo.Order<C>> moneyLocked = new HashMap<>();
+
     public PaymentAlipay(AbstractPaymentServer<C> server) {
         this.server = server;
     }

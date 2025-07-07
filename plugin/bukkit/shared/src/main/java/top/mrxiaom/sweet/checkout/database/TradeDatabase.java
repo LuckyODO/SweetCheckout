@@ -16,7 +16,10 @@ import top.mrxiaom.sweet.checkout.func.ShopManager;
 
 import java.sql.*;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 public class TradeDatabase extends AbstractPluginHolder implements IDatabase {
     public static class Log implements Comparable<Log> {
@@ -47,8 +50,10 @@ public class TradeDatabase extends AbstractPluginHolder implements IDatabase {
             return o.time.compareTo(time);
         }
     }
+
     private String TABLE_TRADE_LOG;
     private boolean supportAnyValue;
+
     public TradeDatabase(PluginCommon plugin) {
         super(plugin);
     }
@@ -64,7 +69,7 @@ public class TradeDatabase extends AbstractPluginHolder implements IDatabase {
                         "`type` VARCHAR(24)," +
                         "`money` VARCHAR(32)," +
                         "`reason` LONGTEXT" +
-                ");"
+                        ");"
         )) {
             ps.execute();
         }
@@ -87,9 +92,9 @@ public class TradeDatabase extends AbstractPluginHolder implements IDatabase {
 
     public void log(OfflinePlayer player, LocalDateTime time, String type, String money, String reason) {
         try (Connection conn = plugin.getConnection();
-            PreparedStatement ps = conn.prepareStatement(
-                    "INSERT INTO `" + TABLE_TRADE_LOG + "`(`uuid`,`name`,`time`,`type`,`money`,`reason`) VALUES(?,?,?,?,?,?);"
-            )) {
+             PreparedStatement ps = conn.prepareStatement(
+                     "INSERT INTO `" + TABLE_TRADE_LOG + "`(`uuid`,`name`,`time`,`type`,`money`,`reason`) VALUES(?,?,?,?,?,?);"
+             )) {
             ps.setString(1, player.getUniqueId().toString());
             String name = player.getName();
             ps.setString(2, name == null ? "" : name);
@@ -132,9 +137,9 @@ public class TradeDatabase extends AbstractPluginHolder implements IDatabase {
 
     public List<Log> get(String startDate, String endDate) {
         try (Connection conn = plugin.getConnection();
-            PreparedStatement ps = conn.prepareStatement(
-                    "SELECT * FROM `" + TABLE_TRADE_LOG + "` WHERE `time` BETWEEN ? AND ?;"
-            )) {
+             PreparedStatement ps = conn.prepareStatement(
+                     "SELECT * FROM `" + TABLE_TRADE_LOG + "` WHERE `time` BETWEEN ? AND ?;"
+             )) {
             ps.setString(1, startDate);
             ps.setString(2, endDate);
             try (ResultSet result = ps.executeQuery()) {
@@ -162,9 +167,9 @@ public class TradeDatabase extends AbstractPluginHolder implements IDatabase {
 
     public List<Log> get(UUID uuid, int limit) {
         try (Connection conn = plugin.getConnection();
-            PreparedStatement ps = conn.prepareStatement(
-                    "SELECT * FROM `" + TABLE_TRADE_LOG + "` WHERE `uuid`=? ORDER BY `time` DESC LIMIT " + limit + ";"
-            )) {
+             PreparedStatement ps = conn.prepareStatement(
+                     "SELECT * FROM `" + TABLE_TRADE_LOG + "` WHERE `uuid`=? ORDER BY `time` DESC LIMIT " + limit + ";"
+             )) {
             ps.setString(1, uuid.toString());
             try (ResultSet result = ps.executeQuery()) {
                 List<Log> list = new ArrayList<>();
@@ -190,14 +195,14 @@ public class TradeDatabase extends AbstractPluginHolder implements IDatabase {
                 ? "ANY_VALUE(`uuid`) AS `uuid`,ANY_VALUE(`name`) AS `name`,"
                 : "`uuid`,`name`,";
         try (Connection conn = plugin.getConnection();
-            PreparedStatement ps = conn.prepareStatement(
-                    "SELECT " + selection +
-                        "SUM(`money`) AS `total_money` " +
-                    "FROM `" + TABLE_TRADE_LOG + "` " +
-                    "GROUP BY `uuid` " +
-                    "ORDER BY `total_money` DESC " +
-                    "LIMIT " + top + ";");
-            ResultSet result = ps.executeQuery()) {
+             PreparedStatement ps = conn.prepareStatement(
+                     "SELECT " + selection +
+                             "SUM(`money`) AS `total_money` " +
+                             "FROM `" + TABLE_TRADE_LOG + "` " +
+                             "GROUP BY `uuid` " +
+                             "ORDER BY `total_money` DESC " +
+                             "LIMIT " + top + ";");
+             ResultSet result = ps.executeQuery()) {
             List<RankManager.Rank> list = new ArrayList<>();
             while (result.next()) {
                 String uuid = result.getString("uuid");

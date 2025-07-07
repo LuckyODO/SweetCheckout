@@ -11,30 +11,34 @@
 
 package com.wechat.pay.java.service.partnerpayments.nativepay.model;
 
-import static com.wechat.pay.java.core.util.StringUtil.toIndentedString;
-
 import com.google.gson.annotations.SerializedName;
 
-/** SettleInfo */
+import static com.wechat.pay.java.core.util.StringUtil.toIndentedString;
+
+/**
+ * SettleInfo
+ */
 public class SettleInfo {
-  /** profitSharing 说明：是否指定分账 */
-  @SerializedName("profit_sharing")
-  private Boolean profitSharing;
+    /**
+     * profitSharing 说明：是否指定分账
+     */
+    @SerializedName("profit_sharing")
+    private Boolean profitSharing;
 
-  public Boolean getProfitSharing() {
-    return profitSharing;
-  }
+    public Boolean getProfitSharing() {
+        return profitSharing;
+    }
 
-  public void setProfitSharing(Boolean profitSharing) {
-    this.profitSharing = profitSharing;
-  }
+    public void setProfitSharing(Boolean profitSharing) {
+        this.profitSharing = profitSharing;
+    }
 
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class SettleInfo {\n");
-    sb.append("    profitSharing: ").append(toIndentedString(profitSharing)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("class SettleInfo {\n");
+        sb.append("    profitSharing: ").append(toIndentedString(profitSharing)).append("\n");
+        sb.append("}");
+        return sb.toString();
+    }
 }

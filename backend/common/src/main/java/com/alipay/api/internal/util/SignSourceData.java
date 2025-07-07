@@ -17,11 +17,11 @@ public class SignSourceData {
     /**
      * 待验签原始内容在响应字符串中的起始位置
      */
-    private final int    beginIndex;
+    private final int beginIndex;
     /**
      * 待验签原始内容在响应字符串中的结束位置
      */
-    private final int    endIndex;
+    private final int endIndex;
 
     public SignSourceData(String sourceData, int beginIndex, int endIndex) {
         this.sourceData = sourceData;

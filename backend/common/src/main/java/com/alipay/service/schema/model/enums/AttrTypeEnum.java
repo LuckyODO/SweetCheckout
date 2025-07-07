@@ -1,10 +1,6 @@
 package com.alipay.service.schema.model.enums;
 
-import com.alipay.service.schema.model.attribute.Attribute;
-import com.alipay.service.schema.model.attribute.ComplexAttribute;
-import com.alipay.service.schema.model.attribute.MultiAttribute;
-import com.alipay.service.schema.model.attribute.MultiComplexAttribute;
-import com.alipay.service.schema.model.attribute.SingleAttribute;
+import com.alipay.service.schema.model.attribute.*;
 
 import java.util.function.Supplier;
 

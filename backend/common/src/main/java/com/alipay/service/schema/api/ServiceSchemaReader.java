@@ -1,11 +1,7 @@
 package com.alipay.service.schema.api;
 
 import com.alipay.service.schema.exception.SchemaException;
-import com.alipay.service.schema.model.attribute.Attribute;
-import com.alipay.service.schema.model.attribute.ComplexAttribute;
-import com.alipay.service.schema.model.attribute.MultiAttribute;
-import com.alipay.service.schema.model.attribute.MultiComplexAttribute;
-import com.alipay.service.schema.model.attribute.SingleAttribute;
+import com.alipay.service.schema.model.attribute.*;
 import com.alipay.service.schema.model.enums.AttrRuleTypeEnum;
 import com.alipay.service.schema.model.enums.AttrTypeEnum;
 import com.alipay.service.schema.model.enums.AttrValueTypeEnum;

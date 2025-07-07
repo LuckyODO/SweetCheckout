@@ -18,6 +18,7 @@ import java.util.TimerTask;
 public class PaymentWeChat<C extends ClientInfo<C>> {
     AbstractPaymentServer<C> server;
     public Map<String, ClientInfo.Order<C>> moneyLocked = new HashMap<>();
+
     public PaymentWeChat(AbstractPaymentServer<C> server) {
         this.server = server;
     }

@@ -24,9 +24,11 @@ public class RankManager extends AbstractModule {
             this.money = money;
         }
     }
+
     int top;
     IRunTask task;
     Map<Integer, Rank> rankMap = new HashMap<>();
+
     public RankManager(PluginCommon plugin) {
         super(plugin);
     }
@@ -44,7 +46,7 @@ public class RankManager extends AbstractModule {
             task = plugin.getScheduler().runTaskTimerAsync(() -> {
                 List<Rank> ranks = plugin.getTradeDatabase().calculateRank(top);
                 rankMap.clear();
-                for (int i = 0; i < ranks.size() && i < top;) {
+                for (int i = 0; i < ranks.size() && i < top; ) {
                     Rank rank = ranks.get(i++);
                     rankMap.put(i, rank);
                 }

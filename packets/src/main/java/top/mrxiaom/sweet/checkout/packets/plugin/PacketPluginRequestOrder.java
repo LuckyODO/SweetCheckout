@@ -56,6 +56,7 @@ public class PacketPluginRequestOrder implements IPacket<PacketPluginRequestOrde
     public Class<Response> getResponsePacket() {
         return Response.class;
     }
+
     @SuppressWarnings("FieldMayBeFinal")
     public static class Response implements IResponsePacket {
         /**

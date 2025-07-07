@@ -14,16 +14,21 @@ public enum CancelReasons implements IHolderAccessor {
     // TODO: 添加各种取消原因
 
     ;
+
     CancelReasons(String defaultValue) {
         holder = wrap(this, defaultValue);
     }
+
     CancelReasons(String... defaultValue) {
         holder = wrap(this, defaultValue);
     }
+
     CancelReasons(List<String> defaultValue) {
         holder = wrap(this, defaultValue);
     }
+
     private final LanguageEnumAutoHolder<CancelReasons> holder;
+
     public LanguageEnumAutoHolder<CancelReasons> holder() {
         return holder;
     }

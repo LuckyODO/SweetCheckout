@@ -29,12 +29,10 @@ public class AsymmetricManager {
      * Gets by name.
      *
      * @param type the type
-     *
      * @return the by name
-     *
      * @throws AlipayApiException the alipay api exception
      */
-    public static IAsymmetricEncryptor getByName(String type) throws AlipayApiException{
+    public static IAsymmetricEncryptor getByName(String type) throws AlipayApiException {
         IAsymmetricEncryptor asymmetricEncryptor = null;
 
         if (!StringUtils.isEmpty(type)) {

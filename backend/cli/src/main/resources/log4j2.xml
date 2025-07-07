@@ -3,11 +3,12 @@
 <Configuration name="Console">
     <Appenders>
         <TerminalConsole name="ConsoleTerminal">
-            <PatternLayout pattern="%highlightError{[%d{HH:mm:ss}] [%logger/%p]: %msg%n}" />
+            <PatternLayout pattern="%highlightError{[%d{HH:mm:ss}] [%logger/%p]: %msg%n}"/>
         </TerminalConsole>
 
-        <RollingRandomAccessFile name="File" fileName="logs/latest.log" filePattern="logs/%d{yyyy-MM-dd}-%i.log.gz" immediateFlush="false">
-            <PatternLayout pattern="[%d{HH:mm:ss}] [%logger/%p]: %msg%n" />
+        <RollingRandomAccessFile name="File" fileName="logs/latest.log" filePattern="logs/%d{yyyy-MM-dd}-%i.log.gz"
+                                 immediateFlush="false">
+            <PatternLayout pattern="[%d{HH:mm:ss}] [%logger/%p]: %msg%n"/>
             <Policies>
                 <TimeBasedTriggeringPolicy/>
                 <OnStartupTriggeringPolicy/>

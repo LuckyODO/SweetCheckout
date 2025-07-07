@@ -25,7 +25,7 @@ public abstract class AlipayResponse implements Serializable {
     @ApiField("sub_msg")
     private String subMsg;
 
-    private String              body;
+    private String body;
     private Map<String, String> params;
 
     /**

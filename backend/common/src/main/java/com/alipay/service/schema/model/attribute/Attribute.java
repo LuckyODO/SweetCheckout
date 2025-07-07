@@ -25,12 +25,12 @@ import java.util.List;
  */
 public abstract class Attribute {
 
-    private String              id;
-    private String              name;
-    private AttrTypeEnum        type;
-    private AttrValueTypeEnum   valueType;
-    private List<AttributeRule> rules   = new ArrayList<>();
-    private List<Option>        options = new ArrayList<>();
+    private String id;
+    private String name;
+    private AttrTypeEnum type;
+    private AttrValueTypeEnum valueType;
+    private List<AttributeRule> rules = new ArrayList<>();
+    private List<Option> options = new ArrayList<>();
 
     /**
      * 转换成document的元素

@@ -10,6 +10,7 @@ import java.util.Arrays;
 
 public class MapFile implements IMapSource {
     private final File file;
+
     public MapFile(File file) {
         this.file = file;
     }

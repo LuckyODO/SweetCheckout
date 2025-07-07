@@ -11,12 +11,16 @@ import java.util.Map;
 public interface AlipayClient {
 
     <T extends AlipayResponse> T execute(AlipayRequest<T> request) throws AlipayApiException;
+
     <T extends AlipayResponse> T execute(AlipayRequest<T> request,
                                          String authToken) throws AlipayApiException;
+
     <T extends AlipayResponse> T execute(AlipayRequest<T> request, String accessToken,
                                          String appAuthToken) throws AlipayApiException;
+
     <T extends AlipayResponse> T execute(AlipayRequest<T> request, String accessToken,
                                          String appAuthToken, String targetAppId) throws AlipayApiException;
+
     <T extends AlipayResponse> T pageExecute(AlipayRequest<T> request) throws AlipayApiException;
 
     /**
@@ -49,8 +53,10 @@ public interface AlipayClient {
 
     <T extends AlipayResponse> T certificateExecute(AlipayRequest<T> request,
                                                     String authToken) throws AlipayApiException;
+
     <T extends AlipayResponse> T certificateExecute(AlipayRequest<T> request, String accessToken,
                                                     String appAuthToken) throws AlipayApiException;
+
     <T extends AlipayResponse> T certificateExecute(AlipayRequest<T> request, String accessToken,
                                                     String appAuthToken, String targetAppId) throws AlipayApiException;
 }

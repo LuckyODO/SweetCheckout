@@ -1,7 +1,7 @@
-import java.util.Locale
+import java.util.*
 
 plugins {
-    id ("com.gradleup.shadow") version "8.3.0" apply false
+    id("com.gradleup.shadow") version "8.3.0" apply false
 }
 allprojects {
     group = "top.mrxiaom.sweet.checkout"

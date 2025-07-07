@@ -11,45 +11,48 @@ import com.alipay.api.internal.mapping.ApiField;
  */
 public class EnterprisePayInfo extends AlipayObject {
 
-	private static final long serialVersionUID = 6659592632361523314L;
+    private static final long serialVersionUID = 6659592632361523314L;
 
-	/**
-	 * 因公付业务信息
-	 */
-	@ApiField("biz_info")
-	private String bizInfo;
+    /**
+     * 因公付业务信息
+     */
+    @ApiField("biz_info")
+    private String bizInfo;
 
-	/**
-	 * 开票金额
-	 */
-	@ApiField("invoice_amount")
-	private String invoiceAmount;
+    /**
+     * 开票金额
+     */
+    @ApiField("invoice_amount")
+    private String invoiceAmount;
 
-	/**
-	 * 是否包含因公付资产
-	 */
-	@ApiField("is_use_enterprise_pay")
-	private Boolean isUseEnterprisePay;
+    /**
+     * 是否包含因公付资产
+     */
+    @ApiField("is_use_enterprise_pay")
+    private Boolean isUseEnterprisePay;
 
-	public String getBizInfo() {
-		return this.bizInfo;
-	}
-	public void setBizInfo(String bizInfo) {
-		this.bizInfo = bizInfo;
-	}
+    public String getBizInfo() {
+        return this.bizInfo;
+    }
 
-	public String getInvoiceAmount() {
-		return this.invoiceAmount;
-	}
-	public void setInvoiceAmount(String invoiceAmount) {
-		this.invoiceAmount = invoiceAmount;
-	}
+    public void setBizInfo(String bizInfo) {
+        this.bizInfo = bizInfo;
+    }
 
-	public Boolean getIsUseEnterprisePay() {
-		return this.isUseEnterprisePay;
-	}
-	public void setIsUseEnterprisePay(Boolean isUseEnterprisePay) {
-		this.isUseEnterprisePay = isUseEnterprisePay;
-	}
+    public String getInvoiceAmount() {
+        return this.invoiceAmount;
+    }
+
+    public void setInvoiceAmount(String invoiceAmount) {
+        this.invoiceAmount = invoiceAmount;
+    }
+
+    public Boolean getIsUseEnterprisePay() {
+        return this.isUseEnterprisePay;
+    }
+
+    public void setIsUseEnterprisePay(Boolean isUseEnterprisePay) {
+        this.isUseEnterprisePay = isUseEnterprisePay;
+    }
 
 }

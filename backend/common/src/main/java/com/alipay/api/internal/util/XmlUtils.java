@@ -29,11 +29,11 @@ import java.util.StringTokenizer;
  */
 public final class XmlUtils {
 
-    private static final String XMLNS_XSI           = "xmlns:xsi";
+    private static final String XMLNS_XSI = "xmlns:xsi";
     private static final String XSI_SCHEMA_LOCATION = "xsi:schemaLocation";
-    private static final String LOGIC_YES           = "yes";
-    private static final String DEFAULT_ENCODE      = "UTF-8";
-    private static final String REG_INVALID_CHARS   = "&#\\d+;";
+    private static final String LOGIC_YES = "yes";
+    private static final String DEFAULT_ENCODE = "UTF-8";
+    private static final String REG_INVALID_CHARS = "&#\\d+;";
 
     /**
      * Creates a new document instance.

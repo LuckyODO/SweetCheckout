@@ -7,6 +7,7 @@ import top.mrxiaom.sweet.checkout.func.PaymentAPI;
 public class LocalPaymentClient extends PaymentClient {
     private final BukkitMain main;
     private final LocalClientInfo info;
+
     public LocalPaymentClient(BukkitMain main, PaymentAPI parent) {
         super(parent);
         this.main = main;

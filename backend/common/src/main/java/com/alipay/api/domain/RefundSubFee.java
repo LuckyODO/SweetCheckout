@@ -11,32 +11,34 @@ import com.alipay.api.internal.mapping.ApiField;
  */
 public class RefundSubFee extends AlipayObject {
 
-	private static final long serialVersionUID = 1564322611345145375L;
+    private static final long serialVersionUID = 1564322611345145375L;
 
-	/**
-	 * 实退费用
-	 */
-	@ApiField("refund_charge_fee")
-	private String refundChargeFee;
+    /**
+     * 实退费用
+     */
+    @ApiField("refund_charge_fee")
+    private String refundChargeFee;
 
-	/**
-	 * 签约费率
-	 */
-	@ApiField("switch_fee_rate")
-	private String switchFeeRate;
+    /**
+     * 签约费率
+     */
+    @ApiField("switch_fee_rate")
+    private String switchFeeRate;
 
-	public String getRefundChargeFee() {
-		return this.refundChargeFee;
-	}
-	public void setRefundChargeFee(String refundChargeFee) {
-		this.refundChargeFee = refundChargeFee;
-	}
+    public String getRefundChargeFee() {
+        return this.refundChargeFee;
+    }
 
-	public String getSwitchFeeRate() {
-		return this.switchFeeRate;
-	}
-	public void setSwitchFeeRate(String switchFeeRate) {
-		this.switchFeeRate = switchFeeRate;
-	}
+    public void setRefundChargeFee(String refundChargeFee) {
+        this.refundChargeFee = refundChargeFee;
+    }
+
+    public String getSwitchFeeRate() {
+        return this.switchFeeRate;
+    }
+
+    public void setSwitchFeeRate(String switchFeeRate) {
+        this.switchFeeRate = switchFeeRate;
+    }
 
 }

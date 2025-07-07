@@ -1,232 +1,243 @@
 package com.alipay.api.response;
 
-import java.util.Date;
-import com.alipay.api.internal.mapping.ApiField;
-import com.alipay.api.domain.TradePrecreateConfirmIndirectMerchantInfo;
-import com.alipay.api.domain.TradePrecreateConfirmTradeMerchantInfo;
-import com.alipay.api.domain.TradePrecreateConfirmOrderInfo;
-import com.alipay.api.domain.TradePrecreateConfirmPrecreateCodeInfo;
-import com.alipay.api.domain.TradePrecreateConfirmTradeStoreInfo;
-
 import com.alipay.api.AlipayResponse;
+import com.alipay.api.domain.*;
+import com.alipay.api.internal.mapping.ApiField;
+
+import java.util.Date;
 
 /**
  * ALIPAY API: alipay.trade.precreate.confirm response.
- * 
+ *
  * @author auto create
  * @since 1.0, 2024-09-19 11:42:14
  */
 public class AlipayTradePrecreateConfirmResponse extends AlipayResponse {
 
-	private static final long serialVersionUID = 3397222887583915625L;
+    private static final long serialVersionUID = 3397222887583915625L;
 
-	/** 
-	 * 收单模式
+    /**
+     * 收单模式
+     * <p>
+     * 银行代理收单，取值：bankAgentMode
+     * <p>
+     * 平台直连收单，取值：
+     * <p>
+     * normalOrderMode
+     */
+    @ApiField("acquiring_mode")
+    private String acquiringMode;
 
-银行代理收单，取值：bankAgentMode
+    /**
+     * 间联商户信息,若商户是间联商户则必选
+     * 格式为json
+     */
+    @ApiField("indirect_merchant_info")
+    private TradePrecreateConfirmIndirectMerchantInfo indirectMerchantInfo;
 
-平台直连收单，取值：
+    /**
+     * 直连商户信息，当商户为直连商户会有非空的值
+     * 格式为json
+     */
+    @ApiField("merchant_info")
+    private TradePrecreateConfirmTradeMerchantInfo merchantInfo;
 
-normalOrderMode
-	 */
-	@ApiField("acquiring_mode")
-	private String acquiringMode;
+    /**
+     * 商户原始订单号
+     */
+    @ApiField("merchant_order_no")
+    private String merchantOrderNo;
 
-	/** 
-	 * 间联商户信息,若商户是间联商户则必选
-格式为json
-	 */
-	@ApiField("indirect_merchant_info")
-	private TradePrecreateConfirmIndirectMerchantInfo indirectMerchantInfo;
+    /**
+     * 线上SKA支持A+钱包支付定制url
+     * 主站无处理，仅转发
+     */
+    @ApiField("merchant_return_url")
+    private String merchantReturnUrl;
 
-	/** 
-	 * 直连商户信息，当商户为直连商户会有非空的值
-格式为json
-	 */
-	@ApiField("merchant_info")
-	private TradePrecreateConfirmTradeMerchantInfo merchantInfo;
+    /**
+     * 订单创建时间
+     */
+    @ApiField("order_create_time")
+    private Date orderCreateTime;
 
-	/** 
-	 * 商户原始订单号
-	 */
-	@ApiField("merchant_order_no")
-	private String merchantOrderNo;
+    /**
+     * 订单信息
+     * 格式为json
+     */
+    @ApiField("order_info")
+    private TradePrecreateConfirmOrderInfo orderInfo;
 
-	/** 
-	 * 线上SKA支持A+钱包支付定制url
-主站无处理，仅转发
-	 */
-	@ApiField("merchant_return_url")
-	private String merchantReturnUrl;
+    /**
+     * 商户订单号
+     */
+    @ApiField("out_trade_no")
+    private String outTradeNo;
 
-	/** 
-	 * 订单创建时间
-	 */
-	@ApiField("order_create_time")
-	private Date orderCreateTime;
+    /**
+     * 商户ID
+     */
+    @ApiField("partner_id")
+    private String partnerId;
 
-	/** 
-	 * 订单信息
-格式为json
-	 */
-	@ApiField("order_info")
-	private TradePrecreateConfirmOrderInfo orderInfo;
+    /**
+     * 预下单的码信息
+     * 格式为json
+     */
+    @ApiField("precreate_code_info")
+    private TradePrecreateConfirmPrecreateCodeInfo precreateCodeInfo;
 
-	/** 
-	 * 商户订单号
-	 */
-	@ApiField("out_trade_no")
-	private String outTradeNo;
+    /**
+     * 销售产品码
+     */
+    @ApiField("product_code")
+    private String productCode;
 
-	/** 
-	 * 商户ID
-	 */
-	@ApiField("partner_id")
-	private String partnerId;
+    /**
+     * 清算机构流水号（如网联流水号）
+     */
+    @ApiField("settle_serial_no")
+    private String settleSerialNo;
 
-	/** 
-	 * 预下单的码信息
-格式为json
-	 */
-	@ApiField("precreate_code_info")
-	private TradePrecreateConfirmPrecreateCodeInfo precreateCodeInfo;
+    /**
+     * 店铺信息
+     * 格式为json
+     */
+    @ApiField("store_info")
+    private TradePrecreateConfirmTradeStoreInfo storeInfo;
 
-	/** 
-	 * 销售产品码
-	 */
-	@ApiField("product_code")
-	private String productCode;
+    /**
+     * 订单金额
+     * 币种：人民币
+     * 单位：元
+     */
+    @ApiField("total_amount")
+    private String totalAmount;
 
-	/** 
-	 * 清算机构流水号（如网联流水号）
-	 */
-	@ApiField("settle_serial_no")
-	private String settleSerialNo;
+    /**
+     * 支付宝交易号
+     */
+    @ApiField("trade_no")
+    private String tradeNo;
 
-	/** 
-	 * 店铺信息
-格式为json
-	 */
-	@ApiField("store_info")
-	private TradePrecreateConfirmTradeStoreInfo storeInfo;
+    public void setAcquiringMode(String acquiringMode) {
+        this.acquiringMode = acquiringMode;
+    }
 
-	/** 
-	 * 订单金额
-币种：人民币
-单位：元
-	 */
-	@ApiField("total_amount")
-	private String totalAmount;
+    public String getAcquiringMode() {
+        return this.acquiringMode;
+    }
 
-	/** 
-	 * 支付宝交易号
-	 */
-	@ApiField("trade_no")
-	private String tradeNo;
+    public void setIndirectMerchantInfo(TradePrecreateConfirmIndirectMerchantInfo indirectMerchantInfo) {
+        this.indirectMerchantInfo = indirectMerchantInfo;
+    }
 
-	public void setAcquiringMode(String acquiringMode) {
-		this.acquiringMode = acquiringMode;
-	}
-	public String getAcquiringMode( ) {
-		return this.acquiringMode;
-	}
+    public TradePrecreateConfirmIndirectMerchantInfo getIndirectMerchantInfo() {
+        return this.indirectMerchantInfo;
+    }
 
-	public void setIndirectMerchantInfo(TradePrecreateConfirmIndirectMerchantInfo indirectMerchantInfo) {
-		this.indirectMerchantInfo = indirectMerchantInfo;
-	}
-	public TradePrecreateConfirmIndirectMerchantInfo getIndirectMerchantInfo( ) {
-		return this.indirectMerchantInfo;
-	}
+    public void setMerchantInfo(TradePrecreateConfirmTradeMerchantInfo merchantInfo) {
+        this.merchantInfo = merchantInfo;
+    }
 
-	public void setMerchantInfo(TradePrecreateConfirmTradeMerchantInfo merchantInfo) {
-		this.merchantInfo = merchantInfo;
-	}
-	public TradePrecreateConfirmTradeMerchantInfo getMerchantInfo( ) {
-		return this.merchantInfo;
-	}
+    public TradePrecreateConfirmTradeMerchantInfo getMerchantInfo() {
+        return this.merchantInfo;
+    }
 
-	public void setMerchantOrderNo(String merchantOrderNo) {
-		this.merchantOrderNo = merchantOrderNo;
-	}
-	public String getMerchantOrderNo( ) {
-		return this.merchantOrderNo;
-	}
+    public void setMerchantOrderNo(String merchantOrderNo) {
+        this.merchantOrderNo = merchantOrderNo;
+    }
 
-	public void setMerchantReturnUrl(String merchantReturnUrl) {
-		this.merchantReturnUrl = merchantReturnUrl;
-	}
-	public String getMerchantReturnUrl( ) {
-		return this.merchantReturnUrl;
-	}
+    public String getMerchantOrderNo() {
+        return this.merchantOrderNo;
+    }
 
-	public void setOrderCreateTime(Date orderCreateTime) {
-		this.orderCreateTime = orderCreateTime;
-	}
-	public Date getOrderCreateTime( ) {
-		return this.orderCreateTime;
-	}
+    public void setMerchantReturnUrl(String merchantReturnUrl) {
+        this.merchantReturnUrl = merchantReturnUrl;
+    }
 
-	public void setOrderInfo(TradePrecreateConfirmOrderInfo orderInfo) {
-		this.orderInfo = orderInfo;
-	}
-	public TradePrecreateConfirmOrderInfo getOrderInfo( ) {
-		return this.orderInfo;
-	}
+    public String getMerchantReturnUrl() {
+        return this.merchantReturnUrl;
+    }
 
-	public void setOutTradeNo(String outTradeNo) {
-		this.outTradeNo = outTradeNo;
-	}
-	public String getOutTradeNo( ) {
-		return this.outTradeNo;
-	}
+    public void setOrderCreateTime(Date orderCreateTime) {
+        this.orderCreateTime = orderCreateTime;
+    }
 
-	public void setPartnerId(String partnerId) {
-		this.partnerId = partnerId;
-	}
-	public String getPartnerId( ) {
-		return this.partnerId;
-	}
+    public Date getOrderCreateTime() {
+        return this.orderCreateTime;
+    }
 
-	public void setPrecreateCodeInfo(TradePrecreateConfirmPrecreateCodeInfo precreateCodeInfo) {
-		this.precreateCodeInfo = precreateCodeInfo;
-	}
-	public TradePrecreateConfirmPrecreateCodeInfo getPrecreateCodeInfo( ) {
-		return this.precreateCodeInfo;
-	}
+    public void setOrderInfo(TradePrecreateConfirmOrderInfo orderInfo) {
+        this.orderInfo = orderInfo;
+    }
 
-	public void setProductCode(String productCode) {
-		this.productCode = productCode;
-	}
-	public String getProductCode( ) {
-		return this.productCode;
-	}
+    public TradePrecreateConfirmOrderInfo getOrderInfo() {
+        return this.orderInfo;
+    }
 
-	public void setSettleSerialNo(String settleSerialNo) {
-		this.settleSerialNo = settleSerialNo;
-	}
-	public String getSettleSerialNo( ) {
-		return this.settleSerialNo;
-	}
+    public void setOutTradeNo(String outTradeNo) {
+        this.outTradeNo = outTradeNo;
+    }
 
-	public void setStoreInfo(TradePrecreateConfirmTradeStoreInfo storeInfo) {
-		this.storeInfo = storeInfo;
-	}
-	public TradePrecreateConfirmTradeStoreInfo getStoreInfo( ) {
-		return this.storeInfo;
-	}
+    public String getOutTradeNo() {
+        return this.outTradeNo;
+    }
 
-	public void setTotalAmount(String totalAmount) {
-		this.totalAmount = totalAmount;
-	}
-	public String getTotalAmount( ) {
-		return this.totalAmount;
-	}
+    public void setPartnerId(String partnerId) {
+        this.partnerId = partnerId;
+    }
 
-	public void setTradeNo(String tradeNo) {
-		this.tradeNo = tradeNo;
-	}
-	public String getTradeNo( ) {
-		return this.tradeNo;
-	}
+    public String getPartnerId() {
+        return this.partnerId;
+    }
+
+    public void setPrecreateCodeInfo(TradePrecreateConfirmPrecreateCodeInfo precreateCodeInfo) {
+        this.precreateCodeInfo = precreateCodeInfo;
+    }
+
+    public TradePrecreateConfirmPrecreateCodeInfo getPrecreateCodeInfo() {
+        return this.precreateCodeInfo;
+    }
+
+    public void setProductCode(String productCode) {
+        this.productCode = productCode;
+    }
+
+    public String getProductCode() {
+        return this.productCode;
+    }
+
+    public void setSettleSerialNo(String settleSerialNo) {
+        this.settleSerialNo = settleSerialNo;
+    }
+
+    public String getSettleSerialNo() {
+        return this.settleSerialNo;
+    }
+
+    public void setStoreInfo(TradePrecreateConfirmTradeStoreInfo storeInfo) {
+        this.storeInfo = storeInfo;
+    }
+
+    public TradePrecreateConfirmTradeStoreInfo getStoreInfo() {
+        return this.storeInfo;
+    }
+
+    public void setTotalAmount(String totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public String getTotalAmount() {
+        return this.totalAmount;
+    }
+
+    public void setTradeNo(String tradeNo) {
+        this.tradeNo = tradeNo;
+    }
+
+    public String getTradeNo() {
+        return this.tradeNo;
+    }
 
 }

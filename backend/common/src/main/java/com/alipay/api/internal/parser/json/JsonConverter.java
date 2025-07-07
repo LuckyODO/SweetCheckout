@@ -186,6 +186,7 @@ public class JsonConverter implements Converter {
     }
 
     /**
+     *
      */
     private String getSignSourceData(AlipayRequest<?> request, String body) throws AlipayApiException {
 
@@ -213,7 +214,6 @@ public class JsonConverter implements Converter {
 
     /**
      * 获取签名源串内容
-     *
      */
     private String parseSignSourceData(String body, String rootNode, int indexOfRootNode) throws AlipayApiException {
 
@@ -237,7 +237,6 @@ public class JsonConverter implements Converter {
 
     /**
      * 获取签名
-     *
      */
     private String getSign(String body) {
 
@@ -264,7 +263,6 @@ public class JsonConverter implements Converter {
 
     /**
      * 获取JSON响应加签内容串
-     *
      */
     private ResponseParseItem getJSONSignSourceData(AlipayRequest<?> request, String body) {
 
@@ -288,6 +286,7 @@ public class JsonConverter implements Converter {
     }
 
     /**
+     *
      */
     private ResponseParseItem parseJSONSignSourceData(String body, String rootNode,
                                                       int indexOfRootNode) {

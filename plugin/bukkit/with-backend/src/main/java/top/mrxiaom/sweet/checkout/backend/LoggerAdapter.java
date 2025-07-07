@@ -1,7 +1,7 @@
 /**
  * Copyright (c) 2004-2011 QOS.ch
  * All rights reserved.
- *
+ * <p>
  * Permission is hereby granted, free  of charge, to any person obtaining
  * a  copy  of this  software  and  associated  documentation files  (the
  * "Software"), to  deal in  the Software without  restriction, including
@@ -9,10 +9,10 @@
  * distribute,  sublicense, and/or sell  copies of  the Software,  and to
  * permit persons to whom the Software  is furnished to do so, subject to
  * the following conditions:
- *
+ * <p>
  * The  above  copyright  notice  and  this permission  notice  shall  be
  * included in all copies or substantial portions of the Software.
- *
+ * <p>
  * THE  SOFTWARE IS  PROVIDED  "AS  IS", WITHOUT  WARRANTY  OF ANY  KIND,
  * EXPRESS OR  IMPLIED, INCLUDING  BUT NOT LIMITED  TO THE  WARRANTIES OF
  * MERCHANTABILITY,    FITNESS    FOR    A   PARTICULAR    PURPOSE    AND
@@ -20,25 +20,19 @@
  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
  * OF CONTRACT, TORT OR OTHERWISE,  ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
  */
 package top.mrxiaom.sweet.checkout.backend;
-
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
 
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.event.EventConstants;
 import org.slf4j.event.LoggingEvent;
-import org.slf4j.helpers.AbstractLogger;
-import org.slf4j.helpers.FormattingTuple;
-import org.slf4j.helpers.LegacyAbstractLogger;
-import org.slf4j.helpers.MessageFormatter;
-import org.slf4j.helpers.NormalizedParameters;
-import org.slf4j.helpers.SubstituteLogger;
+import org.slf4j.helpers.*;
 import org.slf4j.spi.DefaultLoggingEventBuilder;
 import org.slf4j.spi.LocationAwareLogger;
+
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
 
 /**
  * A wrapper over {@link java.util.logging.Logger java.util.logging.Logger} in
@@ -214,7 +208,7 @@ public final class LoggerAdapter extends LegacyAbstractLogger implements Locatio
     static String SUBSTITUE = SubstituteLogger.class.getName();
     static String FLUENT = DefaultLoggingEventBuilder.class.getName();
 
-    static String[] BARRIER_CLASSES = new String[] { SUPER_OF_SUPER, SUPER, SELF, SUBSTITUE, FLUENT };
+    static String[] BARRIER_CLASSES = new String[]{SUPER_OF_SUPER, SUPER, SELF, SUBSTITUE, FLUENT};
 
     private boolean barrierMatch(String callerFQCN, String candidateClassName) {
         if (candidateClassName.equals(callerFQCN))

@@ -2,11 +2,7 @@ package com.alipay.service.schema.util;
 
 import com.alipay.service.schema.exception.SchemaException;
 import com.alipay.service.schema.model.enums.SchemaErrorEnum;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
-import org.dom4j.Node;
+import org.dom4j.*;
 import org.dom4j.io.SAXReader;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -19,9 +15,9 @@ import java.util.List;
 
 public class XmlUtils {
     private static final String DEFAULT_ENCODE = "UTF-8";
-    public static        String EGE            = "http://xml.org/sax/features/external-general-entities";
-    public static        String EPE            = "http://xml.org/sax/features/external-parameter-entities";
-    public static        String LED            = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
+    public static String EGE = "http://xml.org/sax/features/external-general-entities";
+    public static String EPE = "http://xml.org/sax/features/external-parameter-entities";
+    public static String LED = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
 
     /**
      * Creates a new document instance.

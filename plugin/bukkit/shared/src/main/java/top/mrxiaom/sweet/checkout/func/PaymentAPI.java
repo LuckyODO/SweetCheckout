@@ -33,6 +33,7 @@ public class PaymentAPI extends AbstractModule {
     private final Map<String, Consumer> eventMap = new HashMap<>();
     private final String userAgent;
     private PaymentClient client;
+
     public PaymentAPI(PluginCommon plugin) {
         super(plugin);
         userAgent = "SweetCheckout/" + plugin.getDescription().getVersion() + " Minecraft/" + MinecraftVersion.getVersion().name();

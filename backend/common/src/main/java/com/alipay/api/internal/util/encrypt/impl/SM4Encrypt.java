@@ -1,9 +1,9 @@
 package com.alipay.api.internal.util.encrypt.impl;
 
-import com.alipay.api.internal.util.encrypt.Encrypt;
 import com.alipay.api.AlipayApiErrorEnum;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.internal.util.codec.Base64;
+import com.alipay.api.internal.util.encrypt.Encrypt;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import javax.crypto.Cipher;
@@ -63,11 +63,12 @@ public class SM4Encrypt implements Encrypt {
             return new String(Base64.encodeBase64(ivAndEncryptedText), CIPHER_CHARSET);
         } catch (Exception e) {
             throw new AlipayApiException(String.format(AlipayApiErrorEnum.ENCRYPT_SM4_ERROR.getErrMsg(),
-                    content, charset), e);        }
+                    content, charset), e);
+        }
     }
 
     @Override
-    public String decrypt(String content,String aesKey, String charset) throws AlipayApiException {
+    public String decrypt(String content, String aesKey, String charset) throws AlipayApiException {
         try {
             byte[] ivAndEncryptedText = Base64.decodeBase64(content.getBytes(CIPHER_CHARSET));
 
@@ -81,12 +82,12 @@ public class SM4Encrypt implements Encrypt {
             return new String(cleanBytes, charset);
         } catch (Exception e) {
             throw new AlipayApiException(String.format(AlipayApiErrorEnum.DECRYPT_SM4_ERROR.getErrMsg(),
-                    content, charset), e);        }
+                    content, charset), e);
+        }
     }
 
     /**
      * getter for property alg
-     *
      */
     public static String getAlg() {
         return ALG;
@@ -94,7 +95,6 @@ public class SM4Encrypt implements Encrypt {
 
     /**
      * getter for property mode
-     *
      */
     public String getMode() {
         return MODE;
@@ -102,7 +102,6 @@ public class SM4Encrypt implements Encrypt {
 
     /**
      * getter for property padding
-     *
      */
     public String getPadding() {
         return PADDING;
@@ -110,7 +109,6 @@ public class SM4Encrypt implements Encrypt {
 
     /**
      * getter for property fullCipherName
-     *
      */
     public String getFullCipherName() {
         return fullCipherName;

@@ -16,6 +16,7 @@ public class ConsoleMain extends CommonMain<WebSocketClientInfo, PaymentServer> 
 
     private final PaymentServer server;
     private final Console console;
+
     private ConsoleMain(Logger logger) {
         super(logger, new File("."));
         reloadConfig();
@@ -34,7 +35,8 @@ public class ConsoleMain extends CommonMain<WebSocketClientInfo, PaymentServer> 
     }
 
     public class Console extends SimpleTerminalConsole {
-        private Console() {}
+        private Console() {
+        }
 
         @Override
         public boolean isRunning() {

@@ -1,7 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer
 
 plugins {
-    id ("com.gradleup.shadow")
+    id("com.gradleup.shadow")
 }
 
 java.withJavadocJar()

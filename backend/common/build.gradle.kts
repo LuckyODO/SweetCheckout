@@ -1,4 +1,3 @@
-
 val targetJavaVersion = 8
 
 dependencies {

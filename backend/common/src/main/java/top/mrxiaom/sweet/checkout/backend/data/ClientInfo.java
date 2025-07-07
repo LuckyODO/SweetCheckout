@@ -64,6 +64,7 @@ public abstract class ClientInfo<C extends ClientInfo<C>> {
             getClient().removeOrder(this);
         }
     }
+
     private final Map<String, Order<C>> orders = new HashMap<>();
     private static final Set<String> locked = new HashSet<>();
     private final DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");

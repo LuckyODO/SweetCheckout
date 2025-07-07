@@ -25,12 +25,7 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -49,31 +44,31 @@ public abstract class AbstractAlipayClient implements AlipayClient {
 
     }
 
-    protected boolean                                    loadTest           = false;
-    private   String                                     serverUrl;
-    private   String                                     appId;
-    private   String                                     prodCode;
-    private   String                                     format             = AlipayConstants.FORMAT_JSON;
-    private   String                                     signType           = AlipayConstants.SIGN_TYPE_RSA;
-    private   String                                     encryptType        = AlipayConstants.ENCRYPT_TYPE_AES;
-    private   String                                     charset;
-    private   int                                        connectTimeout     = 3000;
-    private   int                                        readTimeout        = 15000;
-    private   String                                     proxyHost;
-    private   int                                        proxyPort;
-    private   SignChecker                                signChecker;
-    private   String                                     appCertSN;
-    private   String                                     alipayCertSN;
-    private   String                                     alipayRootCertSN;
-    private   String                                     alipayRootSm2CertSN;
-    private   String                                     rootCertContent;
-    private   X509Certificate                            cert;
-    private   ConcurrentHashMap<String, X509Certificate> alipayPublicCertMap;
-    private   ConcurrentHashMap<String, String>          alipayPublicKeyMap;
-    private   Map<String, String>                        headers;
-    private   int                                        maxIdleConnections = 0;
-    private   long                                       keepAliveDuration  = 10000L;
-    private   AbstractHttpClient                         customizedHttpClient;
+    protected boolean loadTest = false;
+    private String serverUrl;
+    private String appId;
+    private String prodCode;
+    private String format = AlipayConstants.FORMAT_JSON;
+    private String signType = AlipayConstants.SIGN_TYPE_RSA;
+    private String encryptType = AlipayConstants.ENCRYPT_TYPE_AES;
+    private String charset;
+    private int connectTimeout = 3000;
+    private int readTimeout = 15000;
+    private String proxyHost;
+    private int proxyPort;
+    private SignChecker signChecker;
+    private String appCertSN;
+    private String alipayCertSN;
+    private String alipayRootCertSN;
+    private String alipayRootSm2CertSN;
+    private String rootCertContent;
+    private X509Certificate cert;
+    private ConcurrentHashMap<String, X509Certificate> alipayPublicCertMap;
+    private ConcurrentHashMap<String, String> alipayPublicKeyMap;
+    private Map<String, String> headers;
+    private int maxIdleConnections = 0;
+    private long keepAliveDuration = 10000L;
+    private AbstractHttpClient customizedHttpClient;
 
     public AbstractAlipayClient(String serverUrl, String appId, String format,
                                 String charset, String signType) {

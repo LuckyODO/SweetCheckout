@@ -38,8 +38,12 @@ public class AlipayOpenAppAlipaycertDownloadResponse extends AlipayResponse {
         return this.msg;
     }
 
-    public void setAlipayCertContent(String alipayCertContent) { this.alipayCertContent = alipayCertContent; }
+    public void setAlipayCertContent(String alipayCertContent) {
+        this.alipayCertContent = alipayCertContent;
+    }
 
-    public String getAlipayCertContent() { return this.alipayCertContent; }
+    public String getAlipayCertContent() {
+        return this.alipayCertContent;
+    }
 
 }

@@ -20,7 +20,7 @@ public class AlipayOpenAppAlipaycertDownloadRequest implements
     public static final String ALIPAYCERT_DOWNLOAD = "alipay.open.app.alipaycert.download";
 
     private AlipayHashMap udfParams;         // add user-defined text parameters
-    private String        apiVersion = "1.0";
+    private String apiVersion = "1.0";
 
     private String notifyUrl;
 

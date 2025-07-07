@@ -10,7 +10,10 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapRenderer;
 import top.mrxiaom.pluginbase.func.AutoRegister;
@@ -29,7 +32,6 @@ import top.mrxiaom.sweet.checkout.utils.Utils;
 
 import java.io.File;
 import java.util.*;
-import java.util.List;
 import java.util.function.Consumer;
 
 @AutoRegister
@@ -51,6 +53,7 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
     private byte[] mapDarkPattern, mapLightPattern;
     private final boolean useComponent = MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_20_R4);
     private final boolean useLegacyMapId = !MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_13_R1);
+
     public PaymentsAndQRCodeManager(PluginCommon plugin) {
         super(plugin);
         filledMap = Util.valueOr(Material.class, "FILLED_MAP", Material.MAP);

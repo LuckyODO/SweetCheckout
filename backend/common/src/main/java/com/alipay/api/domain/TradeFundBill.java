@@ -11,71 +11,76 @@ import com.alipay.api.internal.mapping.ApiField;
  */
 public class TradeFundBill extends AlipayObject {
 
-	private static final long serialVersionUID = 7876464699421256584L;
+    private static final long serialVersionUID = 7876464699421256584L;
 
-	/**
-	 * 该支付工具类型所使用的金额
-	 */
-	@ApiField("amount")
-	private String amount;
+    /**
+     * 该支付工具类型所使用的金额
+     */
+    @ApiField("amount")
+    private String amount;
 
-	/**
-	 * 银行卡支付时的银行代码
-	 */
-	@ApiField("bank_code")
-	private String bankCode;
+    /**
+     * 银行卡支付时的银行代码
+     */
+    @ApiField("bank_code")
+    private String bankCode;
 
-	/**
-	 * 交易使用的资金渠道，详见 <a href="https://doc.open.alipay.com/doc2/detail?treeId=26&articleId=103259&docType=1">支付渠道列表</a>
-	 */
-	@ApiField("fund_channel")
-	private String fundChannel;
+    /**
+     * 交易使用的资金渠道，详见 <a href="https://doc.open.alipay.com/doc2/detail?treeId=26&articleId=103259&docType=1">支付渠道列表</a>
+     */
+    @ApiField("fund_channel")
+    private String fundChannel;
 
-	/**
-	 * 渠道所使用的资金类型,目前只在资金渠道(fund_channel)是银行卡渠道(BANKCARD)的情况下才返回该信息
-	 */
-	@ApiField("fund_type")
-	private String fundType;
+    /**
+     * 渠道所使用的资金类型,目前只在资金渠道(fund_channel)是银行卡渠道(BANKCARD)的情况下才返回该信息
+     */
+    @ApiField("fund_type")
+    private String fundType;
 
-	/**
-	 * 渠道实际付款金额
-	 */
-	@ApiField("real_amount")
-	private String realAmount;
+    /**
+     * 渠道实际付款金额
+     */
+    @ApiField("real_amount")
+    private String realAmount;
 
-	public String getAmount() {
-		return this.amount;
-	}
-	public void setAmount(String amount) {
-		this.amount = amount;
-	}
+    public String getAmount() {
+        return this.amount;
+    }
 
-	public String getBankCode() {
-		return this.bankCode;
-	}
-	public void setBankCode(String bankCode) {
-		this.bankCode = bankCode;
-	}
+    public void setAmount(String amount) {
+        this.amount = amount;
+    }
 
-	public String getFundChannel() {
-		return this.fundChannel;
-	}
-	public void setFundChannel(String fundChannel) {
-		this.fundChannel = fundChannel;
-	}
+    public String getBankCode() {
+        return this.bankCode;
+    }
 
-	public String getFundType() {
-		return this.fundType;
-	}
-	public void setFundType(String fundType) {
-		this.fundType = fundType;
-	}
+    public void setBankCode(String bankCode) {
+        this.bankCode = bankCode;
+    }
 
-	public String getRealAmount() {
-		return this.realAmount;
-	}
-	public void setRealAmount(String realAmount) {
-		this.realAmount = realAmount;
-	}
+    public String getFundChannel() {
+        return this.fundChannel;
+    }
+
+    public void setFundChannel(String fundChannel) {
+        this.fundChannel = fundChannel;
+    }
+
+    public String getFundType() {
+        return this.fundType;
+    }
+
+    public void setFundType(String fundType) {
+        this.fundType = fundType;
+    }
+
+    public String getRealAmount() {
+        return this.realAmount;
+    }
+
+    public void setRealAmount(String realAmount) {
+        this.realAmount = realAmount;
+    }
 
 }

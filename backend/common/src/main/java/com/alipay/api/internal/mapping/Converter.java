@@ -23,21 +23,18 @@ public interface Converter {
 
     /**
      * 获取响应内的签名数据
-     *
      */
     SignItem getSignItem(AlipayRequest<?> request, String responseBody)
             throws AlipayApiException;
 
     /**
      * 获取响应内的证书和签名数据
-     *
      */
     CertItem getCertItem(AlipayRequest<?> request, String responseBody)
             throws AlipayApiException;
 
     /**
      * 获取解密后的响应内的真实内容
-     *
      */
     String decryptSourceData(AlipayRequest<?> request, String body, String format,
                              Decryptor decryptor, String encryptType, String charset)

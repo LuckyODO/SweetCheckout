@@ -15,12 +15,12 @@ import java.util.Map;
 public abstract class JSONReader {
 
     private static final Object OBJECT_END = new Object();
-    private static final Object ARRAY_END  = new Object();
-    private static final Object COLON      = new Object();
-    private static final Object COMMA      = new Object();
-    public static final  int    FIRST      = 0;
-    public static final  int    CURRENT    = 1;
-    public static final  int    NEXT       = 2;
+    private static final Object ARRAY_END = new Object();
+    private static final Object COLON = new Object();
+    private static final Object COMMA = new Object();
+    public static final int FIRST = 0;
+    public static final int CURRENT = 1;
+    public static final int NEXT = 2;
 
     private static Map<Character, Character> escapes = new HashMap<>();
 
@@ -36,9 +36,9 @@ public abstract class JSONReader {
     }
 
     private CharacterIterator it;
-    private char              c;
-    private Object            token;
-    private StringBuffer      buf = new StringBuffer();
+    private char c;
+    private Object token;
+    private StringBuffer buf = new StringBuffer();
 
     private char next() {
         c = it.next();

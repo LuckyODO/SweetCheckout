@@ -9,6 +9,7 @@ import java.io.File;
 public class BukkitMain extends CommonMain<LocalClientInfo, PluginPaymentServer> {
     private final PluginPaymentServer server;
     private LocalPaymentClient client;
+
     public BukkitMain(java.util.logging.Logger logger, File dataFolder) {
         super(new LoggerAdapter(logger), dataFolder);
         reloadConfig();

@@ -6,20 +6,11 @@ package com.alipay.api.msg;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayConstants;
 import com.alipay.api.AlipayRequest;
-import com.alipay.api.internal.util.AlipayLogger;
-import com.alipay.api.internal.util.AlipaySignature;
-import com.alipay.api.internal.util.AntCertificationUtil;
-import com.alipay.api.internal.util.StringUtils;
-import com.alipay.api.internal.util.WebUtils;
+import com.alipay.api.internal.util.*;
 import com.alipay.api.internal.util.json.JSONWriter;
 import org.apache.commons.io.FileUtils;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -29,12 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * @author liuqun.lq
@@ -42,29 +28,29 @@ import java.util.concurrent.TimeUnit;
  */
 public class AlipayMsgClient {
 
-    private static Map<String, AlipayMsgClient>                   clientMap       = new HashMap<>();
-    private String     serverHost;
-    private boolean    isSSL                 = true;
+    private static Map<String, AlipayMsgClient> clientMap = new HashMap<>();
+    private String serverHost;
+    private boolean isSSL = true;
     private MsgHandler messageHandler;
-    private String     appId;
-    private String     signType;
-    private String     appPrivateKey;
-    private String     alipayPublicKey;
-    private String     charset               = "UTF-8";
-    private int        bizThreadPoolCoreSize = 5;
-    private int        bizThreadPoolMaxSize  = 10;
-    private boolean    loadTest              = false;
+    private String appId;
+    private String signType;
+    private String appPrivateKey;
+    private String alipayPublicKey;
+    private String charset = "UTF-8";
+    private int bizThreadPoolCoreSize = 5;
+    private int bizThreadPoolMaxSize = 10;
+    private boolean loadTest = false;
     private String appCertSN;
     private String alipayCertSN;
     private String alipayRootCertSN;
     private String rootCertContent;
-    private        ThreadPoolExecutor                             bizThreadPoolExecutor;
-    private        ScheduledThreadPoolExecutor                    heartBeatExecutor;
-    private        int                                            reConnectTimes  = 0;
-    private        long                                           waitTime        = 0L;
-    private        MsgConnector                                   webSocketConnector;
-    private        LinkedBlockingQueue<String>                    sendingQueue    = new LinkedBlockingQueue<>(200);
-    private        ConcurrentHashMap<String, ProtocolDataContext> sendingContexts =
+    private ThreadPoolExecutor bizThreadPoolExecutor;
+    private ScheduledThreadPoolExecutor heartBeatExecutor;
+    private int reConnectTimes = 0;
+    private long waitTime = 0L;
+    private MsgConnector webSocketConnector;
+    private LinkedBlockingQueue<String> sendingQueue = new LinkedBlockingQueue<>(200);
+    private ConcurrentHashMap<String, ProtocolDataContext> sendingContexts =
             new ConcurrentHashMap<>(256);
 
     private AlipayMsgClient() {
@@ -253,7 +239,7 @@ public class AlipayMsgClient {
     /**
      * 推荐使用destroy()代替close()
      */
-    public void destroy() throws InterruptedException{
+    public void destroy() throws InterruptedException {
         close();
         bizThreadPoolExecutor = null;
         heartBeatExecutor = null;

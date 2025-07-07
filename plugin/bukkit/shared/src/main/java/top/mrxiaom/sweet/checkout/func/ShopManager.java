@@ -14,6 +14,7 @@ import java.util.*;
 @AutoRegister
 public class ShopManager extends AbstractModule {
     final Map<String, ShopItem> shops = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+
     public ShopManager(PluginCommon plugin) {
         super(plugin);
     }

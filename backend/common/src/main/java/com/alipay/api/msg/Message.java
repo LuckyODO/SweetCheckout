@@ -20,7 +20,7 @@ public class Message implements Serializable {
 
     private static final Pattern DATA_PATTERN = Pattern.compile("\"data\"\\s*:\\s*\\{");
 
-    private String xType    = "message";
+    private String xType = "message";
     private String xCmd;
     private String xMessageId;
     private String xStatus;
@@ -29,7 +29,7 @@ public class Message implements Serializable {
     private String xSignType;
     private String xSign;
     private String xCharset;
-    private Long   xTimestamp;
+    private Long xTimestamp;
     private String xVersion = "1.0";
     private String appId;
     private String msgApi;
@@ -92,7 +92,7 @@ public class Message implements Serializable {
                 message.setMsgApi((String) (headerJson.get("msgApi")));
 
                 message.setAppCertSN((String) (headerJson.get("app_cert_sn")));
-                message.setAlipayRootCertSN((String)(headerJson.get("alipay_root_cert_sn")));
+                message.setAlipayRootCertSN((String) (headerJson.get("alipay_root_cert_sn")));
             }
             if (dataJson.containsKey("content")) {
                 if (!(dataJson.get("content") instanceof Map<?, ?>)) {

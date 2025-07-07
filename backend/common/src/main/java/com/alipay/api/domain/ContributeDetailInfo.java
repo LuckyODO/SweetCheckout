@@ -11,32 +11,34 @@ import com.alipay.api.internal.mapping.ApiField;
  */
 public class ContributeDetailInfo extends AlipayObject {
 
-	private static final long serialVersionUID = 7628311239431431415L;
+    private static final long serialVersionUID = 7628311239431431415L;
 
-	/**
-	 * 其它出资方金额，单位：元，精确到小数点后两位
-	 */
-	@ApiField("contribute_amount")
-	private String contributeAmount;
+    /**
+     * 其它出资方金额，单位：元，精确到小数点后两位
+     */
+    @ApiField("contribute_amount")
+    private String contributeAmount;
 
-	/**
-	 * 出资方类型，如品牌商出资、支付宝平台出资...
-	 */
-	@ApiField("contribute_type")
-	private String contributeType;
+    /**
+     * 出资方类型，如品牌商出资、支付宝平台出资...
+     */
+    @ApiField("contribute_type")
+    private String contributeType;
 
-	public String getContributeAmount() {
-		return this.contributeAmount;
-	}
-	public void setContributeAmount(String contributeAmount) {
-		this.contributeAmount = contributeAmount;
-	}
+    public String getContributeAmount() {
+        return this.contributeAmount;
+    }
 
-	public String getContributeType() {
-		return this.contributeType;
-	}
-	public void setContributeType(String contributeType) {
-		this.contributeType = contributeType;
-	}
+    public void setContributeAmount(String contributeAmount) {
+        this.contributeAmount = contributeAmount;
+    }
+
+    public String getContributeType() {
+        return this.contributeType;
+    }
+
+    public void setContributeType(String contributeType) {
+        this.contributeType = contributeType;
+    }
 
 }

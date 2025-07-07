@@ -10,6 +10,7 @@ import top.mrxiaom.sweet.checkout.packets.common.IPacket;
 
 public class PacketSerializer {
     public static final Gson gson = new GsonBuilder().create();
+
     @SuppressWarnings({"rawtypes"})
     public static JsonObject serialize(IPacket packet) {
         Class<? extends IPacket> type = packet.getClass();

@@ -91,7 +91,7 @@ public class Base64 implements BinaryEncoder, BinaryDecoder {
 
     // Create arrays to hold the base64 characters and a 
     // lookup for base64 chars
-    private static byte[] base64Alphabet       = new byte[BASELENGTH];
+    private static byte[] base64Alphabet = new byte[BASELENGTH];
     private static byte[] lookUpBase64Alphabet = new byte[LOOKUPLENGTH];
 
     // Populating the lookup and character arrays

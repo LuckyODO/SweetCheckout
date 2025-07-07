@@ -30,6 +30,7 @@ public abstract class AbstractPaymentServer<C extends ClientInfo<C>> {
     Map<String, List<BiFunction>> executors = new HashMap<>();
     PaymentWeChat wechat = new PaymentWeChat(this);
     PaymentAlipay alipay = new PaymentAlipay(this);
+
     public AbstractPaymentServer(Logger logger) {
         this.logger = logger;
         this.registerExecutor(PacketPluginRequestOrder.class, this::handleRequest);
@@ -39,15 +40,17 @@ public abstract class AbstractPaymentServer<C extends ClientInfo<C>> {
     public Logger getLogger() {
         return logger;
     }
+
     public Timer getTimer() {
         return timer;
     }
 
     /**
      * 注册接收包处理器，无返回值
-     * @param type 包类型
+     *
+     * @param type     包类型
      * @param executor 处理器
-     * @param <T> 包类型
+     * @param <T>      包类型
      */
     public <T extends IPacket> void registerExecutor(Class<T> type, BiConsumer<T, C> executor) {
         registerExecutor(type, (packet, client) -> {
@@ -58,10 +61,11 @@ public abstract class AbstractPaymentServer<C extends ClientInfo<C>> {
 
     /**
      * 注册接收包处理器，有返回值
-     * @param type 包类型
+     *
+     * @param type     包类型
      * @param executor 处理器
-     * @param <S> 返回类型
-     * @param <T> 包类型
+     * @param <S>      返回类型
+     * @param <T>      包类型
      */
     public <S extends IPacket, T extends IPacket<S>> void registerExecutor(Class<T> type, BiFunction<T, C, S> executor) {
         String key = type.getName();
@@ -142,10 +146,13 @@ public abstract class AbstractPaymentServer<C extends ClientInfo<C>> {
     }
 
     public abstract List<String> getAllProcess();
+
     public abstract Configuration getConfig();
+
     public void send(@NotNull C client, @NotNull IPacket packet) {
         send(client, packet, null);
     }
+
     public abstract void send(@NotNull C client, @NotNull IPacket packet, @Nullable Long echo);
 
     public void onMessage(C client, String s) {
@@ -156,6 +163,7 @@ public abstract class AbstractPaymentServer<C extends ClientInfo<C>> {
         if (packet == null) return;
         onMessage(client, packet, echo);
     }
+
     public void onMessage(C client, IPacket packet, Long echo) {
         Object result = null;
         List<BiFunction> list = executors.get(packet.getClass().getName());

@@ -18,7 +18,7 @@ public class CertAlipayRequest {
     private String encryptor;
     private String encryptType;
     private String proxyHost;
-    private int    proxyPort;
+    private int proxyPort;
 
     /**
      * 指定商户证书内容字符串，该字段与certPath只需指定一个，优先以该字段的值为准

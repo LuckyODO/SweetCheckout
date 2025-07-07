@@ -28,6 +28,7 @@ public class LogBookManager extends AbstractModule {
     private DateTimeFormatter lineTimeFormat;
     private final Map<String, String> paymentTypes = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private String reasonPoints, reasonBuy;
+
     public LogBookManager(PluginCommon plugin) {
         super(plugin);
     }

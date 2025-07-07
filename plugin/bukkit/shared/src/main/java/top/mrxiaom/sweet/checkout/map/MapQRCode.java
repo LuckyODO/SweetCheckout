@@ -7,6 +7,7 @@ import java.util.Arrays;
 
 public class MapQRCode implements IMapSource {
     private final QRCode code;
+
     public MapQRCode(QRCode code) {
         this.code = code;
     }
@@ -35,7 +36,7 @@ public class MapQRCode implements IMapSource {
         for (int z = 0; z < widthAndHeight; z++) {
             for (int x = 0; x < widthAndHeight; x++) {
                 // 再画上暗色（前景色）
-                if (scaling ? code.isDark(z / 2,x / 2) : code.isDark(z, x)) {
+                if (scaling ? code.isDark(z / 2, x / 2) : code.isDark(z, x)) {
                     int index = (start + x) + 128 * (start + z);
                     if (mapDarkPattern != null) {
                         colors[index] = mapDarkPattern[index];

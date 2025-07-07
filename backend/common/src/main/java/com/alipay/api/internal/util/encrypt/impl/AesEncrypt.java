@@ -13,7 +13,6 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
-import java.security.GeneralSecurityException;
 
 /**
  * @author zts
@@ -70,7 +69,6 @@ public class AesEncrypt implements Encrypt {
 
     /**
      * 初始向量的方法, 全部为0. 这里的写法适合于其它算法,针对AES算法的话,IV值一定是128位的(16字节).
-     *
      */
     private static byte[] initIv(String fullAlg) {
 

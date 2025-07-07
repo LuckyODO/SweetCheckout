@@ -10,6 +10,7 @@ import java.net.URISyntaxException;
 public class WebSocketPaymentClient extends PaymentClient {
     private final String url;
     private final Client client;
+
     public WebSocketPaymentClient(PaymentAPI parent, String url) throws URISyntaxException {
         super(parent);
         this.url = url;

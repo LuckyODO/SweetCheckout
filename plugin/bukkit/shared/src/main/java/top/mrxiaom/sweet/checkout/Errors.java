@@ -20,16 +20,21 @@ public enum Errors implements IHolderAccessor {
     payment__internal_error("&e支付接口出现内部错误，请联系服务器管理员"),
 
     ;
+
     Errors(String defaultValue) {
         holder = wrap(this, defaultValue);
     }
+
     Errors(String... defaultValue) {
         holder = wrap(this, defaultValue);
     }
+
     Errors(List<String> defaultValue) {
         holder = wrap(this, defaultValue);
     }
+
     private final LanguageEnumAutoHolder<Errors> holder;
+
     public LanguageEnumAutoHolder<Errors> holder() {
         return holder;
     }

@@ -1,9 +1,9 @@
 package com.alipay.api.domain;
 
-import java.util.Date;
-
 import com.alipay.api.AlipayObject;
 import com.alipay.api.internal.mapping.ApiField;
+
+import java.util.Date;
 
 /**
  * 预下单的订单信息
@@ -13,45 +13,48 @@ import com.alipay.api.internal.mapping.ApiField;
  */
 public class TradePrecreateConfirmOrderInfo extends AlipayObject {
 
-	private static final long serialVersionUID = 7873237158352874894L;
+    private static final long serialVersionUID = 7873237158352874894L;
 
-	/**
-	 * 对交易或商品的描述
-	 */
-	@ApiField("body")
-	private String body;
+    /**
+     * 对交易或商品的描述
+     */
+    @ApiField("body")
+    private String body;
 
-	/**
-	 * 支付超时的绝对时间
-	 */
-	@ApiField("pay_expire_time")
-	private Date payExpireTime;
+    /**
+     * 支付超时的绝对时间
+     */
+    @ApiField("pay_expire_time")
+    private Date payExpireTime;
 
-	/**
-	 * 商品数量
-	 */
-	@ApiField("quantity")
-	private Long quantity;
+    /**
+     * 商品数量
+     */
+    @ApiField("quantity")
+    private Long quantity;
 
-	public String getBody() {
-		return this.body;
-	}
-	public void setBody(String body) {
-		this.body = body;
-	}
+    public String getBody() {
+        return this.body;
+    }
 
-	public Date getPayExpireTime() {
-		return this.payExpireTime;
-	}
-	public void setPayExpireTime(Date payExpireTime) {
-		this.payExpireTime = payExpireTime;
-	}
+    public void setBody(String body) {
+        this.body = body;
+    }
 
-	public Long getQuantity() {
-		return this.quantity;
-	}
-	public void setQuantity(Long quantity) {
-		this.quantity = quantity;
-	}
+    public Date getPayExpireTime() {
+        return this.payExpireTime;
+    }
+
+    public void setPayExpireTime(Date payExpireTime) {
+        this.payExpireTime = payExpireTime;
+    }
+
+    public Long getQuantity() {
+        return this.quantity;
+    }
+
+    public void setQuantity(Long quantity) {
+        this.quantity = quantity;
+    }
 
 }

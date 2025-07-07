@@ -11,9 +11,9 @@ import java.util.concurrent.CountDownLatch;
  */
 public class ProtocolDataContext {
 
-    private ProtocolData   sendData;
+    private ProtocolData sendData;
     private CountDownLatch sendSignal;
-    private ProtocolData   ackData;
+    private ProtocolData ackData;
 
     /**
      * Getter method for property <tt>sendData</tt>.

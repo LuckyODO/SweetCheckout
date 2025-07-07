@@ -8,7 +8,11 @@ import org.jetbrains.annotations.Nullable;
 
 public interface IMapPacket {
     Object createMapPacket(int mapId, byte[] colors);
+
     void sendPacket(Player player, Object packet);
+
     byte[] getColors(MapRenderer renderer);
-    @Nullable MapView getMap(@NotNull Integer mapId);
+
+    @Nullable
+    MapView getMap(@NotNull Integer mapId);
 }
