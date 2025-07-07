@@ -2,7 +2,7 @@
 
 自部署支付系统，无费率，免费，开源。
 
-![Minecraft versions](https://img.shields.io/badge/minecraft-1.8.8--1.21.6-blue) ![Bukkit Java Compatible](https://img.shields.io/badge/Bukkit-Java_8-purple) ![Backend Java Compatible](https://img.shields.io/badge/backend-Java_17-purple)
+![Minecraft versions](https://img.shields.io/badge/minecraft-1.8.8--1.21.7-blue) ![Bukkit WS Java Compatible](https://img.shields.io/badge/bukkit--ws-Java_8-purple) ![Bukkit with Backend Java Compatible](https://img.shields.io/badge/bukkit--with--backend-Java_8-purple) ![Backend Java Compatible](https://img.shields.io/badge/backend--cli-Java_17-purple)
 
 <details>
     <summary>免责声明</summary>
