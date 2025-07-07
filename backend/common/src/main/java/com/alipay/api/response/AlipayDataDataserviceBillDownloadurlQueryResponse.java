@@ -22,7 +22,7 @@ public class AlipayDataDataserviceBillDownloadurlQueryResponse extends AlipayRes
 
 	/** 
 	 * 描述本次申请的账单文件状态。
-EMPTY_DATA_WITH_BILL_FILE：当天无账单业务数据&&可以获取到空数据账单文件。
+EMPTY_DATA_WITH_BILL_FILE：当天无账单业务数据&amp;可以获取到空数据账单文件。
 	 */
 	@ApiField("bill_file_code")
 	private String billFileCode;

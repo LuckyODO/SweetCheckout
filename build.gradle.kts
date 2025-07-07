@@ -10,6 +10,7 @@ allprojects {
 subprojects {
     if (File(projectDir, "src").exists()) {
         apply(plugin = "java")
+        apply(plugin = "maven-publish")
         val targetJavaVersion = 8
 
         repositories {
@@ -26,6 +27,8 @@ subprojects {
         }
 
         project.extensions.configure<JavaPluginExtension> {
+            withSourcesJar()
+            withJavadocJar()
             val javaVersion = JavaVersion.toVersion(targetJavaVersion)
             if (JavaVersion.current() < javaVersion) {
                 toolchain.languageVersion.set(JavaLanguageVersion.of(targetJavaVersion))
@@ -37,6 +40,33 @@ subprojects {
             options.isWarnings = false
             if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible) {
                 options.release.set(targetJavaVersion)
+            }
+        }
+
+        tasks.withType<Javadoc>().configureEach {
+            (options as? StandardJavadocDocletOptions)?.apply {
+                locale("zh_CN")
+                charset("UTF-8")
+                encoding("UTF-8")
+                docEncoding("UTF-8")
+                addBooleanOption("keywords", true)
+                addBooleanOption("Xdoclint:none", true)
+
+                val currentJavaVersion = JavaVersion.current()
+                if (currentJavaVersion > JavaVersion.VERSION_1_9) {
+                    addBooleanOption("html5", true)
+                }
+            }
+        }
+
+        project.extensions.configure<PublishingExtension> {
+            publications {
+                create<MavenPublication>("maven") {
+                    from(components["java"])
+                    groupId = project.group.toString()
+                    artifactId = project.name
+                    version = project.version.toString()
+                }
             }
         }
     }

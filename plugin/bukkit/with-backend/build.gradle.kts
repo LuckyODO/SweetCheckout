@@ -27,13 +27,7 @@ dependencies {
     implementation(project(":packets"))
 }
 tasks {
-    jar {
-        archiveBaseName.set("SweetCheckout-bukkit-with-backend")
-    }
     shadowJar {
-        archiveBaseName.set("SweetCheckout-bukkit-with-backend")
-        archiveClassifier.set("")
-        destinationDirectory.set(rootProject.file("out"))
         configurations.add(shadowLink)
         val shadowRelocations: Map<String, String> by project.extra
         val shadowExcludes: List<String> by project.extra
@@ -53,8 +47,14 @@ tasks {
             transform(Log4j2PluginsCacheFileTransformer())
         }
     }
-    build {
+    val copyTask = create<Copy>("copyBuildArtifact") {
         dependsOn(shadowJar)
+        from(shadowJar.get().outputs)
+        rename { "SweetCheckout-bukkit-with-backend-$version.jar" }
+        into(rootProject.file("out"))
+    }
+    build {
+        dependsOn(copyTask)
     }
     processResources {
         duplicatesStrategy = DuplicatesStrategy.INCLUDE

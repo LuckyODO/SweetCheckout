@@ -188,7 +188,7 @@ public class AlipayTradePrecreateModel extends AlipayObject {
 
 	/**
 	 * 订单标题。
-注意：不可使用特殊字符，如 /，=，& 等。
+注意：不可使用特殊字符，如 /，=，&amp; 等。
 	 */
 	@ApiField("subject")
 	private String subject;

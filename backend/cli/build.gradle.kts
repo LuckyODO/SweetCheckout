@@ -40,9 +40,6 @@ fun Jar.setupManifest() {
 }
 tasks {
     shadowJar {
-        archiveBaseName.set("backend")
-        archiveClassifier.set("")
-        destinationDirectory.set(rootProject.file("out"))
         minimize {
             val dependencies = listOf(
                 "org.bouncycastle:bcprov-jdk15on",
@@ -56,8 +53,14 @@ tasks {
         }
         setupManifest()
     }
-    build {
+    val copyTask = create<Copy>("copyBuildArtifact") {
         dependsOn(shadowJar)
+        from(shadowJar.get().outputs)
+        rename { "backend-$version.jar" }
+        into(rootProject.file("out"))
+    }
+    build {
+        dependsOn(copyTask)
     }
     create<JavaExec>("runConsole") {
         group = "minecraft"

@@ -19,13 +19,7 @@ dependencies {
     implementation(project(":packets"))
 }
 tasks {
-    jar {
-        archiveBaseName.set("SweetCheckout-bukkit-ws")
-    }
     shadowJar {
-        archiveBaseName.set("SweetCheckout-bukkit-ws")
-        archiveClassifier.set("")
-        destinationDirectory.set(rootProject.file("out"))
         val shadowRelocations: Map<String, String> by project.extra
         val shadowExcludes: List<String> by project.extra
         shadowRelocations.forEach { (original, target) ->
@@ -33,8 +27,14 @@ tasks {
         }
         shadowExcludes.forEach(this::exclude)
     }
-    build {
+    val copyTask = create<Copy>("copyBuildArtifact") {
         dependsOn(shadowJar)
+        from(shadowJar.get().outputs)
+        rename { "SweetCheckout-bukkit-ws-$version.jar" }
+        into(rootProject.file("out"))
+    }
+    build {
+        dependsOn(copyTask)
     }
     processResources {
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
