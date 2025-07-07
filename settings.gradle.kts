@@ -4,6 +4,9 @@ include(":backend")
 include(":backend:common")
 include(":backend:cli")
 include(":plugin")
+include(":plugin:bukkit")
+include(":plugin:bukkit:common")
+include(":plugin:bukkit:ws")
 include(":plugin:nms")
 for (file in File("plugin/nms").listFiles() ?: arrayOf()) {
     if (file.isDirectory && File(file, "build.gradle.kts").exists()) {
