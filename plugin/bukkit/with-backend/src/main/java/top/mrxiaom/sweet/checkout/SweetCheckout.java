@@ -8,6 +8,8 @@ import top.mrxiaom.sweet.checkout.api.PaymentClient;
 import top.mrxiaom.sweet.checkout.backend.BukkitMain;
 import top.mrxiaom.sweet.checkout.func.PaymentAPI;
 
+import java.io.File;
+
 public class SweetCheckout extends PluginCommon {
     public static SweetCheckout getInstance() {
         return (SweetCheckout) BukkitPlugin.getInstance();
@@ -21,7 +23,7 @@ public class SweetCheckout extends PluginCommon {
     @Override
     protected void beforeEnable() {
         super.beforeEnable();
-        main = new BukkitMain(getLogger(), getDataFolder());
+        main = new BukkitMain(getLogger(), new File(getDataFolder(), "backend"));
     }
 
     @Override

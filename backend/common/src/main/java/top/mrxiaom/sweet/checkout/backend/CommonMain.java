@@ -32,9 +32,13 @@ public abstract class CommonMain<C extends ClientInfo<C>, S extends AbstractPaym
             })
             .setPrettyPrinting()
             .create();
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public CommonMain(Logger logger, File dataFolder) {
         this.logger = logger;
         this.dataFolder = dataFolder;
+        if (!dataFolder.exists()) {
+            dataFolder.mkdirs();
+        }
     }
 
     public Configuration getConfig() {
