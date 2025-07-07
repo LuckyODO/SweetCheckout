@@ -1,6 +1,7 @@
 package top.mrxiaom.sweet.checkout;
 
 import org.jetbrains.annotations.Nullable;
+import top.mrxiaom.pluginbase.BukkitPlugin;
 import top.mrxiaom.sweet.checkout.api.PaymentClient;
 import top.mrxiaom.sweet.checkout.api.WebSocketPaymentClient;
 import top.mrxiaom.sweet.checkout.func.PaymentAPI;
@@ -8,6 +9,9 @@ import top.mrxiaom.sweet.checkout.func.PaymentAPI;
 import java.net.URISyntaxException;
 
 public class SweetCheckout extends PluginCommon {
+    public static SweetCheckout getInstance() {
+        return (SweetCheckout) BukkitPlugin.getInstance();
+    }
     @Override
     public PaymentClient handlePaymentReload(PaymentAPI parent, @Nullable String url) throws URISyntaxException {
         PaymentClient client = parent.getClient();
