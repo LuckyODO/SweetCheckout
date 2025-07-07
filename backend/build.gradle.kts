@@ -11,6 +11,7 @@ val sharedDependencies = listOf(
     "top.mrxiaom:Java-WebSocket:1.5.8",
     "org.jetbrains:annotations:21.0.0",
 )
+project(":plugin:bukkit:with-backend").extra["backendDependencies"] = sharedDependencies
 subprojects {
     extra["dependencies"] = sharedDependencies
 }

@@ -7,6 +7,7 @@ include(":plugin")
 include(":plugin:bukkit")
 include(":plugin:bukkit:shared")
 include(":plugin:bukkit:with-backend")
+include(":plugin:bukkit:with-backend:java9")
 include(":plugin:bukkit:ws")
 include(":plugin:nms")
 for (file in File("plugin/nms").listFiles() ?: arrayOf()) {

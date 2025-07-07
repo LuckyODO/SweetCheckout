@@ -1,4 +1,6 @@
 subprojects {
+    val pluginBase = "1.5.1"
+    extra["pluginBase"] = pluginBase
     extra["dependencies"] = listOf(
         "top.mrxiaom:qrcode-encoder:1.0.0",
         "net.kyori:adventure-api:4.22.0",
@@ -8,7 +10,7 @@ subprojects {
         "com.zaxxer:HikariCP:4.0.3",
         "org.slf4j:slf4j-nop:2.0.16",
         "org.jetbrains:annotations:24.0.0",
-        "top.mrxiaom:PluginBase:1.4.9",
+        "top.mrxiaom:PluginBase:$pluginBase",
     )
     extra["shadowRelocations"] = mapOf(
         "org.intellij.lang.annotations" to "annotations.intellij",

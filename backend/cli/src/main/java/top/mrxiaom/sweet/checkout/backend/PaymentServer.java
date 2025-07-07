@@ -17,12 +17,11 @@ import top.mrxiaom.sweet.checkout.packets.common.IPacket;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.*;
-import java.util.function.BiFunction;
 
 /**
  * 后端 WebSocket/Http 路由
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({"rawtypes"})
 public class PaymentServer extends AbstractPaymentServer<WebSocketClientInfo> {
     private final ConsoleMain console;
     private final WS webSocketServer;
@@ -62,11 +61,6 @@ public class PaymentServer extends AbstractPaymentServer<WebSocketClientInfo> {
     }
 
     @Override
-    public void send(@NotNull WebSocketClientInfo client, @NotNull IPacket packet) {
-        send(client, packet, null);
-    }
-
-    @Override
     public void send(@NotNull WebSocketClientInfo client, @NotNull IPacket packet, @Nullable Long echo) {
         JsonObject json = PacketSerializer.serialize(packet);
         if (echo != null) {
@@ -93,23 +87,8 @@ public class PaymentServer extends AbstractPaymentServer<WebSocketClientInfo> {
 
         @Override
         public void onMessage(WebSocket client, String s) {
-            JsonObject json = JsonParser.parseString(s).getAsJsonObject();
-            JsonElement echoProperty = json.get("echo");
-            Long echo = echoProperty == null ? null : echoProperty.getAsLong();
-            IPacket packet = PacketSerializer.deserialize(json);
-            if (packet == null) return;
-            Object result = null;
-            List<BiFunction> list = executors.get(packet.getClass().getName());
             WebSocketClientInfo clientInfo = getOrCreateInfo(client);
-            if (list != null && !list.isEmpty()) for (BiFunction executor : list) {
-                Object obj = executor.apply(packet, clientInfo);
-                if (result == null && obj != null) {
-                    result = obj;
-                }
-            }
-            if (echo != null && result != null && packet.isResponsePacket(result)) {
-                send(clientInfo, (IPacket) result, echo);
-            }
+            PaymentServer.this.onMessage(clientInfo, s);
         }
 
         @Override

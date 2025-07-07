@@ -143,7 +143,9 @@ public abstract class AbstractPaymentServer<C extends ClientInfo<C>> {
 
     public abstract List<String> getAllProcess();
     public abstract Configuration getConfig();
-    public abstract void send(@NotNull C client, @NotNull IPacket packet);
+    public void send(@NotNull C client, @NotNull IPacket packet) {
+        send(client, packet, null);
+    }
     public abstract void send(@NotNull C client, @NotNull IPacket packet, @Nullable Long echo);
 
     public void onMessage(C client, String s) {
@@ -152,6 +154,9 @@ public abstract class AbstractPaymentServer<C extends ClientInfo<C>> {
         Long echo = echoProperty == null ? null : echoProperty.getAsLong();
         IPacket packet = PacketSerializer.deserialize(json);
         if (packet == null) return;
+        onMessage(client, packet, echo);
+    }
+    public void onMessage(C client, IPacket packet, Long echo) {
         Object result = null;
         List<BiFunction> list = executors.get(packet.getClass().getName());
         if (list != null && !list.isEmpty()) for (BiFunction executor : list) {
