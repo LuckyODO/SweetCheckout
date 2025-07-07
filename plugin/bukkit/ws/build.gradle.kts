@@ -1,5 +1,5 @@
 plugins {
-    id ("com.github.johnrengelman.shadow")
+    id ("com.gradleup.shadow")
 }
 
 val shadowGroup = "top.mrxiaom.sweet.checkout.libs"
