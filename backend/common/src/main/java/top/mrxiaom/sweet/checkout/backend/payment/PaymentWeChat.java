@@ -42,7 +42,7 @@ public class PaymentWeChat<C extends ClientInfo<C>> {
             return new PacketPluginRequestOrder.Response("payment.hook-price-locked");
         }
         String orderId = client.nextOrderId();
-        String paymentUrl = hook.getPaymentUrls().getOrDefault(packet.getPrice(), hook.getPaymentUrl());
+        String paymentUrl = hook.getPaymentUrl(packet.getPrice());
         ClientInfo.Order<C> order = client.createOrder(orderId, "wechat", packet.getPlayerName(), packet.getPrice());
         moneyLocked.put(packet.getPrice(), order);
         return new PacketPluginRequestOrder.Response("hook", orderId, paymentUrl);

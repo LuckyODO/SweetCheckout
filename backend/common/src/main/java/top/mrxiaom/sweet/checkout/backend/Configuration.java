@@ -263,5 +263,14 @@ public class Configuration {
         public Map<String, String> getPaymentUrls() {
             return paymentUrls;
         }
+
+        public String getPaymentUrl(String price) {
+            String trim = getPaymentUrls().getOrDefault(price, "").trim();
+            if (trim.isEmpty()) {
+                return getPaymentUrl();
+            } else {
+                return trim;
+            }
+        }
     }
 }
