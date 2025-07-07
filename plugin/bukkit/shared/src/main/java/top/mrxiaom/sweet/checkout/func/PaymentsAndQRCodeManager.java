@@ -78,6 +78,7 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
             } else if (paymentActionBarProcess != null) {
                 int timeout = (int) Math.floor((info.outdateTime - now) / 1000.0);
                 AdventureUtil.sendActionBar(player, PAPI.setPlaceholders(player, paymentActionBarProcess.replace("%timeout%", String.valueOf(timeout))));
+                info.updateMapColors();
             }
         }
     }
