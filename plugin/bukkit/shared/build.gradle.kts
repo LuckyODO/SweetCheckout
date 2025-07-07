@@ -1,3 +1,6 @@
+plugins {
+    `maven-publish`
+}
 
 val shadowGroup = "top.mrxiaom.sweet.checkout.libs"
 
@@ -12,4 +15,14 @@ dependencies {
     }
     compileOnly(project(":plugin:nms"))
     compileOnly(project(":packets"))
+}
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["java"])
+            groupId = rootProject.group.toString()
+            artifactId = "bukkit"
+            version = rootProject.version.toString()
+        }
+    }
 }

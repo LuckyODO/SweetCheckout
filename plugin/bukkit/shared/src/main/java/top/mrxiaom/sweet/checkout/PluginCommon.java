@@ -19,6 +19,10 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 public abstract class PluginCommon extends BukkitPlugin {
+    public static PluginCommon getInstance() {
+        return (PluginCommon) BukkitPlugin.getInstance();
+    }
+
     public PluginCommon() {
         super(options()
                 .bungee(false)
