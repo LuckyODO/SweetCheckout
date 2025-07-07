@@ -23,7 +23,9 @@ dependencies {
     add("shadowLink", project("java9"))
     implementation(project(":backend:common"))
     implementation(project(":plugin:bukkit:shared"))
-    implementation(project(":plugin:nms"))
+    for (dependency in project.project(":plugin:nms").allprojects) {
+        add("shadowLink", dependency)
+    }
     implementation(project(":packets"))
 }
 tasks {

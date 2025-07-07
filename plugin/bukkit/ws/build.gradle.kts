@@ -4,6 +4,7 @@ plugins {
 
 java.withJavadocJar()
 val shadowGroup = "top.mrxiaom.sweet.checkout.libs"
+val shadowLink = configurations.create("shadowLink")
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.20-R0.1-SNAPSHOT")
 
@@ -15,11 +16,14 @@ dependencies {
     }
     implementation("top.mrxiaom:Java-WebSocket:1.5.8")
     implementation(project(":plugin:bukkit:shared"))
-    implementation(project(":plugin:nms"))
+    for (dependency in project.project(":plugin:nms").allprojects) {
+        add("shadowLink", dependency)
+    }
     implementation(project(":packets"))
 }
 tasks {
     shadowJar {
+        configurations.add(shadowLink)
         val shadowRelocations: Map<String, String> by project.extra
         val shadowExcludes: List<String> by project.extra
         shadowRelocations.forEach { (original, target) ->
