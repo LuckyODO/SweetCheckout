@@ -6,7 +6,7 @@ dependencies {
         implementation(proj)
         proj.dependencies.implementation("org.jetbrains:annotations:21.0.0")
         if (proj.name != "shared") {
-            proj.dependencies.implementation(project(":bukkit:nms:shared"))
+            proj.dependencies.implementation(project(":plugin:nms:shared"))
         }
     }
 }

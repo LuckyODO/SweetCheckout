@@ -25,7 +25,7 @@ dependencies {
     implementation("org.jetbrains:annotations:24.0.0")
     implementation("top.mrxiaom:PluginBase:1.4.9")
     implementation("top.mrxiaom:Java-WebSocket:1.5.8")
-    implementation(project(":bukkit:nms"))
+    implementation(project(":plugin:nms"))
     implementation(project(":packets"))
 }
 tasks {

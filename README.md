@@ -20,11 +20,13 @@
 ```
 SweetCheckout 目录结构
   ├─ backend: 支付系统后端
-  ├─ bukkit: Bukkit插件
+  ├─ packets: 网络包结构
+  ├─ plugin: Bukkit插件
   └─ wechat-hook: 微信Hook软件
 ```
 
 + `支付系统后端`: 负责中转和管理插件请求与支付接口请求，储存支付排队序列
++ `网络包结构`: 后端与插件进行通讯的网络包结构 (json) 处理模块
 + `Bukkit插件`: 与玩家交互的逻辑
 + `微信Hook软件`: 接收微信收款消息，转发给后端处理
 
