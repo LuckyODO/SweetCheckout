@@ -3,7 +3,6 @@ package top.mrxiaom.sweet.checkout.backend;
 import net.minecrell.terminalconsole.SimpleTerminalConsole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import top.mrxiaom.sweet.checkout.backend.api.ISender;
 import top.mrxiaom.sweet.checkout.backend.data.WebSocketClientInfo;
 
 import java.io.File;
@@ -35,7 +34,6 @@ public class ConsoleMain extends CommonMain<WebSocketClientInfo, PaymentServer> 
     }
 
     public class Console extends SimpleTerminalConsole {
-        private final ConsoleSender consoleSender = new ConsoleSender();
         private Console() {}
 
         @Override
@@ -45,7 +43,24 @@ public class ConsoleMain extends CommonMain<WebSocketClientInfo, PaymentServer> 
 
         @Override
         protected void runCommand(String s) {
-            ConsoleMain.this.runCommand(consoleSender, s);
+            if ("reload".equals(s)) {
+                reloadConfig();
+                logger.info("配置文件已重载.");
+                return;
+            }
+            if ("process".equals(s)) {
+                for (String name : getServer().getAllProcess()) {
+                    logger.info(name);
+                }
+                return;
+            }
+            if ("stop".equals(s)) {
+                running = false;
+                logger.info("再见.");
+                System.exit(0);
+                return;
+            }
+            logger.info("未知命令.");
         }
 
         @Override
@@ -55,13 +70,6 @@ public class ConsoleMain extends CommonMain<WebSocketClientInfo, PaymentServer> 
             } catch (InterruptedException e) {
                 logger.warn("停止服务端时出现异常", e);
             }
-        }
-    }
-    public class ConsoleSender implements ISender {
-        private ConsoleSender() {}
-        @Override
-        public void send(String message) {
-            logger.info(message);
         }
     }
 }

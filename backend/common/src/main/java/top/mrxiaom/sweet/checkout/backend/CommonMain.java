@@ -6,8 +6,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import top.mrxiaom.sweet.checkout.backend.api.ISender;
 import top.mrxiaom.sweet.checkout.backend.data.ClientInfo;
 
 import java.io.File;
@@ -68,26 +66,5 @@ public abstract class CommonMain<C extends ClientInfo<C>, S extends AbstractPaym
         } catch (IOException e) {
             logger.warn("加载配置文件时出现异常", e);
         }
-    }
-
-    protected void runCommand(ISender sender, String s) {
-        if ("reload".equals(s)) {
-            reloadConfig();
-            sender.send("配置文件已重载.");
-            return;
-        }
-        if ("process".equals(s)) {
-            for (String name : getServer().getAllProcess()) {
-                sender.send(name);
-            }
-            return;
-        }
-        if ("stop".equals(s)) {
-            running = false;
-            sender.send("再见.");
-            System.exit(0);
-            return;
-        }
-        sender.send("未知命令.");
     }
 }
