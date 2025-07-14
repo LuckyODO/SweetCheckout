@@ -48,6 +48,11 @@ public class BuyCountDatabase extends AbstractPluginHolder implements IDatabase,
         )) { ps.execute(); }
     }
 
+    public void clearCaches() {
+        globalCaches.clear();
+        playerCaches.clear();
+    }
+
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
         String uuid = e.getPlayer().getUniqueId().toString();
@@ -210,6 +215,29 @@ public class BuyCountDatabase extends AbstractPluginHolder implements IDatabase,
                 ps.setString(6, data);
             }
             ps.execute();
+        }
+    }
+
+    public void reset(ShopItem shop) {
+        try (Connection conn = plugin.getConnection()) {
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "DELETE FROM `" + TABLE_GLOBAL + "` WHERE `shop`=?;"
+            )) {
+                ps.setString(1, shop.id);
+                ps.execute();
+            }
+            globalCaches.remove(shop.id);
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "DELETE FROM `" + TABLE_PLAYER + "` WHERE `shop`=?;"
+            )) {
+                ps.setString(1, shop.id);
+                ps.execute();
+            }
+            for (Map<String, TemporaryCount> map : playerCaches.values()) {
+                map.remove(shop.id);
+            }
+        } catch (SQLException e) {
+            warn(e);
         }
     }
 }

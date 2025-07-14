@@ -385,6 +385,19 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                     Pair.of("%money%", moneyStr),
                     Pair.of("%reason%", reason));
         }
+        if (args.length == 2 && "reset".equalsIgnoreCase(args[0]) && sender.isOp()) {
+            String shopId = args[1];
+            ShopItem shop = ShopManager.inst().get(shopId);
+            if (shop == null) {
+                return Messages.commands__reset__not_found.tm(sender);
+            }
+            plugin.getBuyCountDatabase().reset(shop);
+            return Messages.commands__reset__done.tm(sender);
+        }
+        if (args.length == 1 && "clear".equalsIgnoreCase(args[0]) && sender.isOp()) {
+            plugin.getBuyCountDatabase().clearCaches();
+            return Messages.commands__clear__success.tm(sender);
+        }
         if (args.length >= 1 && "reload".equalsIgnoreCase(args[0]) && sender.isOp()) {
             if (args.length == 2 && "database".equalsIgnoreCase(args[1])) {
                 plugin.options.database().reloadConfig();
@@ -447,6 +460,8 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                 list.add("log");
                 list.add("map");
                 list.add("qrcode");
+                list.add("reset");
+                list.add("clear");
                 list.add("reload");
             }
             return list;
@@ -485,6 +500,9 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                         }
                     }
                     return fileList;
+                }
+                if ("reset".equalsIgnoreCase(args[0])) {
+                    return startsWith(ShopManager.inst().shops(sender), args[1]);
                 }
             }
         }

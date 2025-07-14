@@ -109,6 +109,11 @@ public enum Messages implements IHolderAccessor {
     commands__stats__success__player_exists("&c  %number%.&b %player% &e￥%money%"),
     commands__stats__success__player_none("&c  %number%.&7 虚位以待"),
 
+    commands__reset__not_found("&e无效的商品ID"),
+    commands__reset__done("&a商品限购数据已重置完成，详细信息请查阅控制台"),
+
+    commands__clear__success("&a已清空数据库缓存"),
+
     commands__check__no_player("&e找不到该玩家"),
 
     no_permission("&c你没有进行此操作的权限"),
@@ -130,6 +135,8 @@ public enum Messages implements IHolderAccessor {
             "    &7其时间格式可用 &e月&7, &e年-月&7, &e年-月-日&7 三种格式",
             "&f/checkout map [文件名] &7不输入文件名时，将手中的地图保存到&f output.map &7文件；输入文件名时，通过地图预览文件以测试文件是否正常",
             "&f/checkout log <玩家> <类型> <金额> <原因...> &7手动添加充值记录",
+            "&f/checkout reset <商品ID> &7重置某个商品的限购数量和周期时间",
+            "&f/checkout clear &7清空数据缓存。如果你有多个服区，建议在执行 reset 后在其它服区执行该命令",
             "&f/checkout reload database &7重新连接数据库",
             "&f/checkout reload &7重载配置文件",
             ""),
