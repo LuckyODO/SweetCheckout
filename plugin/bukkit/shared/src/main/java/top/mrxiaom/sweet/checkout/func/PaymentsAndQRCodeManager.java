@@ -24,6 +24,7 @@ import top.mrxiaom.pluginbase.utils.Util;
 import top.mrxiaom.qrcode.QRCode;
 import top.mrxiaom.sweet.checkout.PluginCommon;
 import top.mrxiaom.sweet.checkout.func.entry.PaymentInfo;
+import top.mrxiaom.sweet.checkout.func.entry.ShopItem;
 import top.mrxiaom.sweet.checkout.map.IMapSource;
 import top.mrxiaom.sweet.checkout.map.MapQRCode;
 import top.mrxiaom.sweet.checkout.nms.NMS;
@@ -40,7 +41,7 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
     private static Material filledMap;
 
     private final Map<UUID, PaymentInfo> players = new HashMap<>();
-    private final Set<UUID> processPlayers = new HashSet<>();
+    private final Map<UUID, String> processPlayers = new HashMap<>();
     private int mapId = 20070831;
     private String mapName;
     private List<String> mapLore;
@@ -86,13 +87,27 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
         }
     }
 
+    @Deprecated
     public void putProcess(Player player) {
-        processPlayers.add(player.getUniqueId());
+        putProcess(player, "deprecated");
+    }
+
+    public void putProcess(Player player, String tag) {
+        processPlayers.put(player.getUniqueId(), tag);
     }
 
     public boolean isProcess(Player player) {
         UUID uuid = player.getUniqueId();
-        return processPlayers.contains(uuid) || players.containsKey(uuid);
+        return processPlayers.containsKey(uuid) || players.containsKey(uuid);
+    }
+
+    public int getProcessingCount(ShopItem shopItem) {
+        int count = 0;
+        String target = "buy:" + shopItem.id + ":";
+        for (String tag : processPlayers.values()) {
+            if (tag.startsWith(target)) count++;
+        }
+        return count;
     }
 
     @Override
@@ -222,7 +237,6 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
         }
         UUID uuid = player.getUniqueId();
         ItemStack old = player.getInventory().getItemInHand();
-        putProcess(player);
         players.put(uuid, new PaymentInfo(mapId, player, colors, old, item, orderId, outdateTime, done));
         player.getInventory().setItemInHand(item);
     }

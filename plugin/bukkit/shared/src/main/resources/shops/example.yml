@@ -13,6 +13,34 @@ payment:
   alipay: true
   # 是否允许使用微信
   wechat: true
+# 限购设置
+limitations:
+  # 限购模式
+  # GLOBAL     - 全服限购
+  # PER_PLAYER - 每个玩家限购
+  # NONE       - 关闭限购
+  mode: NONE
+  # 限购数量，如果需要在其它插件使用 PAPI 变量，如下
+  # %sweetcheckout_shop_商品ID_limit_current% 已购买数量
+  # %sweetcheckout_shop_商品ID_limit_last% 可购买数量
+  # %sweetcheckout_shop_商品ID_limit_max% 限购数量
+  counts: 50
+  # 在达到限购上限后，执行什么操作
+  deny-actions:
+    - '[message]&e已到达购买数量上限'
+  # 限购重置周期，可用以下格式（时间均不支持指定秒数）
+  #   每天重置 - EveryDay 时:分
+  #   每周重置 - EveryWeek 周数1,周数2 时:分
+  #   每月重置 - EveryMonth 日期1,日期2 时:分
+  #   永不重置 - Never
+  # 以下是一些示例
+  #   EveryDay 4:00
+  #   EveryWeek 1,3,5 4:00
+  #   EveryWeek Monday,Wednesday,Friday 4:00
+  #   EveryMonth 1,15 4:00
+  #   EveryMonth 0 4:00
+  # 对于每月重置，使用0代表每月最后一天，-1代表每月最后一天的前一天，比如1月的日期0是31日，日期-1是30日。
+  reset: Never
 # 商品价格 (元)
 price: 1.00
 # 支付完成后执行命令
@@ -24,3 +52,9 @@ price: 1.00
 # 全部支持 PAPI 变量
 rewards:
   - '[console]msg %player_name% 测试商品'
+
+# 刷新时执行命令，仅限购模式为 GLOBAL 时可用
+# 插件会在玩家提交订单前，以及每30秒检查一次刷新，可能会存在一些延迟。
+# 不支持需要玩家的 PAPI 变量
+reset-actions:
+  - '[console]smsgs m @a &e测试商品已刷新!'

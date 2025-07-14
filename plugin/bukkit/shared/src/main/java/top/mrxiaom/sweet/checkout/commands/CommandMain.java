@@ -97,7 +97,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                 if (manager.isProcess(player)) {
                     return Messages.commands__points__processing.tm(player);
                 }
-                manager.putProcess(player);
+                manager.putProcess(player, "points:" + moneyStr + ":" + type);
                 String productName = random(pointsNames, "商品");
                 return send(player, Messages.commands__points__send.str(), new PacketPluginRequestOrder(
                         player.getName(), type, productName, moneyStr
@@ -143,6 +143,10 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                 if (shop == null) {
                     return Messages.commands__buy__not_found.tm(player);
                 }
+                if (shop.checkLimitation(plugin, player)) {
+                    ActionProviders.run(plugin, player, shop.limitationDenyActions);
+                    return true;
+                }
                 PaymentsAndQRCodeManager manager = PaymentsAndQRCodeManager.inst();
                 String type = args[2];
                 if ("wechat".equalsIgnoreCase(type)) {
@@ -159,7 +163,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                 if (manager.isProcess(player)) {
                     return Messages.commands__buy__processing.tm(player);
                 }
-                manager.putProcess(player);
+                manager.putProcess(player, "buy:" + shop.id + ":" + type);
                 String productName = random(shop.names, "商品");
                 return send(player, Messages.commands__buy__send.str(), new PacketPluginRequestOrder(
                         player.getName(), type, productName, shop.price
@@ -189,6 +193,14 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                         // 支付成功操作，给予玩家奖励
                         info("玩家 " + player.getName() + " 通过 " + type + " 支付 ￥" + money + " 购买了商品 " + shop.display + " (" + shop.id + ") --" + productName + " " + orderId);
                         plugin.getTradeDatabase().log(player, LocalDateTime.now(), type, shop.price, "buy:" + shop.id);
+                        switch (shop.limitationMode) {
+                            case GLOBAL:
+                                plugin.getBuyCountDatabase().addGlobalCount(shop, 1);
+                                break;
+                            case PER_PLAYER:
+                                plugin.getBuyCountDatabase().addPlayerCount(player, shop, 1);
+                                break;
+                        }
                         plugin.run(player, shop.rewards);
                     });
                 });

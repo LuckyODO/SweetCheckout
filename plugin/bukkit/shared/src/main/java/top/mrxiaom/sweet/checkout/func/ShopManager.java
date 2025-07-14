@@ -6,6 +6,8 @@ import org.bukkit.permissions.Permissible;
 import top.mrxiaom.pluginbase.func.AutoRegister;
 import top.mrxiaom.pluginbase.utils.Util;
 import top.mrxiaom.sweet.checkout.PluginCommon;
+import top.mrxiaom.sweet.checkout.database.BuyCountDatabase;
+import top.mrxiaom.sweet.checkout.func.entry.EnumLimitationMode;
 import top.mrxiaom.sweet.checkout.func.entry.ShopItem;
 
 import java.io.File;
@@ -17,6 +19,16 @@ public class ShopManager extends AbstractModule {
 
     public ShopManager(PluginCommon plugin) {
         super(plugin);
+        plugin.getScheduler().runTaskTimerAsync(this::checkReset, 30 * 20L, 30 * 20L);
+    }
+
+    private void checkReset() {
+        BuyCountDatabase database = plugin.getBuyCountDatabase();
+        for (ShopItem shop : shops.values()) {
+            if (shop.limitationMode.equals(EnumLimitationMode.GLOBAL)) {
+                database.getGlobalCount(shop, true);
+            }
+        }
     }
 
     @Override
@@ -40,6 +52,7 @@ public class ShopManager extends AbstractModule {
                 ShopItem loaded = ShopItem.load(plugin, cfg, id);
                 if (loaded != null) {
                     shops.put(id, loaded);
+                    plugin.getBuyCountDatabase().setPeriod(loaded);
                 }
             });
         }

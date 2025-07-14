@@ -11,6 +11,7 @@ import top.mrxiaom.pluginbase.func.LanguageManager;
 import top.mrxiaom.pluginbase.utils.Pair;
 import top.mrxiaom.pluginbase.utils.scheduler.FoliaLibScheduler;
 import top.mrxiaom.sweet.checkout.api.PaymentClient;
+import top.mrxiaom.sweet.checkout.database.BuyCountDatabase;
 import top.mrxiaom.sweet.checkout.database.TradeDatabase;
 import top.mrxiaom.sweet.checkout.func.PaymentAPI;
 import top.mrxiaom.sweet.checkout.nms.NMS;
@@ -36,9 +37,14 @@ public abstract class PluginCommon extends BukkitPlugin {
 
     public boolean processingLogs;
     private TradeDatabase tradeDatabase;
+    private BuyCountDatabase buyCountDatabase;
 
     public TradeDatabase getTradeDatabase() {
         return tradeDatabase;
+    }
+
+    public BuyCountDatabase getBuyCountDatabase() {
+        return buyCountDatabase;
     }
 
     public abstract PaymentClient handlePaymentReload(PaymentAPI parent, @Nullable String url) throws URISyntaxException;
@@ -67,7 +73,8 @@ public abstract class PluginCommon extends BukkitPlugin {
                 .register(Errors.class, Errors::holder)
                 .register(CancelReasons.class, CancelReasons::holder);
         options.registerDatabase(
-                tradeDatabase = new TradeDatabase(this)
+                tradeDatabase = new TradeDatabase(this),
+                buyCountDatabase = new BuyCountDatabase(this)
         );
     }
 
