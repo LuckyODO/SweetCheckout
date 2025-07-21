@@ -5,7 +5,7 @@ plugins {
 }
 allprojects {
     group = "top.mrxiaom.sweet.checkout"
-    version = "1.0.4"
+    version = "1.0.5"
 }
 subprojects {
     if (File(projectDir, "src").exists()) {
