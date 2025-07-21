@@ -120,6 +120,6 @@ public class PluginPaymentServer extends AbstractPaymentServer<LocalClientInfo> 
 
     @Override
     public void send(@NotNull LocalClientInfo client, @NotNull IPacket packet, @Nullable Long echo) {
-        main.getServer().onMessage(client, packet, echo);
+        main.getClient().getParent().onMessage(packet, echo);
     }
 }

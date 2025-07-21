@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
 import org.bukkit.configuration.MemoryConfiguration;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.mrxiaom.pluginbase.func.AutoRegister;
 import top.mrxiaom.pluginbase.utils.Pair;
@@ -74,25 +75,39 @@ public class PaymentAPI extends AbstractModule {
         return client != null && client.isOpen();
     }
 
-    @SuppressWarnings({"deprecation", "unchecked"})
+    @SuppressWarnings({"deprecation"})
     public void onMessage(String s) {
         JsonObject json = parser.parse(s).getAsJsonObject();
         JsonElement echoProperty = json.get("echo");
-        if (echoProperty != null) {
-            Consumer resp = responseMap.remove(echoProperty.getAsLong());
+        IPacket packet;
+        try {
+            packet = PacketSerializer.deserialize(json);
+        } catch (Throwable t) {
+            warn("接收数据包时出现错误", t);
+            return;
+        }
+        if (packet != null) {
+            if (echoProperty != null) {
+                onMessage(packet, echoProperty.getAsLong());
+            } else {
+                onMessage(packet, null);
+            }
+        }
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public void onMessage(@NotNull IPacket packet, @Nullable Long echo) {
+        if (echo != null) {
+            Consumer resp = responseMap.remove(echo);
             if (resp != null) try {
-                IPacket packet = PacketSerializer.deserialize(json);
-                if (packet != null) plugin.getScheduler().runTask(() -> resp.accept(packet));
+                plugin.getScheduler().runTask(() -> resp.accept(packet));
             } catch (Throwable t) {
                 warn("接收数据包时出现错误", t);
             }
         } else {
-            IPacket packet = PacketSerializer.deserialize(json);
-            if (packet != null) {
-                Consumer consumer = eventMap.get(packet.getClass().getName());
-                if (consumer != null) {
-                    plugin.getScheduler().runTask(() -> consumer.accept(packet));
-                }
+            Consumer consumer = eventMap.get(packet.getClass().getName());
+            if (consumer != null) {
+                plugin.getScheduler().runTask(() -> consumer.accept(packet));
             }
         }
     }

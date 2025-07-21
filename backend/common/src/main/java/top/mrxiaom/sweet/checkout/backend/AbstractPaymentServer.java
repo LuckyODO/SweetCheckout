@@ -160,7 +160,10 @@ public abstract class AbstractPaymentServer<C extends ClientInfo<C>> {
         JsonElement echoProperty = json.get("echo");
         Long echo = echoProperty == null ? null : echoProperty.getAsLong();
         IPacket packet = PacketSerializer.deserialize(json);
-        if (packet == null) return;
+        if (packet == null) {
+            logger.warn("无法解析数据包 {}", s);
+            return;
+        }
         onMessage(client, packet, echo);
     }
 
