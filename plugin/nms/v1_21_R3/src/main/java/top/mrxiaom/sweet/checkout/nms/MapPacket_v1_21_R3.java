@@ -33,7 +33,7 @@ public class MapPacket_v1_21_R3 implements IMapPacket {
     @Override
     public void sendPacket(Player player, Object packet) {
         CraftPlayer p = (CraftPlayer) player;
-        p.getHandle().f.sendPacket((Packet<?>) packet);
+        p.getHandle().f.b((Packet<?>) packet);
     }
 
     @Override
