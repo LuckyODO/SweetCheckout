@@ -91,7 +91,7 @@ SweetCheckout 目录结构
 
 注意：由于本项目的目标是尽可能减少中间商，会造成**增加中间商**的拉取请求将被**拒绝**。
 
-[![jitpack badge](https://jitpack.io/v/MrXiaoM/SweetCheckout.svg)](https://jitpack.io/#MrXiaoM/SweetCheckout)
+[![jitpack badge](https://jitpack.io/v/top.mrxiaom/SweetCheckout.svg)](https://jitpack.io/#top.mrxiaom/SweetCheckout)
 
 ```kotlin
 repositories {
