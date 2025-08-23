@@ -98,7 +98,7 @@ repositories {
     maven("https://jitpack.io")
 }
 dependencies {
-    compileOnly("com.github.MrXiaoM.SweetCheckout:shared:$VERSION")
+    compileOnly("top.mrxiaom.SweetCheckout:shared:$VERSION")
     compileOnly("top.mrxiaom:qrcode-encoder:1.0.0") // 1.0.6 起需要添加
 }
 ```
