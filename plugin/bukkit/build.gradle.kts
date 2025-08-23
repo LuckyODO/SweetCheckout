@@ -1,26 +1,22 @@
 subprojects {
-    val pluginBase = "1.5.4"
+    val pluginBase = "1.6.1"
     extra["pluginBase"] = pluginBase
-    extra["dependencies"] = listOf(
+    extra["dependencies"] = mapOf(
+        "com.github.technicallycoded:FoliaLib:0.4.4" to true,
+        "top.mrxiaom.pluginbase:library:$pluginBase" to false,
+        "top.mrxiaom.pluginbase:paper:$pluginBase" to false,
+        "top.mrxiaom:LibrariesResolver:$pluginBase" to false,
+    )
+    extra["libraries"] = listOf(
         "top.mrxiaom:qrcode-encoder:1.0.0",
         "net.kyori:adventure-api:4.22.0",
         "net.kyori:adventure-platform-bukkit:4.4.0",
         "net.kyori:adventure-text-minimessage:4.22.0",
-        "com.github.technicallycoded:FoliaLib:0.4.4",
         "com.zaxxer:HikariCP:4.0.3",
-        "org.slf4j:slf4j-nop:2.0.16",
-        "org.jetbrains:annotations:24.0.0",
-        "top.mrxiaom:PluginBase:$pluginBase",
     )
     extra["shadowRelocations"] = mapOf(
-        "org.intellij.lang.annotations" to "annotations.intellij",
-        "org.jetbrains.annotations" to "annotations.jetbrains",
         "top.mrxiaom.pluginbase" to "base",
-        "com.zaxxer.hikari" to "hikari",
-        "org.slf4j" to "slf4j",
         "de.tr7zw.changeme.nbtapi" to "nbtapi",
-        "net.kyori" to "kyori",
-        "top.mrxiaom.qrcode" to "qrcode",
         "org.java_websocket" to "websocket",
         "com.tcoded.folialib" to "folialib",
     )
@@ -31,4 +27,8 @@ subprojects {
         "top/mrxiaom/pluginbase/gui/*",
         "top/mrxiaom/pluginbase/utils/Bytes*",
     )
+    dependencies {
+        add("compileOnly", "org.spigotmc:spigot-api:1.20-R0.1-SNAPSHOT")
+        add("compileOnly", "me.clip:placeholderapi:2.11.6")
+    }
 }

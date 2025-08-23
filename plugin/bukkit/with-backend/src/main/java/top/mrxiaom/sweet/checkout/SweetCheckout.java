@@ -15,6 +15,9 @@ public class SweetCheckout extends PluginCommon {
         return (SweetCheckout) BukkitPlugin.getInstance();
     }
 
+    public SweetCheckout() throws Exception {
+    }
+
     private BukkitMain main;
 
     public BukkitMain getBackend() {

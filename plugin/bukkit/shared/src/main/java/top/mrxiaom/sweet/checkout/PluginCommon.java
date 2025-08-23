@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import top.mrxiaom.pluginbase.BukkitPlugin;
 import top.mrxiaom.pluginbase.api.IAction;
 import top.mrxiaom.pluginbase.func.LanguageManager;
+import top.mrxiaom.pluginbase.resolver.DefaultLibraryResolver;
 import top.mrxiaom.pluginbase.utils.Pair;
 import top.mrxiaom.pluginbase.utils.scheduler.FoliaLibScheduler;
 import top.mrxiaom.sweet.checkout.api.PaymentClient;
@@ -16,7 +17,9 @@ import top.mrxiaom.sweet.checkout.database.TradeDatabase;
 import top.mrxiaom.sweet.checkout.func.PaymentAPI;
 import top.mrxiaom.sweet.checkout.nms.NMS;
 
+import java.io.File;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.List;
 
 public abstract class PluginCommon extends BukkitPlugin {
@@ -24,7 +27,7 @@ public abstract class PluginCommon extends BukkitPlugin {
         return (PluginCommon) BukkitPlugin.getInstance();
     }
 
-    public PluginCommon() {
+    public PluginCommon() throws Exception {
         super(options()
                 .bungee(false)
                 .adventure(true)
@@ -33,6 +36,18 @@ public abstract class PluginCommon extends BukkitPlugin {
                 .scanIgnore("top.mrxiaom.sweet.checkout.libs")
         );
         scheduler = new FoliaLibScheduler(this);
+
+        info("正在检查依赖库状态");
+        File librariesDir = new File(this.getDataFolder(), "libraries");
+        DefaultLibraryResolver resolver = new DefaultLibraryResolver(getLogger(), librariesDir);
+
+        resolver.addLibrary(BuildConstants.LIBRARIES);
+
+        List<URL> libraries = resolver.doResolve();
+        info("正在添加 " + libraries.size() + " 个依赖库到类加载器");
+        for (URL library : libraries) {
+            this.classLoader.addURL(library);
+        }
     }
 
     public boolean processingLogs;

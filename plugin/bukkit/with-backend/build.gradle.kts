@@ -8,13 +8,17 @@ java.withJavadocJar()
 val shadowGroup = "top.mrxiaom.sweet.checkout.libs"
 val shadowLink = configurations.create("shadowLink")
 dependencies {
-    compileOnly("org.spigotmc:spigot-api:1.20-R0.1-SNAPSHOT")
-
-    compileOnly("me.clip:placeholderapi:2.11.6")
-
-    val dependencies: List<String> by project.extra
-    for (dependency in dependencies) {
-        implementation(dependency)
+    val dependencies: Map<String, Boolean> by project.extra
+    for ((dependency, ignore) in dependencies) {
+        if (ignore) {
+            implementation(dependency) { isTransitive = false }
+        } else {
+            implementation(dependency)
+        }
+    }
+    val libraries: List<String> by project.extra
+    for (library in libraries) {
+        compileOnly(library)
     }
     val backendDependencies: List<String> by project.extra
     for (dependency in backendDependencies) {

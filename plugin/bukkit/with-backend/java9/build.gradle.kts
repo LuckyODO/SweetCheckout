@@ -2,7 +2,7 @@ val targetJavaVersion = 9
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.20-R0.1-SNAPSHOT")
     val pluginBase: String by project.extra
-    compileOnly("top.mrxiaom:PluginBase:$pluginBase")
+    compileOnly("top.mrxiaom.pluginbase:library:$pluginBase")
     compileOnly(project(":plugin:bukkit:shared"))
     compileOnly(project(":plugin:bukkit:with-backend"))
     compileOnly(project(":backend:common"))

@@ -12,6 +12,11 @@ public class MapQRCode implements IMapSource {
         this.code = code;
     }
 
+    @Deprecated
+    public MapQRCode(top.mrxiaom.sweet.checkout.libs.qrcode.QRCode code) {
+        this.code = code.impl;
+    }
+
     public QRCode getCode() {
         return code;
     }
