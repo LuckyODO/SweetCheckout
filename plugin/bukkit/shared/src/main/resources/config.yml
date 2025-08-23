@@ -28,6 +28,8 @@ map-item:
   # 「下表为目前游戏中使用的地图基色，以及它们被颜色修饰修饰后的颜色」
   # https://zh.minecraft.wiki/w/%E5%9C%B0%E5%9B%BE%E5%AD%98%E5%82%A8%E6%A0%BC%E5%BC%8F#%E5%9C%B0%E5%9B%BE%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E6%A0%BC%E5%BC%8F
   # 下面的 base 是 地图基色B，modifier 是 颜色修饰M。
+  # 除此之外，你也可以添加文件 qrcode_light.map 和 qrcode_dark.map 到插件配置目录下，实现自定义二维码图样。
+  # 可以通过 /checkout map 命令导出手中地图到 output.map 文件
   colors:
     # 亮色（背景色）
     light:
