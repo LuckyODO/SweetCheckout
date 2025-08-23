@@ -65,6 +65,7 @@ SweetCheckout 目录结构
 |                                        | (其时间格式可用 `月`, `年-月`, `年-月-日` 三种格式)                       |                              |
 | `/checkout check`                      | 查看自己的充值记录                                                | `sweet.checkout.check`       |
 | `/checkout check [玩家]`                 | 查看自己或某人的充值记录                                             | `sweet.checkout.check.other` |
+| `/checkout qrcode <二维码内容>`             | 根据输入内容生成二维码，并通过地图展示。此命令用于测试地图以及二维码生成器的可用性                | OP                           |
 | `/checkout map [文件名]`                  | 不输入文件名时，将手中的地图保存到`output.map`文件；输入文件名时，通过地图预览文件以测试文件是否正常 | OP                           |
 | `/checkout log <玩家> <类型> <金额> <原因...>` | 手动添加充值记录。类型可以是任意字符串。                                     | OP/控制台                       |
 | `/checkout reload database`            | 重新连接数据库                                                  | OP/控制台                       |
@@ -89,3 +90,17 @@ SweetCheckout 目录结构
 基本上，经过这一层接口的抽象，我们需要传递的信息大约只有：商品名（可选）、金额、订单号、支付二维码。
 
 注意：由于本项目的目标是尽可能减少中间商，会造成**增加中间商**的拉取请求将被**拒绝**。
+
+[![jitpack badge](https://jitpack.io/v/MrXiaoM/SweetCheckout.svg)](https://jitpack.io/#MrXiaoM/SweetCheckout)
+
+```kotlin
+repositories {
+    maven("https://jitpack.io")
+}
+dependencies {
+    compileOnly("com.github.MrXiaoM.SweetCheckout:shared:$VERSION")
+    compileOnly("top.mrxiaom:qrcode-encoder:1.0.0") // 1.0.6 起需要添加
+}
+```
+
+对接本插件的开发文档，请见 [MCIO Plugins](https://plugins.mcio.dev/docs/checkout/api/)。
