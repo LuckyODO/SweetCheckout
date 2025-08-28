@@ -48,7 +48,7 @@ public class ShopManager extends AbstractModule {
                     warn("[shops] 重复的商品ID: " + id);
                     return;
                 }
-                YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+                YamlConfiguration cfg = Util.load(file);
                 ShopItem loaded = ShopItem.load(plugin, cfg, id);
                 if (loaded != null) {
                     shops.put(id, loaded);

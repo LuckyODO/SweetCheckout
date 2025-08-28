@@ -10,6 +10,7 @@ import top.mrxiaom.pluginbase.api.IAction;
 import top.mrxiaom.pluginbase.func.LanguageManager;
 import top.mrxiaom.pluginbase.resolver.DefaultLibraryResolver;
 import top.mrxiaom.pluginbase.utils.Pair;
+import top.mrxiaom.pluginbase.utils.Util;
 import top.mrxiaom.pluginbase.utils.scheduler.FoliaLibScheduler;
 import top.mrxiaom.sweet.checkout.api.PaymentClient;
 import top.mrxiaom.sweet.checkout.database.BuyCountDatabase;
@@ -42,6 +43,10 @@ public abstract class PluginCommon extends BukkitPlugin {
         DefaultLibraryResolver resolver = new DefaultLibraryResolver(getLogger(), librariesDir);
 
         resolver.addLibrary(BuildConstants.LIBRARIES);
+        if (Util.isPresent("top.mrxiaom.sweet.checkout.backend.BukkitMain")
+        && !Util.isPresent("org.apache.commons.io.FileUtils")) {
+            resolver.addLibrary("commons-io:commons-io:2.17.0");
+        }
 
         List<URL> libraries = resolver.doResolve();
         info("正在添加 " + libraries.size() + " 个依赖库到类加载器");

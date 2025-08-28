@@ -1,5 +1,5 @@
 subprojects {
-    val pluginBase = "1.6.2"
+    val pluginBase = "1.6.3"
     extra["pluginBase"] = pluginBase
     extra["dependencies"] = mapOf(
         "com.github.technicallycoded:FoliaLib:0.4.4" to true,
