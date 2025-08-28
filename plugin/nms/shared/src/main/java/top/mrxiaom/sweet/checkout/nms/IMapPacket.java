@@ -1,6 +1,7 @@
 package top.mrxiaom.sweet.checkout.nms;
 
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 import org.jetbrains.annotations.NotNull;
@@ -15,4 +16,8 @@ public interface IMapPacket {
 
     @Nullable
     MapView getMap(@NotNull Integer mapId);
+
+    default ItemStack overrideMapItem(ItemStack item) {
+        return item;
+    }
 }

@@ -2,7 +2,11 @@ package top.mrxiaom.sweet.checkout.func;
 
 import com.google.common.collect.Lists;
 import de.tr7zw.changeme.nbtapi.NBT;
+import de.tr7zw.changeme.nbtapi.NBTCompound;
+import de.tr7zw.changeme.nbtapi.NBTContainer;
+import de.tr7zw.changeme.nbtapi.NBTReflectionUtil;
 import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
+import de.tr7zw.changeme.nbtapi.utils.nmsmappings.ReflectionMethod;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.MemoryConfiguration;
@@ -16,6 +20,8 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapRenderer;
+import org.bukkit.map.MapView;
+import org.jetbrains.annotations.NotNull;
 import top.mrxiaom.pluginbase.func.AutoRegister;
 import top.mrxiaom.pluginbase.utils.AdventureItemStack;
 import top.mrxiaom.pluginbase.utils.AdventureUtil;
@@ -42,7 +48,7 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
 
     private final Map<UUID, PaymentInfo> players = new HashMap<>();
     private final Map<UUID, String> processPlayers = new HashMap<>();
-    private int mapId = 20070831;
+    private @NotNull Integer mapId = 20070831;
     private String mapName;
     private List<String> mapLore;
     private Integer mapCustomModelData;
@@ -79,11 +85,12 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
                     AdventureUtil.sendActionBar(player, PAPI.setPlaceholders(player, paymentActionBarTimeout));
                 }
                 remove(info.orderId);
+                continue;
             } else if (paymentActionBarProcess != null) {
                 int timeout = (int) Math.floor((info.outdateTime - now) / 1000.0);
                 AdventureUtil.sendActionBar(player, PAPI.setPlaceholders(player, paymentActionBarProcess.replace("%timeout%", String.valueOf(timeout))));
-                info.updateMapColors();
             }
+            info.updateMapColors();
         }
     }
 
@@ -194,11 +201,18 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
     }
 
     public void restoreMap(Player player, int mapId) {
-        MapRenderer renderer = NMS.getFirstRenderer(mapId);
-        if (renderer != null) {
-            byte[] colors = NMS.getColors(renderer);
-            Object packet = NMS.createMapPacket(mapId, colors);
-            NMS.sendPacket(player, packet);
+        if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_8_R3)) {
+            MapRenderer renderer = NMS.getFirstRenderer(mapId);
+            if (renderer != null) {
+                byte[] colors = NMS.getColors(renderer);
+                Object packet = NMS.createMapPacket(mapId, colors);
+                NMS.sendPacket(player, packet);
+            }
+        } else {
+            MapView map = NMS.getMap(mapId);
+            if (map != null) {
+                player.sendMap(map);
+            }
         }
     }
 
@@ -215,17 +229,36 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
     @SuppressWarnings({"deprecation"})
     public void requireScan(Player player, byte[] colors, String orderId, long outdateTime, Consumer<Double> done) {
         ItemStack item = AdventureItemStack.buildItem(filledMap, mapName, mapLore);
-        NBT.modify(item, nbt -> {
-            nbt.setBoolean(FLAG_SWEET_CHECKOUT_MAP, true);
-            if (!useComponent) { // 1.8-1.20.4
-                if (mapCustomModelData != null) {
-                    nbt.setInteger("CustomModelData", mapCustomModelData);
-                }
-                nbt.setInteger("map", mapId);
-            }
-        });
         if (useLegacyMapId) { // 1.8 - 1.12.2
-            item.setDurability((short) mapId);
+            item.setDurability(mapId.shortValue());
+        }
+        if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_8_R3)) {
+            NBT.modify(item, nbt -> {
+                nbt.setBoolean(FLAG_SWEET_CHECKOUT_MAP, true);
+                if (!useComponent) { // 1.8-1.20.4
+                    if (mapCustomModelData != null) {
+                        nbt.setInteger("CustomModelData", mapCustomModelData);
+                    }
+                    nbt.setInteger("map", mapId);
+                }
+            });
+            item = NMS.overrideMapItem(item);
+        } else {
+            Object nmsItem; // 1.7 的 Bukkit 接口不支持通过 ItemMeta 传递 NBT
+            // 详见 org.bukkit.craftbukkit.v1_7_R4.inventory.CraftMetaItem#applyToItem(NBTTagCompound)
+            // 从 1.8 开始，才有 unhandledTags 字段，储存非原版的 NBT 标签
+
+            nmsItem = ReflectionMethod.ITEMSTACK_NMSCOPY.run(null, item);
+            NBTContainer nbt = NBTReflectionUtil.convertNMSItemtoNBTCompound(nmsItem);
+            NBTCompound tag = nbt.getOrCreateCompound("tag");
+            tag.setBoolean(FLAG_SWEET_CHECKOUT_MAP, true);
+            if (mapCustomModelData != null) {
+                tag.setInteger("CustomModelData", mapCustomModelData);
+            }
+            tag.setInteger("map", mapId);
+            nmsItem = NBTReflectionUtil.convertNBTCompoundtoNMSItem(nbt);
+            item = (ItemStack) ReflectionMethod.ITEMSTACK_BUKKITMIRROR.run(null, nmsItem);
+            item = NMS.overrideMapItem(item);
         }
         if (useComponent) { // 1.20.5+
             NBT.modifyComponents(item, nbt -> {

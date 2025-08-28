@@ -3,6 +3,7 @@ package top.mrxiaom.sweet.checkout.nms;
 import com.google.common.collect.Iterables;
 import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 import org.jetbrains.annotations.NotNull;
@@ -101,6 +102,10 @@ public class NMS {
             mapPacket = new MapPacket_v1_8_R3();
             return loaded = true;
         }
+        if (version.equals(MC1_7_R4)) {
+            mapPacket = new MapPacket_v1_7_R4();
+            return loaded = true;
+        }
         return false;
     }
 
@@ -118,6 +123,10 @@ public class NMS {
 
     public static @Nullable MapView getMap(@NotNull Integer mapId) {
         return mapPacket.getMap(mapId);
+    }
+
+    public static ItemStack overrideMapItem(ItemStack item) {
+        return mapPacket.overrideMapItem(item);
     }
 
     public static @Nullable MapRenderer getFirstRenderer(@NotNull Integer mapId) {
