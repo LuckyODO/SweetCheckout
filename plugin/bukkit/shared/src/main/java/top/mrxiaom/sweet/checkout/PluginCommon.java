@@ -5,6 +5,7 @@ import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.helpers.MessageFormatter;
 import top.mrxiaom.pluginbase.BukkitPlugin;
 import top.mrxiaom.pluginbase.api.IAction;
 import top.mrxiaom.pluginbase.func.LanguageManager;
@@ -43,9 +44,15 @@ public abstract class PluginCommon extends BukkitPlugin {
         DefaultLibraryResolver resolver = new DefaultLibraryResolver(getLogger(), librariesDir);
 
         resolver.addLibrary(BuildConstants.LIBRARIES);
-        if (Util.isPresent("top.mrxiaom.sweet.checkout.backend.BukkitMain")
-        && !Util.isPresent("org.apache.commons.io.FileUtils")) {
-            resolver.addLibrary("commons-io:commons-io:2.17.0");
+        if (Util.isPresent("top.mrxiaom.sweet.checkout.backend.BukkitMain")) {
+            if (!Util.isPresent("org.apache.commons.io.FileUtils")) {
+                resolver.addLibrary("commons-io:commons-io:2.17.0");
+            }
+            try {
+                MessageFormatter.class.getDeclaredMethod("basicArrayFormat", String.class, Object[].class);
+            } catch (Throwable t) {
+                resolver.addLibrary("org.slf4j:slf4j-api:2.0.16");
+            }
         }
 
         List<URL> libraries = resolver.doResolve();
