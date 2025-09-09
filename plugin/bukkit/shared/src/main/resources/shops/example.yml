@@ -8,6 +8,9 @@ display: '测试商品'
 # 购买该商品所需权限，注释此条目则无需权限
 # 其中，%id% 会被替换为本商品的ID
 permission: 'sweet.checkout.buy.%id%'
+# 订单数据修饰器，格式与 config.yml 中的 points.modifiers 相同
+# 唯一的区别是 operator.point 在此处无效
+modifiers: []
 payment:
   # 是否允许使用支付宝
   alipay: true

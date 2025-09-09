@@ -66,6 +66,31 @@ points:
     - '点券'
   # 充值1元可获得多少点数，只能输入整数
   scale: 1
+  # 订单数据修饰器
+  # 可用类型: permission, eval
+  # 单个修饰器不可叠加多个类型，例如一个条目里不能同时有 permission 和 eval
+  modifiers:
+      # 当玩家有权限 example.vip1 时
+    - permission: example.vip1
+      # 优先级，可选，数值越小的修饰器越先进行判定，默认 1000
+      priority: 1000
+      # 如果满足了条件，是否终止修饰进程，不再执行后面的修饰器。可选，默认关闭
+      end: false
+      # 对订单数据进行操作
+      operator:
+        # 对点券数量进行修改，增加 10%
+        point: point * 1.1
+        # 对金额进行修改，打九五折
+        #money: money * 0.95
+      # 当输入的表达式满足条件时 (支持 PAPI 变量)
+      # 示例: 当玩家经验等级大于等于 30 级时
+    - eval: %player_level% >= 30
+      # 对订单数据进行操作
+      operator:
+        # 对点券数量进行修改，增加 10%
+        #point: point * 1.1
+        # 对金额进行修改，打九五折
+        money: money * 0.95
   # 支付完成后执行命令
   # [console]开头执行控制台命令
   # [player]开头执行玩家命令

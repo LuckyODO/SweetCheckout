@@ -13,6 +13,7 @@ subprojects {
         "net.kyori:adventure-platform-bukkit:4.4.0",
         "net.kyori:adventure-text-minimessage:4.22.0",
         "com.zaxxer:HikariCP:4.0.3",
+        "top.mrxiaom:EvalEx-j8:3.4.0",
     )
     extra["shadowRelocations"] = mapOf(
         "top.mrxiaom.pluginbase" to "base",

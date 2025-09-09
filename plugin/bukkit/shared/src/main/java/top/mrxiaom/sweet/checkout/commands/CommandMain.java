@@ -25,6 +25,8 @@ import top.mrxiaom.sweet.checkout.PluginCommon;
 import top.mrxiaom.sweet.checkout.database.TradeDatabase;
 import top.mrxiaom.sweet.checkout.func.*;
 import top.mrxiaom.sweet.checkout.func.entry.ShopItem;
+import top.mrxiaom.sweet.checkout.func.modifier.Modifiers;
+import top.mrxiaom.sweet.checkout.func.modifier.OrderInfo;
 import top.mrxiaom.sweet.checkout.map.IMapSource;
 import top.mrxiaom.sweet.checkout.nms.NMS;
 import top.mrxiaom.sweet.checkout.packets.common.IPacket;
@@ -47,6 +49,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
     private boolean useAlipay;
     private int paymentTimeout;
     private int pointsScale;
+    private Modifiers pointsModifiers;
     private List<String> pointsNames;
     private List<IAction> pointsCommands;
     private int statsTop;
@@ -67,6 +70,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
         pointsScale = config.getInt("points.scale");
         pointsNames = config.getStringList("points.names");
         pointsCommands = ActionProviders.loadActions(config.getStringList("points.commands"));
+        pointsModifiers = Modifiers.load(config, "points.modifiers");
 
         statsTop = config.getInt("stats.top", 5);
     }
@@ -82,7 +86,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                 }
                 PaymentsAndQRCodeManager manager = PaymentsAndQRCodeManager.inst();
                 String type = args[1];
-                String moneyStr = args[2];
+                double moneyDouble = Util.parseDouble(args[2]).orElse(0.0);
                 if ("wechat".equalsIgnoreCase(type)) {
                     if (!useWeChat) {
                         return Messages.commands__points__disabled__wechat.tm(player);
@@ -94,6 +98,18 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                 } else {
                     return Messages.commands__points__unknown_type.tm(player);
                 }
+                if (moneyDouble < 0.01) {
+                    return Messages.commands__points__invalid_money.tm(player);
+                }
+                int pointsDouble = (int) Math.round(moneyDouble * pointsScale);
+                OrderInfo orderInfo = new OrderInfo(player, moneyDouble, pointsDouble);
+                try {
+                    pointsModifiers.modify(orderInfo);
+                } catch (Exception e) {
+                    return Messages.commands__points__modifiers_error.tm(player, Pair.of("%error%", e.getMessage()));
+                }
+                String moneyStr = String.format("%.2f", Math.max(0.01, orderInfo.getMoney()));
+                double points = orderInfo.getPoint();
                 if (manager.isProcess(player)) {
                     return Messages.commands__points__processing.tm(player);
                 }
@@ -124,7 +140,6 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                     IMapSource source = IMapSource.fromUrl(plugin, resp.getPaymentUrl());
                     manager.requireScan(player, source, orderId, outdateTime, money -> {
                         // 支付成功操作，给予玩家点券
-                        int points = (int) Math.round(money * pointsScale);
                         info("玩家 " + player.getName() + " 通过 " + type + " 支付 ￥" + money + " 获得了 " + points + " 点券 --" + productName + " " + orderId);
                         plugin.getTradeDatabase().log(player, LocalDateTime.now(), type, moneyStr, "points:" + points);
                         plugin.run(player, pointsCommands,
@@ -165,8 +180,9 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                 }
                 manager.putProcess(player, "buy:" + shop.id + ":" + type);
                 String productName = random(shop.names, "商品");
+                String price = shop.getPrice(player);
                 return send(player, Messages.commands__buy__send.str(), new PacketPluginRequestOrder(
-                        player.getName(), type, productName, shop.price
+                        player.getName(), type, productName, price
                 ), resp -> {
                     String error = resp.getError();
                     if (!error.isEmpty()) {
@@ -185,14 +201,14 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                     Messages.commands__buy__sent.tm(player,
                             Pair.of("%order_id%", orderId),
                             Pair.of("%display%", shop.display),
-                            Pair.of("%money%", shop.price),
+                            Pair.of("%money%", price),
                             Pair.of("%timeout%", paymentTimeout));
                     // 向玩家展示二维码地图
                     IMapSource source = IMapSource.fromUrl(plugin, resp.getPaymentUrl());
                     manager.requireScan(player, source, orderId, outdateTime, money -> {
                         // 支付成功操作，给予玩家奖励
                         info("玩家 " + player.getName() + " 通过 " + type + " 支付 ￥" + money + " 购买了商品 " + shop.display + " (" + shop.id + ") --" + productName + " " + orderId);
-                        plugin.getTradeDatabase().log(player, LocalDateTime.now(), type, shop.price, "buy:" + shop.id);
+                        plugin.getTradeDatabase().log(player, LocalDateTime.now(), type, price, "buy:" + shop.id);
                         switch (shop.limitationMode) {
                             case GLOBAL:
                                 plugin.getBuyCountDatabase().addGlobalCount(shop, 1);

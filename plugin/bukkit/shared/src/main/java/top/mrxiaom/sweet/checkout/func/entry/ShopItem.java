@@ -2,6 +2,7 @@ package top.mrxiaom.sweet.checkout.func.entry;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 import top.mrxiaom.pluginbase.actions.ActionProviders;
 import top.mrxiaom.pluginbase.api.IAction;
@@ -13,6 +14,8 @@ import top.mrxiaom.pluginbase.temporary.period.Period;
 import top.mrxiaom.pluginbase.utils.Util;
 import top.mrxiaom.sweet.checkout.PluginCommon;
 import top.mrxiaom.sweet.checkout.func.PaymentsAndQRCodeManager;
+import top.mrxiaom.sweet.checkout.func.modifier.Modifiers;
+import top.mrxiaom.sweet.checkout.func.modifier.OrderInfo;
 import top.mrxiaom.sweet.checkout.func.temporary.NeverReset;
 
 import java.time.DayOfWeek;
@@ -27,6 +30,7 @@ public class ShopItem {
     public final String id;
     public final String display;
     public final @Nullable String permission;
+    public final Modifiers modifiers;
     public final List<String> names;
     public final boolean paymentAlipay, paymentWeChat;
     public final EnumLimitationMode limitationMode;
@@ -38,7 +42,7 @@ public class ShopItem {
     public final List<IAction> resetActions;
 
     public ShopItem(
-            PluginCommon plugin, String id, String display, @Nullable String permission,
+            PluginCommon plugin, String id, String display, @Nullable String permission, Modifiers modifiers,
             List<String> names, boolean paymentAlipay, boolean paymentWeChat,
             EnumLimitationMode limitationMode, int limitationCounts,
             List<IAction> limitationDenyActions, Period limitationReset,
@@ -48,6 +52,7 @@ public class ShopItem {
         this.id = id;
         this.display = display;
         this.permission = permission;
+        this.modifiers = modifiers;
         this.names = names;
         this.paymentAlipay = paymentAlipay;
         this.paymentWeChat = paymentWeChat;
@@ -58,6 +63,17 @@ public class ShopItem {
         this.price = price;
         this.rewards = rewards;
         this.resetActions = resetActions;
+    }
+
+    public String getPrice(Player player) {
+        try {
+            double price = Double.parseDouble(this.price);
+            OrderInfo order = new OrderInfo(player, price, price);
+            modifiers.modify(order);
+            return String.format("%.2f", order.getMoney());
+        } catch (Exception e) {
+            return this.price;
+        }
     }
 
     /**
@@ -183,7 +199,8 @@ public class ShopItem {
         }
         List<IAction> resetActions = ActionProviders.loadActions(config, "reset-actions");
         String permission = config.getString("permission", null);
-        return new ShopItem(plugin, id, display, permission == null ? null : permission.replace("%id%", id),
+        Modifiers modifiers = Modifiers.load(config, "modifiers");
+        return new ShopItem(plugin, id, display, permission == null ? null : permission.replace("%id%", id), modifiers,
                 names, paymentAlipay, paymentWeChat,
                 limitationMode, limitationCounts,
                 limitationDenyActions, limitationReset,

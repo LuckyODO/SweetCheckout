@@ -17,6 +17,8 @@ public enum Messages implements IHolderAccessor {
     commands__points__disabled__alipay("&e管理员已禁用支付宝支付"),
     commands__points__unknown_type("&e未知支付类型"),
     commands__points__processing("&e请先完成你正在进行的订单"),
+    commands__points__invalid_money("&e请输入正确的金额"),
+    commands__points__modifiers_error("&e订单数据修饰器执行错误，请联系服务器管理员 &7(%error%)"),
     commands__points__send("&f正在请求…"),
     commands__points__sent("",
             "&a&l下单成功&r",
