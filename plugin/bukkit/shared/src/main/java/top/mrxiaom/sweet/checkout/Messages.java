@@ -40,6 +40,7 @@ public enum Messages implements IHolderAccessor {
     commands__buy__disabled__wechat("&e管理员已禁用微信支付"),
     commands__buy__disabled__alipay("&e管理员已禁用支付宝支付"),
     commands__buy__unknown_type("&e未知支付类型"),
+    commands__buy__modifiers_error("&e订单数据修饰器执行错误，请联系服务器管理员 &7(%error%)"),
     commands__buy__processing("&e请先完成你正在进行的订单"),
     commands__buy__send("&f正在请求…"),
     commands__buy__sent("",

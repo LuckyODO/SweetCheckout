@@ -183,12 +183,17 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                 } else {
                     return Messages.commands__buy__unknown_type.tm(player);
                 }
+                String price;
+                try {
+                    price = shop.getPriceOrError(player);
+                } catch (Exception e) {
+                    return Messages.commands__buy__modifiers_error.tm(player, Pair.of("%error%", e.getMessage()));
+                }
                 if (manager.isProcess(player)) {
                     return Messages.commands__buy__processing.tm(player);
                 }
                 manager.putProcess(player, "buy:" + shop.id + ":" + type);
                 String productName = random(shop.names, "商品");
-                String price = shop.getPrice(player);
                 return send(player, Messages.commands__buy__send.str(), new PacketPluginRequestOrder(
                         player.getName(), type, productName, price
                 ), resp -> {

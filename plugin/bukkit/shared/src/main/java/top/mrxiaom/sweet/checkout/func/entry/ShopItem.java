@@ -12,6 +12,7 @@ import top.mrxiaom.pluginbase.temporary.period.EveryMonth;
 import top.mrxiaom.pluginbase.temporary.period.EveryWeek;
 import top.mrxiaom.pluginbase.temporary.period.Period;
 import top.mrxiaom.pluginbase.utils.Util;
+import top.mrxiaom.sweet.checkout.Placeholders;
 import top.mrxiaom.sweet.checkout.PluginCommon;
 import top.mrxiaom.sweet.checkout.func.PaymentsAndQRCodeManager;
 import top.mrxiaom.sweet.checkout.func.modifier.Modifiers;
@@ -65,15 +66,24 @@ public class ShopItem {
         this.resetActions = resetActions;
     }
 
+    public String getPrice() {
+        return price;
+    }
+
+    @Nullable
     public String getPrice(Player player) {
         try {
-            double price = Double.parseDouble(this.price);
-            OrderInfo order = new OrderInfo(player, price, 0);
-            modifiers.modify(order);
-            return String.format("%.2f", order.getMoney());
+            return getPriceOrError(player);
         } catch (Exception e) {
-            return this.price;
+            return null;
         }
+    }
+
+    public String getPriceOrError(Player player) throws Exception {
+        double price = Double.parseDouble(this.price);
+        OrderInfo order = new OrderInfo(player, price, 0);
+        modifiers.modify(order);
+        return String.format("%.2f", order.getMoney());
     }
 
     /**

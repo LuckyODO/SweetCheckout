@@ -48,6 +48,17 @@ public class Placeholders extends PlaceholdersExpansion<PluginCommon> {
             }
             return "WRONG_USAGE";
         }
+        if (params.startsWith("points_money_")) {
+            double money = Util.parseDouble(params.substring(13)).orElse(0.0);
+            return String.valueOf(Math.max(0, CommandMain.inst().getPoints(money)));
+        }
+        if (params.startsWith("money_shop_")) {
+            ShopItem shopItem = ShopManager.inst().get(params.substring(11));
+            if (shopItem == null) {
+                return "0.00";
+            }
+            return shopItem.getPrice();
+        }
         return super.onRequest(player, params);
     }
 
@@ -80,7 +91,8 @@ public class Placeholders extends PlaceholdersExpansion<PluginCommon> {
             if (shopItem == null) {
                 return "0.00";
             }
-            return shopItem.getPrice(player);
+            String price = shopItem.getPrice(player);
+            return price == null ? "ERROR" : price;
         }
         return null;
     }
