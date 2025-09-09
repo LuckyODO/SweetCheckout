@@ -68,7 +68,7 @@ public class ShopItem {
     public String getPrice(Player player) {
         try {
             double price = Double.parseDouble(this.price);
-            OrderInfo order = new OrderInfo(player, price, price);
+            OrderInfo order = new OrderInfo(player, price, 0);
             modifiers.modify(order);
             return String.format("%.2f", order.getMoney());
         } catch (Exception e) {

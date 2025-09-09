@@ -1,12 +1,19 @@
 package top.mrxiaom.sweet.checkout;
 
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.mrxiaom.pluginbase.utils.Pair;
 import top.mrxiaom.pluginbase.utils.PlaceholdersExpansion;
 import top.mrxiaom.pluginbase.utils.Util;
+import top.mrxiaom.sweet.checkout.commands.CommandMain;
 import top.mrxiaom.sweet.checkout.func.RankManager;
+import top.mrxiaom.sweet.checkout.func.ShopManager;
+import top.mrxiaom.sweet.checkout.func.entry.ShopItem;
+import top.mrxiaom.sweet.checkout.func.modifier.OrderInfo;
+
+import java.util.Optional;
 
 public class Placeholders extends PlaceholdersExpansion<PluginCommon> {
     public Placeholders(PluginCommon plugin) {
@@ -42,5 +49,39 @@ public class Placeholders extends PlaceholdersExpansion<PluginCommon> {
             return "WRONG_USAGE";
         }
         return super.onRequest(player, params);
+    }
+
+    @Override
+    public @Nullable String onPlaceholderRequest(Player player, @NotNull String params) {
+        if (params.startsWith("modified_money_")) {
+            CommandMain command = CommandMain.inst();
+            double money = Util.parseDouble(params.substring(15)).orElse(0.0);
+            int point = command.getPoints(money);
+            OrderInfo order = new OrderInfo(player, money, point);
+            try {
+                command.getPointsModifiers().modify(order);
+            } catch (Exception ignored) {
+            }
+            return String.format("%.2f", order.getMoney());
+        }
+        if (params.startsWith("modified_points_")) {
+            CommandMain command = CommandMain.inst();
+            double money = Util.parseDouble(params.substring(16)).orElse(0.0);
+            int point = command.getPoints(money);
+            OrderInfo order = new OrderInfo(player, money, point);
+            try {
+                command.getPointsModifiers().modify(order);
+            } catch (Exception ignored) {
+            }
+            return String.valueOf(order.getPoint());
+        }
+        if (params.startsWith("shop_modified_money_")) {
+            ShopItem shopItem = ShopManager.inst().get(params.substring(20));
+            if (shopItem == null) {
+                return "0.00";
+            }
+            return shopItem.getPrice(player);
+        }
+        return null;
     }
 }

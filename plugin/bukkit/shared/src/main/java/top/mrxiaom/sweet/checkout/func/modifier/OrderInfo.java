@@ -5,9 +5,9 @@ import org.bukkit.entity.Player;
 public class OrderInfo {
     private final Player player;
     private double money;
-    private double point;
+    private int point;
 
-    public OrderInfo(Player player, double money, double point) {
+    public OrderInfo(Player player, double money, int point) {
         this.player = player;
         this.money = money;
         this.point = point;
@@ -25,11 +25,11 @@ public class OrderInfo {
         this.money = money;
     }
 
-    public double getPoint() {
+    public int getPoint() {
         return point;
     }
 
-    public void setPoint(double point) {
+    public void setPoint(int point) {
         this.point = point;
     }
 }

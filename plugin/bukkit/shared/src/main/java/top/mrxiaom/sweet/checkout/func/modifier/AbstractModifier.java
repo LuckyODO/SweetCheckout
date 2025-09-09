@@ -34,11 +34,11 @@ public abstract class AbstractModifier {
             orderInfo.setMoney(money);
         }
         if (!pointExpression.isEmpty()) {
-            double point = new Expression(pointExpression)
+            int point = new Expression(pointExpression)
                     .with("point", orderInfo.getPoint())
                     .evaluate()
                     .getNumberValue()
-                    .doubleValue();
+                    .intValue();
             orderInfo.setPoint(point);
         }
     }

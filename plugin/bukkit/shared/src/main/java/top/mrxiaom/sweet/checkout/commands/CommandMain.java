@@ -75,6 +75,14 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
         statsTop = config.getInt("stats.top", 5);
     }
 
+    public int getPoints(double money) {
+        return (int) Math.round(money * pointsScale);
+    }
+
+    public Modifiers getPointsModifiers() {
+        return pointsModifiers;
+    }
+
     @Override
     @SuppressWarnings({"deprecation"})
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
@@ -101,7 +109,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                 if (moneyDouble < 0.01) {
                     return Messages.commands__points__invalid_money.tm(player);
                 }
-                int pointsDouble = (int) Math.round(moneyDouble * pointsScale);
+                int pointsDouble = getPoints(moneyDouble);
                 OrderInfo orderInfo = new OrderInfo(player, moneyDouble, pointsDouble);
                 try {
                     pointsModifiers.modify(orderInfo);
@@ -109,7 +117,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                     return Messages.commands__points__modifiers_error.tm(player, Pair.of("%error%", e.getMessage()));
                 }
                 String moneyStr = String.format("%.2f", Math.max(0.01, orderInfo.getMoney()));
-                double points = orderInfo.getPoint();
+                int points = orderInfo.getPoint();
                 if (manager.isProcess(player)) {
                     return Messages.commands__points__processing.tm(player);
                 }
@@ -560,5 +568,9 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
             PaymentsAndQRCodeManager.inst().remove(player);
         }
         return true;
+    }
+
+    public static CommandMain inst() {
+        return instanceOf(CommandMain.class);
     }
 }
