@@ -108,7 +108,14 @@ public abstract class PluginCommon extends BukkitPlugin {
     @Override
     protected void afterEnable() {
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            new Placeholders(this).register();
+            Placeholders placeholders;
+            try {
+                placeholders = new PlaceholdersPersist(this);
+                placeholders.persist();
+            } catch (Throwable ignored) {
+                placeholders = new Placeholders(this);
+            }
+            placeholders.register();
         }
         getLogger().info("SweetCheckout 加载完毕");
     }
