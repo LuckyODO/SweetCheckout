@@ -169,7 +169,7 @@ static QWORD DispatchMsg(QWORD arg1, QWORD arg2)
                 nlohmann::json to_log = {
                     { "content", content }
                 };
-                LOG_INFO("Received specific message from gh_f0a92aa7146c: {}", to_log.dump());
+                LOG_INFO(u8"Received specific message from gh_f0a92aa7146c (微信收款助手): {}", to_log.dump());
                 if (content.find(u8"<appname><![CDATA[微信收款助手]]></appname>") != string::npos)
                 {
                     // 同时满足 微信支付收款 和 店员消息 的格式
@@ -197,7 +197,7 @@ static QWORD DispatchMsg(QWORD arg1, QWORD arg2)
                 nlohmann::json to_log = {
                     { "content", content }
                 };
-                LOG_INFO("Received specific message from gh_3dfda90e39d6: {}", to_log.dump());
+                LOG_INFO(u8"Received specific message from gh_3dfda90e39d6 (微信支付): {}", to_log.dump());
                 if (content.find(u8"<appname><![CDATA[微信支付]]></appname>") != string::npos)
                 {
                     std::string pattern = u8"二维码赞赏到账(\\d+\\.\\d{2})元";
