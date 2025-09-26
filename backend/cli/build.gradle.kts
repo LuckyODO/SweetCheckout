@@ -41,17 +41,8 @@ fun Jar.setupManifest() {
 }
 tasks {
     shadowJar {
-        minimize {
-            val dependencies = listOf(
-                "org.bouncycastle:bcprov-jdk15on",
-                "commons-io:commons-io",
-            )
-            include {
-                dependencies.contains("${it.moduleGroup}:${it.moduleName}")
-            }
-            mergeServiceFiles()
-            transform(Log4j2PluginsCacheFileTransformer())
-        }
+        mergeServiceFiles()
+        transform(Log4j2PluginsCacheFileTransformer())
         setupManifest()
     }
     val copyTask = create<Copy>("copyBuildArtifact") {
