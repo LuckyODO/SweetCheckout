@@ -21,13 +21,15 @@
  * OF CONTRACT, TORT OR OTHERWISE,  ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package top.mrxiaom.sweet.checkout.backend;
+package top.mrxiaom.sweet.checkout.backend.logger;
 
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.event.EventConstants;
 import org.slf4j.event.LoggingEvent;
-import org.slf4j.helpers.*;
+import org.slf4j.helpers.AbstractLogger;
+import org.slf4j.helpers.LegacyAbstractLogger;
+import org.slf4j.helpers.SubstituteLogger;
 import org.slf4j.spi.DefaultLoggingEventBuilder;
 import org.slf4j.spi.LocationAwareLogger;
 
@@ -135,7 +137,8 @@ public final class LoggerAdapter extends LegacyAbstractLogger implements Locatio
     private void innerNormalizedLoggingCallHandler(String fqcn, org.slf4j.event.Level level, Marker marker, String msg, Object[] args, Throwable throwable) {
         // millis and thread are filled by the constructor
         Level julLevel = slf4jLevelToJULLevel(level);
-        String formattedMessage = MessageFormatter.basicArrayFormat(msg, args);
+        FormattingTuple ft = FormattingTuple.arrayFormat(msg, args, null);
+        String formattedMessage = ft.getMessage();
         LogRecord record = new LogRecord(julLevel, formattedMessage);
 
         // https://jira.qos.ch/browse/SLF4J-13
@@ -170,7 +173,7 @@ public final class LoggerAdapter extends LegacyAbstractLogger implements Locatio
      *
      * @param record The record to update
      */
-    final private void fillCallerData(String callerFQCN, LogRecord record) {
+    private void fillCallerData(String callerFQCN, LogRecord record) {
         StackTraceElement[] steArray = new Throwable().getStackTrace();
 
         int selfIndex = -1;
@@ -266,7 +269,7 @@ public final class LoggerAdapter extends LegacyAbstractLogger implements Locatio
     private LogRecord eventToRecord(LoggingEvent event, Level julLevel) {
         String format = event.getMessage();
         Object[] arguments = event.getArgumentArray();
-        FormattingTuple ft = MessageFormatter.arrayFormat(format, arguments);
+        FormattingTuple ft = FormattingTuple.arrayFormat(format, arguments, null);
         if (ft.getThrowable() != null && event.getThrowable() != null) {
             throw new IllegalArgumentException("both last element in argument array and last argument are of type Throwable");
         }

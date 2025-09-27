@@ -2,6 +2,7 @@ package top.mrxiaom.sweet.checkout.backend;
 
 import top.mrxiaom.sweet.checkout.api.LocalPaymentClient;
 import top.mrxiaom.sweet.checkout.backend.data.LocalClientInfo;
+import top.mrxiaom.sweet.checkout.backend.logger.LoggerAdapter;
 import top.mrxiaom.sweet.checkout.func.PaymentAPI;
 
 import java.io.File;
