@@ -59,9 +59,21 @@ jobs:
           java-version: 21
       - name: Build plugin and backend
         run: ./gradlew clean build
-      - name: Upload Artifacts
+      - name: Upload Artifacts Backend
         uses: actions/upload-artifact@v4
         with:
-          name: SweetCheckout
-          path: out/*
+          name: SweetCheckout-backend
+          path: out/backend-*
+          if-no-files-found: error
+      - name: Upload Artifacts Plugin With Backend
+        uses: actions/upload-artifact@v4
+        with:
+          name: SweetCheckout-bukkit-with-backend
+          path: out/SweetCheckout-bukkit-with-backend-*
+          if-no-files-found: error
+      - name: Upload Artifacts Plugin WS
+        uses: actions/upload-artifact@v4
+        with:
+          name: SweetCheckout-bukkit-ws
+          path: out/SweetCheckout-bukkit-ws-*
           if-no-files-found: error
