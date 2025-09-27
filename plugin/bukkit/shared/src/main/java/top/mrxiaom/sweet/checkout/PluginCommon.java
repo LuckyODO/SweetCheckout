@@ -4,14 +4,18 @@ import com.google.common.collect.Lists;
 import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.helpers.MessageFormatter;
 import top.mrxiaom.pluginbase.BukkitPlugin;
 import top.mrxiaom.pluginbase.api.IAction;
 import top.mrxiaom.pluginbase.func.LanguageManager;
+import top.mrxiaom.pluginbase.paper.PaperFactory;
 import top.mrxiaom.pluginbase.resolver.DefaultLibraryResolver;
+import top.mrxiaom.pluginbase.utils.ClassLoaderWrapper;
 import top.mrxiaom.pluginbase.utils.Pair;
 import top.mrxiaom.pluginbase.utils.Util;
+import top.mrxiaom.pluginbase.utils.inventory.InventoryFactory;
+import top.mrxiaom.pluginbase.utils.item.ItemEditor;
 import top.mrxiaom.pluginbase.utils.scheduler.FoliaLibScheduler;
 import top.mrxiaom.sweet.checkout.api.PaymentClient;
 import top.mrxiaom.sweet.checkout.database.BuyCountDatabase;
@@ -22,6 +26,7 @@ import top.mrxiaom.sweet.checkout.nms.NMS;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.List;
 
 public abstract class PluginCommon extends BukkitPlugin {
@@ -48,11 +53,6 @@ public abstract class PluginCommon extends BukkitPlugin {
             if (!Util.isPresent("org.apache.commons.io.FileUtils")) {
                 resolver.addLibrary("commons-io:commons-io:2.17.0");
             }
-            try {
-                MessageFormatter.class.getDeclaredMethod("basicArrayFormat", String.class, Object[].class);
-            } catch (Throwable t) {
-                resolver.addLibrary("org.slf4j:slf4j-api:2.0.16");
-            }
         }
 
         List<URL> libraries = resolver.doResolve();
@@ -60,6 +60,23 @@ public abstract class PluginCommon extends BukkitPlugin {
         for (URL library : libraries) {
             this.classLoader.addURL(library);
         }
+    }
+
+    @Override
+    protected @NotNull ClassLoaderWrapper initClassLoader(URLClassLoader classLoader) {
+        return ClassLoaderWrapper.isSupportLibraryLoader
+                ? new ClassLoaderWrapper(ClassLoaderWrapper.findLibraryLoader(classLoader))
+                : new ClassLoaderWrapper(classLoader);
+    }
+
+    @Override
+    public @NotNull ItemEditor initItemEditor() {
+        return PaperFactory.createItemEditor();
+    }
+
+    @Override
+    public @NotNull InventoryFactory initInventoryFactory() {
+        return PaperFactory.createInventoryFactory();
     }
 
     public boolean processingLogs;
