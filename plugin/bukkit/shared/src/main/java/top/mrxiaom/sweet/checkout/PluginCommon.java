@@ -45,7 +45,9 @@ public abstract class PluginCommon extends BukkitPlugin {
         scheduler = new FoliaLibScheduler(this);
 
         info("正在检查依赖库状态");
-        File librariesDir = new File(this.getDataFolder(), "libraries");
+        File librariesDir = ClassLoaderWrapper.isSupportLibraryLoader
+                ? new File("libraries")
+                : new File(this.getDataFolder(), "libraries");
         DefaultLibraryResolver resolver = new DefaultLibraryResolver(getLogger(), librariesDir);
 
         resolver.addLibrary(BuildConstants.LIBRARIES);
