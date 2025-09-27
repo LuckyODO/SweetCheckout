@@ -1,11 +1,11 @@
 subprojects {
-    val pluginBase = "1.6.3"
+    val pluginBase = "1.6.5"
     extra["pluginBase"] = pluginBase
     extra["dependencies"] = mapOf(
         "com.github.technicallycoded:FoliaLib:0.4.4" to true,
         "top.mrxiaom.pluginbase:library:$pluginBase" to false,
         "top.mrxiaom.pluginbase:paper:$pluginBase" to false,
-        "top.mrxiaom:LibrariesResolver:$pluginBase:all" to false,
+        "top.mrxiaom:LibrariesResolver:$pluginBase" to false,
     )
     extra["libraries"] = listOf(
         "top.mrxiaom:qrcode-encoder:1.0.0",
