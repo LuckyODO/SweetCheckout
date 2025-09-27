@@ -11,6 +11,8 @@ import top.mrxiaom.sweet.checkout.func.entry.EnumLimitationMode;
 import top.mrxiaom.sweet.checkout.func.entry.ShopItem;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 @AutoRegister
@@ -43,7 +45,8 @@ public class ShopManager extends AbstractModule {
                     plugin.saveResource("shops/example.yml", new File(folder, "example.yml"));
                 }
             }
-            Util.reloadFolder(new File(plugin.getDataFolder(), "shops"), false, (id, file) -> {
+            Util.reloadFolder(folder, true, (id, file) -> {
+                id = nameWithoutSuffix(id); // TODO: 等待 PluginBase 更新
                 if (shops.containsKey(id)) {
                     warn("[shops] 重复的商品ID: " + id);
                     return;
@@ -57,6 +60,25 @@ public class ShopManager extends AbstractModule {
             });
         }
         info("[shops] 共加载了 " + shops.size() + " 个商品");
+    }
+    public static String nameWithoutSuffix(String s) {
+        Path path = Paths.get(s);
+        Path fileName = path.getFileName();
+        if (fileName == null) {
+            return s;
+        }
+        String fileNameStr = fileName.toString();
+        int lastDotIndex = fileNameStr.lastIndexOf('.');
+        if (lastDotIndex <= 0) {
+            return s;
+        }
+        String fileNameWithoutExt = fileNameStr.substring(0, lastDotIndex);
+        Path parentDir = path.getParent();
+        if (parentDir == null) {
+            return fileNameWithoutExt;
+        } else {
+            return parentDir.resolve(fileNameWithoutExt).toString();
+        }
     }
 
     public Set<String> shops() {
