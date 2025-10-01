@@ -12,7 +12,8 @@ on:
 
 jobs:
   build-hook:
-    runs-on: windows-latest
+    # https://docs.github.com/zh/actions/how-tos/write-workflows/choose-where-workflows-run/choose-the-runner-for-a-job
+    runs-on: windows-2025
     steps:
       - name: Checkout
         uses: actions/checkout@v3
