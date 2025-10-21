@@ -115,7 +115,7 @@ public class PaymentAlipay<C extends ClientInfo<C>> {
         // 每3秒检查一次是否支付成功
         server.getTimer().schedule(order.getTask(), 1000L, 3000L);
         server.getLogger().info("支付宝 轮询模式 下单成功: {} ({})", orderId, randomId);
-        return new PacketPluginRequestOrder.Response("face2face", orderId, qrcodeURL);
+        return new PacketPluginRequestOrder.Response("polling", orderId, qrcodeURL);
     }
 
     public String generateQRCode(String uid, String price, String goodsMemo) {
