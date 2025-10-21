@@ -54,6 +54,7 @@ public class Configuration {
     protected void postLoad(File dataFolder) {
         getWeChatNative().postLoad(dataFolder);
         getAlipayFaceToFace().postLoad(dataFolder);
+        getHook().getAlipay().postLoad(dataFolder);
     }
 
     public int getPort() {
@@ -70,6 +71,18 @@ public class Configuration {
 
     public Hook getHook() {
         return hook;
+    }
+
+    private static AlipayConfig initAlipayConfig(String appId, String privateKey, String publicKey) {
+        AlipayConfig alipayConfig = new AlipayConfig();
+        alipayConfig.setServerUrl("https://openapi.alipay.com/gateway.do");
+        alipayConfig.setAppId(appId);
+        alipayConfig.setPrivateKey(privateKey);
+        alipayConfig.setFormat("json");
+        alipayConfig.setAlipayPublicKey(publicKey);
+        alipayConfig.setCharset("UTF-8");
+        alipayConfig.setSignType("RSA2");
+        return alipayConfig;
     }
 
     @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
@@ -156,15 +169,7 @@ public class Configuration {
                     enable = false;
                     return;
                 }
-                AlipayConfig alipayConfig = new AlipayConfig();
-                alipayConfig.setServerUrl("https://openapi.alipay.com/gateway.do");
-                alipayConfig.setAppId(getAppId());
-                alipayConfig.setPrivateKey(privateKey);
-                alipayConfig.setFormat("json");
-                alipayConfig.setAlipayPublicKey(publicKey);
-                alipayConfig.setCharset("UTF-8");
-                alipayConfig.setSignType("RSA2");
-                this.config = alipayConfig;
+                this.config = initAlipayConfig(getAppId(), privateKey, publicKey);
             }
         }
 
@@ -240,12 +245,56 @@ public class Configuration {
 
     @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
     public static class AlipayHook extends HookProperties {
+        @SerializedName("app_id")
+        private String appId = "";
+        @SerializedName("private_key")
+        private String privateKey = "file:secrets/alipay/private.txt";
+        @SerializedName("alipay_public_key")
+        private String alipayPublicKey = "file:secrets/alipay/public.txt";
+        @SerializedName("seller_id")
+        private String sellerId = "";
 
+        @Expose(serialize = false, deserialize = false)
+        private AlipayConfig config;
+
+        private void postLoad(File dataFolder) {
+            if (isEnable()) {
+                String privateKeyStr = getPrivateKey();
+                String publicKeyStr = getAlipayPublicKey();
+                String privateKey = parseString(logger, dataFolder, "alipay_face2face.private_key", privateKeyStr);
+                String publicKey = parseString(logger, dataFolder, "alipay_face2face.alipay_public_key", publicKeyStr);
+                if (privateKey == null || publicKey == null) {
+                    enable = false;
+                    return;
+                }
+                this.config = initAlipayConfig(getAppId(), privateKey, publicKey);
+            }
+        }
+
+        public String getAppId() {
+            return appId;
+        }
+
+        public String getPrivateKey() {
+            return privateKey;
+        }
+
+        public String getAlipayPublicKey() {
+            return alipayPublicKey;
+        }
+
+        public String getSellerId() {
+            return sellerId;
+        }
+
+        public AlipayConfig getConfig() {
+            return config;
+        }
     }
 
     @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
     public static abstract class HookProperties {
-        private boolean enable = false;
+        protected boolean enable = false;
         @SerializedName("payment_url")
         private String paymentUrl = "收款码地址";
         @SerializedName("payment_urls")

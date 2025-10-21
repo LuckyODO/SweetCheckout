@@ -27,16 +27,29 @@ public class PaymentAlipay<C extends ClientInfo<C>> {
         this.server = server;
     }
 
-    // TODO: 暂无Hook实现计划，先把接口摆在这
     public PacketPluginRequestOrder.Response handleHook(PacketPluginRequestOrder packet, C client, Configuration config) {
         Configuration.AlipayHook hook = config.getHook().getAlipay();
-        if (moneyLocked.containsKey(packet.getPrice())) {
+        String money = packet.getPrice();
+        if (moneyLocked.containsKey(money)) {
             return new PacketPluginRequestOrder.Response("payment.hook-price-locked");
         }
         String orderId = client.nextOrderId();
-        String paymentUrl = hook.getPaymentUrl(packet.getPrice());
-        ClientInfo.Order<C> order = client.createOrder(orderId, "alipay", packet.getPlayerName(), packet.getPrice());
-        moneyLocked.put(packet.getPrice(), order);
+        String paymentUrl = hook.getPaymentUrl(money);
+        ClientInfo.Order<C> order = client.createOrder(orderId, "alipay", packet.getPlayerName(), money);
+        moneyLocked.put(money, order);
+
+        String startTime = LocalDateTime.now().format(POLLING_FORMAT);
+        order.setCancelAction(() -> {/* 轮询模式关闭订单无需进行任何操作，丢弃这个二维码即可 */});
+        // 轮询检查是否交易成功
+        order.setTask(new TimerTask() {
+            @Override
+            public void run() {
+                checkAlipayHook(client, this, orderId, money, startTime);
+            }
+        });
+        // 每3秒检查一次是否支付成功
+        server.getTimer().schedule(order.getTask(), 1000L, 3000L);
+        server.getLogger().info("支付宝 Hook 下单成功: {} ￥{}", orderId, money);
         return new PacketPluginRequestOrder.Response("hook", orderId, paymentUrl);
     }
 
@@ -122,6 +135,58 @@ public class PaymentAlipay<C extends ClientInfo<C>> {
         return "alipays://platformapi/startapp?appId=20000123&actionType=scan&biz_data=" + json;
     }
 
+    private void checkAlipayHook(C client, TimerTask task, String orderId, String price, String startTime) {
+        Configuration config = server.getConfig();
+        ClientInfo.Order<C> order = client.getOrder(orderId);
+        if (order == null || !client.isOpen()) { // 插件连接断开时、任务不存在时取消任务，并关闭交易
+            task.cancel();
+            if (order != null) {
+                order.setTask(null);
+                client.removeOrder(order);
+            }
+            return;
+        }
+        try {
+            // 支付宝商家账户买入交易查询
+            AlipayClient alipayClient = new DefaultAlipayClient(config.getHook().getAlipay().getConfig());
+
+            AlipayDataBillSellQueryRequest request = new AlipayDataBillSellQueryRequest();
+            AlipayDataBillSellQueryModel model = new AlipayDataBillSellQueryModel();
+
+            // 设置交易流水创建时间的起始范围
+            model.setStartTime(startTime);
+            // 设置交易流水创建时间的结束范围
+            model.setEndTime(LocalDateTime.now().format(POLLING_FORMAT));
+
+            request.setBizModel(model);
+            AlipayDataBillSellQueryResponse response = alipayClient.execute(request);
+
+            if (response.isSuccess()) {
+                TradeItemResult item = null;
+                // 筛选成功的、备注相符的条目
+                List<TradeItemResult> list = response.getDetailList();
+                if (list != null) for (TradeItemResult ti : list) {
+                    if (!ti.getTradeStatus().equals("成功")) continue;
+                    if (!price.equals(ti.getTotalAmount())) continue;
+                    item = ti;
+                    break;
+                }
+                // 如果存在条目，检查结果
+                if (item != null) {
+                    String otherAccount = item.getOtherAccount();
+                    String money = item.getTotalAmount();
+                    client.removeOrder(order);
+                    server.getLogger().info("[收款] 从支付宝 Hook 收款，来自 {} 的 ￥{}", otherAccount, money);
+                    server.send(client, new PacketBackendPaymentConfirm(orderId, money));
+                }
+            } else {
+                server.getLogger().warn("支付宝 Hook 检查订单失败 {}, {} {}，查询的订单号 {} ({})\n    {}", response.getMsg(), response.getSubCode(), response.getSubMsg(), orderId, price, response.getBody());
+            }
+        } catch (AlipayApiException e) {
+            server.getLogger().warn("支付宝 Hook API检查订单时执行错误", e);
+        }
+    }
+
     private void checkAlipayPolling(C client, TimerTask task, String orderId, String randomId, String startTime) {
         Configuration config = server.getConfig();
         ClientInfo.Order<C> order = client.getOrder(orderId);
@@ -147,8 +212,6 @@ public class PaymentAlipay<C extends ClientInfo<C>> {
 
             request.setBizModel(model);
             AlipayDataBillSellQueryResponse response = alipayClient.execute(request);
-
-            server.getLogger().info(response.getBody());
 
             if (response.isSuccess()) {
                 TradeItemResult item = null;
