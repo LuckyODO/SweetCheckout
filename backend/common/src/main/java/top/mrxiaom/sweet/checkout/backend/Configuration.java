@@ -86,9 +86,9 @@ public class Configuration {
         @SerializedName("notify_url")
         private String notifyUrl = "https://mcio.dev/consumer/notify";
         @SerializedName("private_key")
-        private String privateKey = "file:secrets/wechat/private.txt";
+        private String privateKey = "file:secrets/wechat/apiclient_key.pem";
         @SerializedName("public_key")
-        private String publicKey = "file:secrets/wechat/public.txt";
+        private String publicKey = "file:secrets/wechat/pub_key.pem";
         @SerializedName("public_key_id")
         private String publicKeyId = "公钥ID";
 
@@ -138,6 +138,8 @@ public class Configuration {
         private String alipayPublicKey = "file:secrets/alipay/public.txt";
         @SerializedName("produce_code")
         private String produceCode = "QR_CODE_OFFLINE";
+        @SerializedName("use_basic_polling_mode")
+        private boolean useBasicPollingMode = false;
 
         @Expose(serialize = false, deserialize = false)
         private AlipayConfig config;
@@ -182,6 +184,10 @@ public class Configuration {
 
         public String getProduceCode() {
             return produceCode;
+        }
+
+        public boolean isUseBasicPollingMode() {
+            return useBasicPollingMode;
         }
 
         public AlipayConfig getConfig() {
