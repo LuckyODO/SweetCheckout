@@ -20,6 +20,7 @@ public class NativePrepay {
         this.config = config;
     }
 
+    @SuppressWarnings({"deprecation"})
     public Response run(CommonPrepayRequest request) {
         request.appid = config.getAppId();
         request.mchid = config.getMerchantId();
@@ -31,7 +32,7 @@ public class NativePrepay {
         reqBuilder.addHeader("Wechatpay-Serial", config.getPublicKeyId());
         reqBuilder.addHeader("Authorization", config.buildAuthorization(METHOD, uri, reqBody));
         reqBuilder.addHeader("Content-Type", "application/json");
-        RequestBody requestBody = RequestBody.create(reqBody, MediaType.parse("application/json; charset=utf-8"));
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), reqBody);
         reqBuilder.method(METHOD, requestBody);
         Request httpRequest = reqBuilder.build();
 
