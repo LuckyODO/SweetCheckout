@@ -6,6 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import com.wechat.pay.java.core.Config;
 import com.wechat.pay.java.core.RSAAutoCertificateConfig;
 import org.apache.commons.io.FileUtils;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -137,11 +138,19 @@ public class Configuration {
             return spAppId;
         }
 
+        @Nullable
         public String getSpMerchantId() {
+            if (spMerchantId.trim().isEmpty() || spMerchantId.equals("服务商户号")) {
+                return null;
+            }
             return spMerchantId;
         }
 
+        @Nullable
         public String getSubMerchantId() {
+            if (subMerchantId.trim().isEmpty() || subMerchantId.equals("子商户号")) {
+                return null;
+            }
             return subMerchantId;
         }
 
