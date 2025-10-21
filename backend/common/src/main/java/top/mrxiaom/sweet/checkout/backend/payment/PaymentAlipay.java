@@ -157,7 +157,8 @@ public class PaymentAlipay<C extends ClientInfo<C>> {
             if (response.isSuccess()) {
                 TradeItemResult item = null;
                 // 筛选成功的、备注相符的条目
-                for (TradeItemResult ti : response.getDetailList()) {
+                List<TradeItemResult> list = response.getDetailList();
+                if (list != null) for (TradeItemResult ti : list) {
                     if (!ti.getTradeStatus().equals("成功")) continue;
                     if (!randomId.equals(ti.getGoodsMemo())) continue;
                     item = ti;
