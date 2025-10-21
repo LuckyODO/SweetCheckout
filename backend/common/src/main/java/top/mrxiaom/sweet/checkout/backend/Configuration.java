@@ -135,6 +135,9 @@ public class Configuration {
         }
 
         public String getSpAppId() {
+            if (spAppId.trim().isEmpty() || spAppId.equals("服务商应用ID")) {
+                return null;
+            }
             return spAppId;
         }
 
