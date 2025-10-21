@@ -31,6 +31,7 @@ import top.mrxiaom.sweet.checkout.map.IMapSource;
 import top.mrxiaom.sweet.checkout.nms.NMS;
 import top.mrxiaom.sweet.checkout.packets.common.IPacket;
 import top.mrxiaom.sweet.checkout.packets.plugin.PacketPluginRequestOrder;
+import top.mrxiaom.sweet.checkout.utils.NumberRange;
 import top.mrxiaom.sweet.checkout.utils.Utils;
 
 import java.io.File;
@@ -52,6 +53,8 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
     private Modifiers pointsModifiers;
     private List<String> pointsNames;
     private List<IAction> pointsCommands;
+    private NumberRange pointsLimitRange;
+    private int pointsLimitRound;
     private int statsTop;
 
     public CommandMain(PluginCommon plugin) {
@@ -67,6 +70,11 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
         useAlipay = config.getBoolean("payment.enable.alipay");
         paymentTimeout = config.getInt("payment.timeout");
 
+        pointsLimitRange = NumberRange.from(config.getString("points.limitation.range"));
+        if (pointsLimitRange == null) {
+            pointsLimitRange = new NumberRange(1, 9999);
+        }
+        pointsLimitRound = Math.max(0, Math.min(2, config.getInt("points.limitation.round", 2)));
         pointsScale = config.getInt("points.scale");
         pointsNames = config.getStringList("points.names");
         pointsCommands = ActionProviders.loadActions(config.getStringList("points.commands"));
@@ -95,6 +103,14 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                 PaymentsAndQRCodeManager manager = PaymentsAndQRCodeManager.inst();
                 String type = args[1];
                 double moneyDouble = Util.parseDouble(args[2]).orElse(0.0);
+                if (!pointsLimitRange.isInRange(moneyDouble)) {
+                    return Messages.commands__points__invalid_money.tm(player);
+                }
+                if (args[2].contains(".")) {
+                    if (args[2].substring(args[2].indexOf('.') + 1).length() > pointsLimitRound) {
+                        return Messages.commands__points__invalid_money.tm(player);
+                    }
+                }
                 if ("wechat".equalsIgnoreCase(type)) {
                     if (!useWeChat) {
                         return Messages.commands__points__disabled__wechat.tm(player);
