@@ -119,7 +119,11 @@ public abstract class AbstractPaymentServer<C extends ClientInfo<C>> {
             }
             // 支付宝当面付
             if (config.getAlipayFaceToFace().isEnable()) {
-                return alipay.handleFaceToFace(packet, client, config);
+                if (config.getAlipayFaceToFace().isUseBasicPollingMode()) {
+                    return alipay.handlePolling(packet, client, config);
+                } else {
+                    return alipay.handleFaceToFace(packet, client, config);
+                }
             }
         }
         return new PacketPluginRequestOrder.Response("payment.type-unknown");

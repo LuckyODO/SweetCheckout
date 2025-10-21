@@ -15,6 +15,8 @@ public enum Errors implements IHolderAccessor {
     payment__already_requested("&e请先完成正在进行的订单"),
     payment__type_unknown("&e未知支付类型"),
     payment__cancel__not_found("&e你要取消的订单不存在"),
+    payment__cancel__not_the_agreed_price("&e你支付了错误的金额，订单已自动取消，请联系服务器管理员处理"),
+    payment__timeout("&e超时未支付订单"),
     payment__hook_price_locked("&e支付系统繁忙，请稍后再试"),
     payment__can_not_create_id("&e支付系统生成订单号繁忙，请稍后再试"),
     payment__internal_error("&e支付接口出现内部错误，请联系服务器管理员"),

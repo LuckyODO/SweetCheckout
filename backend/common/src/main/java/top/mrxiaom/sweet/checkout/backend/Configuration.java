@@ -140,6 +140,8 @@ public class Configuration {
         private String produceCode = "QR_CODE_OFFLINE";
         @SerializedName("use_basic_polling_mode")
         private boolean useBasicPollingMode = false;
+        @SerializedName("seller_id")
+        private String sellerId = "";
 
         @Expose(serialize = false, deserialize = false)
         private AlipayConfig config;
@@ -188,6 +190,10 @@ public class Configuration {
 
         public boolean isUseBasicPollingMode() {
             return useBasicPollingMode;
+        }
+
+        public String getSellerId() {
+            return sellerId;
         }
 
         public AlipayConfig getConfig() {

@@ -3,15 +3,16 @@ package top.mrxiaom.sweet.checkout.backend.payment;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
-import com.alipay.api.domain.AlipayTradeCloseModel;
-import com.alipay.api.domain.AlipayTradePrecreateModel;
-import com.alipay.api.domain.AlipayTradeQueryModel;
+import com.alipay.api.domain.*;
+import com.alipay.api.request.AlipayDataBillBuyQueryRequest;
 import com.alipay.api.request.AlipayTradeCloseRequest;
 import com.alipay.api.request.AlipayTradePrecreateRequest;
 import com.alipay.api.request.AlipayTradeQueryRequest;
+import com.alipay.api.response.AlipayDataBillBuyQueryResponse;
 import com.alipay.api.response.AlipayTradeCloseResponse;
 import com.alipay.api.response.AlipayTradePrecreateResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
+import com.google.gson.JsonObject;
 import top.mrxiaom.sweet.checkout.backend.AbstractPaymentServer;
 import top.mrxiaom.sweet.checkout.backend.Configuration;
 import top.mrxiaom.sweet.checkout.backend.data.ClientInfo;
@@ -19,9 +20,12 @@ import top.mrxiaom.sweet.checkout.packets.backend.PacketBackendPaymentCancel;
 import top.mrxiaom.sweet.checkout.packets.backend.PacketBackendPaymentConfirm;
 import top.mrxiaom.sweet.checkout.packets.plugin.PacketPluginRequestOrder;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class PaymentAlipay<C extends ClientInfo<C>> {
+    DateTimeFormatter POLLING_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     AbstractPaymentServer<C> server;
     public Map<String, ClientInfo.Order<C>> moneyLocked = new HashMap<>();
 
@@ -86,6 +90,97 @@ public class PaymentAlipay<C extends ClientInfo<C>> {
             client.removeOrder(orderId);
             server.getLogger().warn("支付宝 订单码支付 API执行错误", e);
             return new PacketPluginRequestOrder.Response("payment.internal-error");
+        }
+    }
+
+    public PacketPluginRequestOrder.Response handlePolling(PacketPluginRequestOrder packet, C client, Configuration config) {
+        String orderId = client.nextOrderId();
+        if (orderId == null) {
+            return new PacketPluginRequestOrder.Response("payment.can-not-create-id");
+        }
+        // 生成一个二维码，返回给插件扫码
+        String uid = config.getAlipayFaceToFace().getSellerId(); // TODO: 使用支付宝接口获取开发者的 pid
+        String randomId = UUID.randomUUID().toString().replace("-", "");
+        String qrcodeURL = generateQRCode(uid, packet.getPrice(), randomId);
+        String startTime = LocalDateTime.now().format(POLLING_FORMAT);
+        ClientInfo.Order<C> order = client.createOrder(orderId, "alipay", packet.getPlayerName(), packet.getPrice());
+        order.setCancelAction(() -> {/* 轮询模式关闭订单无需进行任何操作，丢弃这个二维码即可 */});
+        // 轮询检查是否交易成功
+        order.setTask(new TimerTask() {
+            @Override
+            public void run() {
+                checkAlipayPolling(client, this, orderId, randomId, startTime);
+            }
+        });
+        // 每3秒检查一次是否支付成功
+        server.getTimer().schedule(order.getTask(), 1000L, 3000L);
+        server.getLogger().info("支付宝 轮询模式 下单成功: {} ({})", orderId, randomId);
+        return new PacketPluginRequestOrder.Response("face2face", orderId, qrcodeURL);
+    }
+
+    public String generateQRCode(String uid, String price, String goodsMemo) {
+        JsonObject json = new JsonObject();
+        json.addProperty("s", "money");
+        json.addProperty("u", uid);
+        json.addProperty("a", price);
+        json.addProperty("m", goodsMemo);
+        return "alipays://platformapi/startapp?appId=20000123&actionType=scan&biz_data=" + json;
+    }
+
+    private void checkAlipayPolling(C client, TimerTask task, String orderId, String randomId, String startTime) {
+        Configuration config = server.getConfig();
+        ClientInfo.Order<C> order = client.getOrder(orderId);
+        if (order == null || !client.isOpen()) { // 插件连接断开时、任务不存在时取消任务，并关闭交易
+            task.cancel();
+            if (order != null) {
+                order.setTask(null);
+                client.removeOrder(order);
+            }
+            return;
+        }
+
+        try {
+            // 支付宝商家账户买入交易查询
+            AlipayClient alipayClient = new DefaultAlipayClient(config.getAlipayFaceToFace().getConfig());
+
+            AlipayDataBillBuyQueryRequest request = new AlipayDataBillBuyQueryRequest();
+            AlipayDataBillBuyQueryModel model = new AlipayDataBillBuyQueryModel();
+
+            // 设置交易流水创建时间的起始范围
+            model.setStartTime(startTime);
+            // 设置交易流水创建时间的结束范围
+            model.setEndTime(LocalDateTime.now().format(POLLING_FORMAT));
+
+            request.setBizModel(model);
+            AlipayDataBillBuyQueryResponse response = alipayClient.execute(request);
+
+            if (response.isSuccess()) {
+                TradeItemResult item = null;
+                // 筛选成功的、备注相符的条目
+                for (TradeItemResult ti : response.getDetailList()) {
+                    if (!ti.getTradeStatus().equals("成功")) continue;
+                    if (!randomId.equals(ti.getGoodsMemo())) continue;
+                    item = ti;
+                    break;
+                }
+                // 如果存在条目，检查结果
+                if (item != null) {
+                    String otherAccount = item.getOtherAccount();
+                    String money = item.getTotalAmount();
+                    client.removeOrder(order);
+                    if (order.getMoney().equals(money)) {
+                        server.getLogger().info("[收款] 从支付宝 轮询模式 收款，来自 {} 的 ￥{}", otherAccount, money);
+                        server.send(client, new PacketBackendPaymentConfirm(orderId, money));
+                    } else {
+                        server.getLogger().warn("[收款] 从支付宝 轮询模式 收款，来自 {} 的 ￥{}，但支付的金额不正确，自动取消订单", otherAccount, money);
+                        server.send(client, new PacketBackendPaymentCancel(orderId, "payment.cancel.not-the-agreed-price"));
+                    }
+                }
+            } else {
+                server.getLogger().warn("支付宝 轮询模式 检查订单失败 {}, {} {}，查询的订单号 {} ({})\n    {}", response.getMsg(), response.getSubCode(), response.getSubMsg(), orderId, randomId, response.getBody());
+            }
+        } catch (AlipayApiException e) {
+            server.getLogger().warn("支付宝 轮询模式 API检查订单时执行错误", e);
         }
     }
 
