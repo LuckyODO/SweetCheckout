@@ -4,14 +4,8 @@ import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.*;
-import com.alipay.api.request.AlipayDataBillBuyQueryRequest;
-import com.alipay.api.request.AlipayTradeCloseRequest;
-import com.alipay.api.request.AlipayTradePrecreateRequest;
-import com.alipay.api.request.AlipayTradeQueryRequest;
-import com.alipay.api.response.AlipayDataBillBuyQueryResponse;
-import com.alipay.api.response.AlipayTradeCloseResponse;
-import com.alipay.api.response.AlipayTradePrecreateResponse;
-import com.alipay.api.response.AlipayTradeQueryResponse;
+import com.alipay.api.request.*;
+import com.alipay.api.response.*;
 import com.google.gson.JsonObject;
 import top.mrxiaom.sweet.checkout.backend.AbstractPaymentServer;
 import top.mrxiaom.sweet.checkout.backend.Configuration;
@@ -119,6 +113,7 @@ public class PaymentAlipay<C extends ClientInfo<C>> {
     }
 
     public String generateQRCode(String uid, String price, String goodsMemo) {
+        // TODO: 这里生成的是个人码，应该使用商家码才能被开发平台正常读取
         JsonObject json = new JsonObject();
         json.addProperty("s", "money");
         json.addProperty("u", uid);
@@ -138,13 +133,12 @@ public class PaymentAlipay<C extends ClientInfo<C>> {
             }
             return;
         }
-
         try {
             // 支付宝商家账户买入交易查询
             AlipayClient alipayClient = new DefaultAlipayClient(config.getAlipayFaceToFace().getConfig());
 
-            AlipayDataBillBuyQueryRequest request = new AlipayDataBillBuyQueryRequest();
-            AlipayDataBillBuyQueryModel model = new AlipayDataBillBuyQueryModel();
+            AlipayDataBillSellQueryRequest request = new AlipayDataBillSellQueryRequest();
+            AlipayDataBillSellQueryModel model = new AlipayDataBillSellQueryModel();
 
             // 设置交易流水创建时间的起始范围
             model.setStartTime(startTime);
@@ -152,7 +146,9 @@ public class PaymentAlipay<C extends ClientInfo<C>> {
             model.setEndTime(LocalDateTime.now().format(POLLING_FORMAT));
 
             request.setBizModel(model);
-            AlipayDataBillBuyQueryResponse response = alipayClient.execute(request);
+            AlipayDataBillSellQueryResponse response = alipayClient.execute(request);
+
+            server.getLogger().info(response.getBody());
 
             if (response.isSuccess()) {
                 TradeItemResult item = null;

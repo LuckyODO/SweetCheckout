@@ -8,17 +8,17 @@ import com.alipay.api.domain.TradeItemResult;
 import com.alipay.api.AlipayResponse;
 
 /**
- * ALIPAY API: alipay.data.bill.buy.query response.
+ * ALIPAY API: alipay.data.bill.sell.query response.
  *
  * @author auto create
- * @since 1.0, 2025-09-15 09:42:40
+ * @since 1.0, 2025-09-15 09:37:39
  */
-public class AlipayDataBillBuyQueryResponse extends AlipayResponse {
+public class AlipayDataBillSellQueryResponse extends AlipayResponse {
 
-    private static final long serialVersionUID = 4659674973567876181L;
+    private static final long serialVersionUID = 5257182112214413643L;
 
     /**
-     * 交易流水详情
+     * 交易流水详情，如果不存在记录则为空
      */
     @ApiListField("detail_list")
     @ApiField("trade_item_result")

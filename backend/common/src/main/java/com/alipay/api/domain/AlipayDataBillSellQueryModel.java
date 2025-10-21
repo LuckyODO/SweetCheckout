@@ -4,14 +4,14 @@ import com.alipay.api.AlipayObject;
 import com.alipay.api.internal.mapping.ApiField;
 
 /**
- * 支付宝商家账户买入交易查询
+ * 支付宝商家账户卖出交易查询
  *
  * @author auto create
- * @since 1.0, 2025-09-12 17:31:28
+ * @since 1.0, 2025-09-12 17:31:47
  */
-public class AlipayDataBillBuyQueryModel extends AlipayObject {
+public class AlipayDataBillSellQueryModel extends AlipayObject {
 
-    private static final long serialVersionUID = 7835215639198611316L;
+    private static final long serialVersionUID = 2775584822836579167L;
 
     /**
      * 支付宝交易流水号。如果查询参数中指定流水号，则只查询流水号相关的记录
@@ -20,7 +20,7 @@ public class AlipayDataBillBuyQueryModel extends AlipayObject {
     private String alipayOrderNo;
 
     /**
-     * 交易流水创建时间的结束范围。与起始时间间隔不超过31天。查询结果为起始时间至结束时间的左闭右开区间
+     * 卖出交易流水创建时间的结束范围。与起始时间间隔不超过31天。查询结果为起始时间至结束时间的左闭右开区间
      */
     @ApiField("end_time")
     private String endTime;
@@ -44,7 +44,7 @@ public class AlipayDataBillBuyQueryModel extends AlipayObject {
     private String pageSize;
 
     /**
-     * 交易流水创建时间的起始范围
+     * 卖出交易流水创建时间的起始范围
      */
     @ApiField("start_time")
     private String startTime;

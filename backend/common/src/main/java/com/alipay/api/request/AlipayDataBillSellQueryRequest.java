@@ -1,25 +1,26 @@
 package com.alipay.api.request;
 
+import com.alipay.api.domain.AlipayDataBillSellQueryModel;
 import java.util.Map;
 
 import com.alipay.api.AlipayRequest;
 import com.alipay.api.internal.util.AlipayHashMap;
-import com.alipay.api.response.AlipayDataBillBuyQueryResponse;
+import com.alipay.api.response.AlipayDataBillSellQueryResponse;
 import com.alipay.api.AlipayObject;
 
 /**
- * ALIPAY API: alipay.data.bill.buy.query request
+ * ALIPAY API: alipay.data.bill.sell.query request
  *
  * @author auto create
- * @since 1.0, 2025-09-15 09:42:40
+ * @since 1.0, 2025-09-15 09:37:39
  */
-public class AlipayDataBillBuyQueryRequest implements AlipayRequest<AlipayDataBillBuyQueryResponse> {
+public class AlipayDataBillSellQueryRequest implements AlipayRequest<AlipayDataBillSellQueryResponse> {
 
     private AlipayHashMap udfParams; // add user-defined text parameters
     private String apiVersion="1.0";
 
     /**
-     * 支付宝商家账户买入交易查询
+     * 支付宝商家账户卖出交易查询
      */
     private String bizContent;
 
@@ -86,7 +87,7 @@ public class AlipayDataBillBuyQueryRequest implements AlipayRequest<AlipayDataBi
     }
 
     public String getApiMethodName() {
-        return "alipay.data.bill.buy.query";
+        return "alipay.data.bill.sell.query";
     }
 
     public Map<String, String> getTextParams() {
@@ -105,8 +106,8 @@ public class AlipayDataBillBuyQueryRequest implements AlipayRequest<AlipayDataBi
         this.udfParams.put(key, value);
     }
 
-    public Class<AlipayDataBillBuyQueryResponse> getResponseClass() {
-        return AlipayDataBillBuyQueryResponse.class;
+    public Class<AlipayDataBillSellQueryResponse> getResponseClass() {
+        return AlipayDataBillSellQueryResponse.class;
     }
 
 

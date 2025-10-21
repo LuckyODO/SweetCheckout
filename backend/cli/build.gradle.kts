@@ -5,7 +5,6 @@ plugins {
 }
 
 val targetJavaVersion = 17
-val shadowGroup = "top.mrxiaom.sweet.checkout.backend.libs"
 val entry = "top.mrxiaom.sweet.checkout.backend.ConsoleMain"
 
 dependencies {
