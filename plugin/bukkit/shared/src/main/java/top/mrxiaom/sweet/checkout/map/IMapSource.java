@@ -18,7 +18,7 @@ public interface IMapSource {
             byte[] bytes = Base64.getDecoder().decode(string);
             return new MapByteArray(bytes);
         } else {
-            QRCode code = QRCode.create(url, ErrorCorrectionLevel.H);
+            QRCode code = QRCode.create(url, ErrorCorrectionLevel.M);
             return new MapQRCode(code);
         }
     }
