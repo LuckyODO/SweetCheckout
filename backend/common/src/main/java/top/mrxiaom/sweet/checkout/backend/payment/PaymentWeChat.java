@@ -1,7 +1,8 @@
 package top.mrxiaom.sweet.checkout.backend.payment;
 
-import com.wechat.pay.java.service.partnerpayments.nativepay.NativePayService;
-import com.wechat.pay.java.service.partnerpayments.nativepay.model.*;
+import com.wechat.pay.api.CloseOrder;
+import com.wechat.pay.api.NativePrepay;
+import com.wechat.pay.api.QueryByOutTradeNo;
 import top.mrxiaom.sweet.checkout.backend.AbstractPaymentServer;
 import top.mrxiaom.sweet.checkout.backend.Configuration;
 import top.mrxiaom.sweet.checkout.backend.data.ClientInfo;
@@ -51,7 +52,7 @@ public class PaymentWeChat<C extends ClientInfo<C>> {
 
     public PacketPluginRequestOrder.Response handleNative(PacketPluginRequestOrder packet, C client, Configuration config) {
         // 微信支付的订单总金额单位为「分」，保留两位小数的结果去掉小数点，再转整数完事
-        Integer priceWeChat = Util.parseInt(packet.getPrice().replace(".", "")).orElse(null);
+        Long priceWeChat = Util.parseLong(packet.getPrice().replace(".", "")).orElse(null);
         if (priceWeChat == null) {
             return new PacketPluginRequestOrder.Response("payment.not-a-number");
         }
@@ -59,22 +60,25 @@ public class PaymentWeChat<C extends ClientInfo<C>> {
         if (orderId == null) {
             return new PacketPluginRequestOrder.Response("payment.can-not-create-id");
         }
-        NativePayService service = new NativePayService.Builder()
-                .config(config.getWeChatNative().getConfig())
-                .build();
+        NativePrepay service = new NativePrepay(config.getWeChatNative().getConfig());
 
-        PrepayRequest request = new PrepayRequest();
-        request.setSpAppid(config.getWeChatNative().getSpAppId());
-        request.setSpMchid(config.getWeChatNative().getSpMerchantId());
-        request.setSubMchid(config.getWeChatNative().getSubMerchantId());
-        Amount amount = new Amount();
-        amount.setTotal(priceWeChat);
-        request.setAmount(amount);
-        request.setDescription(packet.getProductName());
-        request.setNotifyUrl(config.getWeChatNative().getNotifyUrl());
-        request.setOutTradeNo(orderId);
+        NativePrepay.CommonPrepayRequest request = new NativePrepay.CommonPrepayRequest();
+        request.description = packet.getProductName();
+        request.outTradeNo = orderId;
+        request.notifyUrl = config.getWeChatNative().getNotifyUrl();
+        request.amount = new NativePrepay.CommonAmountInfo();
+        request.amount.total = priceWeChat;
+        request.amount.currency = "CNY";
+
         // 调用下单方法，得到应答
-        PrepayResponse response = service.prepay(request);
+        NativePrepay.Response response;
+        try {
+            response = service.run(request);
+        } catch (RuntimeException e) {
+            client.removeOrder(orderId);
+            server.getLogger().warn("微信 Native支付 API执行错误", e);
+            return new PacketPluginRequestOrder.Response("payment.internal-error");
+        }
 
         ClientInfo.Order<C> order = client.createOrder(orderId, "wechat", packet.getPlayerName(), packet.getPrice());
         order.setCancelAction(() -> cancelWeChatNative(orderId));
@@ -102,40 +106,42 @@ public class PaymentWeChat<C extends ClientInfo<C>> {
             cancelWeChatNative(orderId);
             return;
         }
-        NativePayService service = new NativePayService.Builder()
-                .config(config.getWeChatNative().getConfig())
-                .build();
+        QueryByOutTradeNo service = new QueryByOutTradeNo(config.getWeChatNative().getConfig());
 
-        QueryOrderByOutTradeNoRequest request = new QueryOrderByOutTradeNoRequest();
-        request.setSpMchid(config.getWeChatNative().getSpMerchantId());
-        request.setSubMchid(config.getWeChatNative().getSubMerchantId());
-        request.setOutTradeNo(orderId);
+        QueryByOutTradeNo.QueryByOutTradeNoRequest request = new QueryByOutTradeNo.QueryByOutTradeNoRequest();
+        request.outTradeNo = orderId;
 
-        Transaction response = service.queryOrderByOutTradeNo(request);
-        switch (response.getTradeState()) {
-            case SUCCESS: // 支付成功
+        QueryByOutTradeNo.Response response;
+        try {
+            response = service.run(request);
+        } catch (RuntimeException e) {
+            server.getLogger().warn("微信 Native支付 API检查订单时执行错误", e);
+            return;
+        }
+        switch (response.tradeState) {
+            case "SUCCESS": // 支付成功
                 client.removeOrder(order);
-                String openId = response.getPayer().getSpOpenid();
+                String openId = response.payer.openid;
                 String money;
-                if (response.getAmount().getPayerTotal() != null) {
-                    money = String.format("%.2f", response.getAmount().getPayerTotal() / 100.0);
+                if (response.amount.payerTotal != null) {
+                    money = String.format("%.2f", response.amount.payerTotal / 100.0);
                 } else {
                     money = order.getMoney();
                 }
                 server.getLogger().info("[收款] 从微信Native收款，来自 {} 的 ￥{}", openId, money);
                 server.send(client, new PacketBackendPaymentConfirm(orderId, money));
                 break;
-            case REFUND: // 转入退款
-            case CLOSED: // 已关闭
+            case "REFUND": // 转入退款
+            case "CLOSED": // 已关闭
                 client.removeOrder(order);
-                server.send(client, new PacketBackendPaymentCancel(orderId, "payment.native." + response.getTradeState().name().toLowerCase()));
+                server.send(client, new PacketBackendPaymentCancel(orderId, "payment.native." + response.tradeState.toLowerCase()));
                 break;
-            case NOTPAY: // 未支付，忽略
-            case ACCEPT: // ACCEPT 在文档中未定义，忽略
+            case "NOTPAY": // 未支付，忽略
                 break;
-            case REVOKED: // 已撤销 (仅付款码，忽略)
-            case PAYERROR: // 支付失败 (仅付款码，忽略)
-            case USERPAYING: // 用户支付中 (仅付款码，忽略)
+            case "REVOKED": // 已撤销 (仅付款码，忽略)
+            case "USERPAYING": // 用户支付中 (仅付款码，忽略)
+            case "PAYERROR": // 支付失败 (仅付款码，忽略)
+            default:
                 break;
         }
     }
@@ -143,14 +149,15 @@ public class PaymentWeChat<C extends ClientInfo<C>> {
     private void cancelWeChatNative(String orderId) {
         Configuration config = server.getConfig();
 
-        NativePayService service = new NativePayService.Builder()
-                .config(config.getWeChatNative().getConfig())
-                .build();
+        CloseOrder service = new CloseOrder(config.getWeChatNative().getConfig());
 
-        CloseOrderRequest request = new CloseOrderRequest();
-        request.setSpMchid(config.getWeChatNative().getSpMerchantId());
-        request.setSubMchid(config.getWeChatNative().getSubMerchantId());
-        request.setOutTradeNo(orderId);
-        service.closeOrder(request);
+        CloseOrder.OrderRequest request = new CloseOrder.OrderRequest();
+        request.outTradeNo = orderId;
+
+        try {
+            service.run(request);
+        } catch (RuntimeException e) {
+            server.getLogger().warn("微信 Native支付 API关闭交易时执行错误", e);
+        }
     }
 }

@@ -20,4 +20,13 @@ public class Util {
             return Optional.empty();
         }
     }
+
+    public static Optional<Long> parseLong(String s) {
+        if (s == null) return Optional.empty();
+        try {
+            return Optional.of(Long.parseLong(s));
+        } catch (NumberFormatException e) {
+            return Optional.empty();
+        }
+    }
 }

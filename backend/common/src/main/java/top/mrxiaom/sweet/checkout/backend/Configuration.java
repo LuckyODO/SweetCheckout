@@ -3,10 +3,9 @@ package top.mrxiaom.sweet.checkout.backend;
 import com.alipay.api.AlipayConfig;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.wechat.pay.java.core.Config;
-import com.wechat.pay.java.core.RSAAutoCertificateConfig;
+import com.wechat.pay.api.WXPay;
+import com.wechat.pay.utils.WXPayUtility;
 import org.apache.commons.io.FileUtils;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,37 +75,42 @@ public class Configuration {
     @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
     public static class WeChatNative {
         private boolean enable = false;
-        @SerializedName("api_key")
-        private String apiKey = "商户API V3密钥";
+        @SerializedName("host")
+        private String host = "https://api.mch.weixin.qq.com";
+        @SerializedName("app_id")
+        private String appId = "开发者ID";
         @SerializedName("merchant_id")
         private String merchantId = "商户号";
         @SerializedName("merchant_serial_number")
         private String merchantSerialNumber = "商户证书序列号";
-        @SerializedName("private_key")
-        private String privateKey = "file:secrets/wechat/private.txt";
         @SerializedName("notify_url")
         private String notifyUrl = "https://mcio.dev/consumer/notify";
-        @SerializedName("sp_app_id")
-        private String spAppId = "服务商应用ID";
-        @SerializedName("sp_merchant_id")
-        private String spMerchantId = "服务商户号";
-        @SerializedName("sub_merchant_id")
-        private String subMerchantId = "子商户号";
+        @SerializedName("private_key")
+        private String privateKey = "file:secrets/wechat/private.txt";
+        @SerializedName("public_key")
+        private String publicKey = "file:secrets/wechat/public.txt";
+        @SerializedName("public_key_id")
+        private String publicKeyId = "公钥ID";
 
         @Expose(serialize = false, deserialize = false)
-        private Config config;
+        private WXPay config;
 
         private void postLoad(File dataFolder) {
             if (isEnable()) {
-                String privateKeyStr = getPrivateKey();
-                String privateKey = parseString(logger, dataFolder, "wechat_native.private_key", privateKeyStr);
-                if (privateKey == null) return;
-                config = new RSAAutoCertificateConfig.Builder()
-                        .merchantId(getMerchantId())
-                        .privateKey(privateKey)
-                        .merchantSerialNumber(getMerchantSerialNumber())
-                        .apiV3Key(getApiKey())
-                        .build();
+                String privateKey = parseString(logger, dataFolder, "wechat_native.private_key", this.privateKey);
+                String publicKey = parseString(logger, dataFolder, "wechat_native.public_key", this.publicKey);
+                if (privateKey == null || publicKey == null) {
+                    enable = false;
+                    return;
+                }
+
+                config = new WXPay(
+                        host, appId, merchantId,
+                        merchantSerialNumber,
+                        WXPayUtility.loadPrivateKeyFromString(privateKey),
+                        publicKeyId,
+                        WXPayUtility.loadPublicKeyFromString(publicKey)
+                );
             }
         }
 
@@ -114,50 +118,11 @@ public class Configuration {
             return enable;
         }
 
-        public String getApiKey() {
-            return apiKey;
-        }
-
-        public String getMerchantId() {
-            return merchantId;
-        }
-
-        public String getMerchantSerialNumber() {
-            return merchantSerialNumber;
-        }
-
-        public String getPrivateKey() {
-            return privateKey;
-        }
-
         public String getNotifyUrl() {
-            return notifyUrl;
+            return notifyUrl.trim().isEmpty() ? null : notifyUrl;
         }
 
-        public String getSpAppId() {
-            if (spAppId.trim().isEmpty() || spAppId.equals("服务商应用ID")) {
-                return null;
-            }
-            return spAppId;
-        }
-
-        @Nullable
-        public String getSpMerchantId() {
-            if (spMerchantId.trim().isEmpty() || spMerchantId.equals("服务商户号")) {
-                return null;
-            }
-            return spMerchantId;
-        }
-
-        @Nullable
-        public String getSubMerchantId() {
-            if (subMerchantId.trim().isEmpty() || subMerchantId.equals("子商户号")) {
-                return null;
-            }
-            return subMerchantId;
-        }
-
-        public Config getConfig() {
+        public WXPay getConfig() {
             return config;
         }
     }
@@ -182,9 +147,11 @@ public class Configuration {
                 String privateKeyStr = getPrivateKey();
                 String publicKeyStr = getAlipayPublicKey();
                 String privateKey = parseString(logger, dataFolder, "alipay_face2face.private_key", privateKeyStr);
-                if (privateKey == null) return;
                 String publicKey = parseString(logger, dataFolder, "alipay_face2face.alipay_public_key", publicKeyStr);
-                if (publicKey == null) return;
+                if (privateKey == null || publicKey == null) {
+                    enable = false;
+                    return;
+                }
                 AlipayConfig alipayConfig = new AlipayConfig();
                 alipayConfig.setServerUrl("https://openapi.alipay.com/gateway.do");
                 alipayConfig.setAppId(getAppId());
