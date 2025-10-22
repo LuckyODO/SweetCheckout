@@ -144,6 +144,7 @@ public class PaymentAlipay<C extends ClientInfo<C>> {
                 order.setTask(null);
                 client.removeOrder(order);
             }
+            moneyLocked.remove(price);
             return;
         }
         try {
@@ -178,6 +179,7 @@ public class PaymentAlipay<C extends ClientInfo<C>> {
                     client.removeOrder(order);
                     server.getLogger().info("[收款] 从支付宝 Hook 收款，来自 {} 的 ￥{}", otherAccount, money);
                     server.send(client, new PacketBackendPaymentConfirm(orderId, money));
+                   moneyLocked.remove(price);
                 }
             } else {
                 server.getLogger().warn("支付宝 Hook 检查订单失败 {}, {} {}，查询的订单号 {} ({})\n    {}", response.getMsg(), response.getSubCode(), response.getSubMsg(), orderId, price, response.getBody());
