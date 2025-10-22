@@ -40,14 +40,24 @@ public class PaymentWeChat<C extends ClientInfo<C>> {
                 return new PacketPluginRequestOrder.Response("payment.hook-not-running");
             }
         }
+        String money;
         if (moneyLocked.containsKey(packet.getPrice())) {
-            return new PacketPluginRequestOrder.Response("payment.hook-price-locked");
+            if (!packet.isAllowIncreasing()) {
+                return new PacketPluginRequestOrder.Response("payment.hook-price-locked");
+            }
+            double moneyNum = Double.parseDouble(packet.getPrice());
+            do {
+                moneyNum += 0.01;
+            } while (moneyLocked.containsKey(String.format("%.2f", moneyNum)));
+            money = String.format("%.2f", moneyNum);
+        } else {
+            money = packet.getPrice();
         }
         String orderId = client.nextOrderId();
-        String paymentUrl = hook.getPaymentUrl(packet.getPrice());
-        ClientInfo.Order<C> order = client.createOrder(orderId, "wechat", packet.getPlayerName(), packet.getPrice());
-        moneyLocked.put(packet.getPrice(), order);
-        return new PacketPluginRequestOrder.Response("hook", orderId, paymentUrl);
+        String paymentUrl = hook.getPaymentUrl(money);
+        ClientInfo.Order<C> order = client.createOrder(orderId, "wechat", packet.getPlayerName(), money);
+        moneyLocked.put(money, order);
+        return new PacketPluginRequestOrder.Response("hook", orderId, order.getMoney(), paymentUrl);
     }
 
     public PacketPluginRequestOrder.Response handleNative(PacketPluginRequestOrder packet, C client, Configuration config) {
@@ -91,7 +101,7 @@ public class PaymentWeChat<C extends ClientInfo<C>> {
         });
         // 每3秒检查一次是否支付成功
         server.getTimer().schedule(order.getTask(), 1000L, 3000L);
-        return new PacketPluginRequestOrder.Response("native", orderId, response.getCodeUrl());
+        return new PacketPluginRequestOrder.Response("native", orderId, order.getMoney(), response.getCodeUrl());
     }
 
     private void checkWeChatNative(C client, TimerTask task, String orderId) {

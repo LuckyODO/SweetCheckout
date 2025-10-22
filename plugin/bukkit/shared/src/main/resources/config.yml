@@ -49,6 +49,10 @@ payment:
     alipay: true
   # 支付超时时间 (秒)
   timeout: 120
+  # 是否允许价格自增
+  # 如果开启，使用 Hook 支付时，如果金额已被锁定，则使用 +0.01 金额
+  # 如果关闭，使用 Hook 支付时，如果金额已被锁定，则阻止下单，并提醒玩家
+  allow-increasing: false
   action-bar:
     # 支付时，显示在物品栏上方的提示，持续显示。注释此条配置则不显示提示
     process: '&f请在 &b%timeout%秒 &f内完成付款'

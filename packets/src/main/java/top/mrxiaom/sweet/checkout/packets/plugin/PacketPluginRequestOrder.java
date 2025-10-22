@@ -25,11 +25,20 @@ public class PacketPluginRequestOrder implements IPacket<PacketPluginRequestOrde
      */
     private String price;
 
+    /**
+     * 是否允许自增金额，即使用 Hook 支付时，如果金额已被锁定，则使用 +0.01 金额
+     */
+    private boolean allowIncreasing;
+
     public PacketPluginRequestOrder(String playerName, String type, String productName, String price) {
+        this(playerName, type, productName, price, false);
+    }
+    public PacketPluginRequestOrder(String playerName, String type, String productName, String price, boolean allowIncreasing) {
         this.playerName = playerName;
         this.type = type;
         this.productName = productName;
         this.price = price;
+        this.allowIncreasing = allowIncreasing;
     }
 
     public String getPlayerName() {
@@ -52,6 +61,10 @@ public class PacketPluginRequestOrder implements IPacket<PacketPluginRequestOrde
         this.price = price;
     }
 
+    public boolean isAllowIncreasing() {
+        return allowIncreasing;
+    }
+
     @Override
     public Class<Response> getResponsePacket() {
         return Response.class;
@@ -72,6 +85,10 @@ public class PacketPluginRequestOrder implements IPacket<PacketPluginRequestOrde
          */
         private String orderId;
         /**
+         * 最终下单金额
+         */
+        private String money;
+        /**
          * 付款二维码地址
          */
         private String paymentUrl;
@@ -82,10 +99,11 @@ public class PacketPluginRequestOrder implements IPacket<PacketPluginRequestOrde
             this.paymentUrl = "";
         }
 
-        public Response(String subType, String orderId, String paymentUrl) {
+        public Response(String subType, String orderId, String money, String paymentUrl) {
             this.error = "";
             this.subType = subType;
             this.orderId = orderId;
+            this.money = money;
             this.paymentUrl = paymentUrl;
         }
 
@@ -99,6 +117,10 @@ public class PacketPluginRequestOrder implements IPacket<PacketPluginRequestOrde
 
         public String getOrderId() {
             return orderId;
+        }
+
+        public String getMoney() {
+            return money;
         }
 
         public String getPaymentUrl() {

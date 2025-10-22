@@ -29,9 +29,18 @@ public class PaymentAlipay<C extends ClientInfo<C>> {
 
     public PacketPluginRequestOrder.Response handleHook(PacketPluginRequestOrder packet, C client, Configuration config) {
         Configuration.AlipayHook hook = config.getHook().getAlipay();
-        String money = packet.getPrice();
-        if (moneyLocked.containsKey(money)) {
-            return new PacketPluginRequestOrder.Response("payment.hook-price-locked");
+        String money;
+        if (moneyLocked.containsKey(packet.getPrice())) {
+            if (!packet.isAllowIncreasing()) {
+                return new PacketPluginRequestOrder.Response("payment.hook-price-locked");
+            }
+            double moneyNum = Double.parseDouble(packet.getPrice());
+            do {
+                moneyNum += 0.01;
+            } while (moneyLocked.containsKey(String.format("%.2f", moneyNum)));
+            money = String.format("%.2f", moneyNum);
+        } else {
+            money = packet.getPrice();
         }
         String orderId = client.nextOrderId();
         String paymentUrl = hook.getPaymentUrl(money);
@@ -50,7 +59,7 @@ public class PaymentAlipay<C extends ClientInfo<C>> {
         // 每3秒检查一次是否支付成功
         server.getTimer().schedule(order.getTask(), 1000L, 3000L);
         server.getLogger().info("支付宝 Hook 下单成功: {} ￥{}", orderId, money);
-        return new PacketPluginRequestOrder.Response("hook", orderId, paymentUrl);
+        return new PacketPluginRequestOrder.Response("hook", orderId, order.getMoney(), paymentUrl);
     }
 
     public PacketPluginRequestOrder.Response handleFaceToFace(PacketPluginRequestOrder packet, C client, Configuration config) {
@@ -87,7 +96,7 @@ public class PaymentAlipay<C extends ClientInfo<C>> {
                 // 每3秒检查一次是否支付成功
                 server.getTimer().schedule(order.getTask(), 1000L, 3000L);
                 server.getLogger().info("支付宝 订单码支付 下单成功 {} : {}", response.getMsg(), response.getOutTradeNo());
-                return new PacketPluginRequestOrder.Response("face2face", orderId, response.getQrCode());
+                return new PacketPluginRequestOrder.Response("face2face", orderId, order.getMoney(), response.getQrCode());
             } else {
                 client.removeOrder(orderId);
                 server.getLogger().warn("支付宝 订单码支付 调用失败 {}, {} {}", response.getMsg(), response.getSubCode(), response.getSubMsg());
@@ -122,7 +131,7 @@ public class PaymentAlipay<C extends ClientInfo<C>> {
         // 每3秒检查一次是否支付成功
         server.getTimer().schedule(order.getTask(), 1000L, 3000L);
         server.getLogger().info("支付宝 轮询模式 下单成功: {} ({})", orderId, randomId);
-        return new PacketPluginRequestOrder.Response("polling", orderId, qrcodeURL);
+        return new PacketPluginRequestOrder.Response("polling", orderId, order.getMoney(), qrcodeURL);
     }
 
     public String generateQRCode(String uid, String price, String goodsMemo) {
@@ -179,7 +188,7 @@ public class PaymentAlipay<C extends ClientInfo<C>> {
                     client.removeOrder(order);
                     server.getLogger().info("[收款] 从支付宝 Hook 收款，来自 {} 的 ￥{}", otherAccount, money);
                     server.send(client, new PacketBackendPaymentConfirm(orderId, money));
-                   moneyLocked.remove(price);
+                    moneyLocked.remove(price);
                 }
             } else {
                 server.getLogger().warn("支付宝 Hook 检查订单失败 {}, {} {}，查询的订单号 {} ({})\n    {}", response.getMsg(), response.getSubCode(), response.getSubMsg(), orderId, price, response.getBody());

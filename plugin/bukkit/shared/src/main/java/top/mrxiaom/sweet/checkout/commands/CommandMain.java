@@ -56,6 +56,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
     private NumberRange pointsLimitRange;
     private int pointsLimitRound;
     private int statsTop;
+    private boolean allowIncreasing;
 
     public CommandMain(PluginCommon plugin) {
         super(plugin);
@@ -69,6 +70,8 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
         useWeChat = config.getBoolean("payment.enable.wechat");
         useAlipay = config.getBoolean("payment.enable.alipay");
         paymentTimeout = config.getInt("payment.timeout");
+
+        allowIncreasing = config.getBoolean("payment.allow-increasing", false);
 
         pointsLimitRange = NumberRange.from(config.getString("points.limitation.range"));
         if (pointsLimitRange == null) {
@@ -140,7 +143,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                 manager.putProcess(player, "points:" + moneyStr + ":" + type);
                 String productName = random(pointsNames, "商品");
                 return send(player, Messages.commands__points__send.str(), new PacketPluginRequestOrder(
-                        player.getName(), type, productName, moneyStr
+                        player.getName(), type, productName, moneyStr, allowIncreasing
                 ), resp -> {
                     String error = resp.getError();
                     if (!error.isEmpty()) {
@@ -152,20 +155,26 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                     }
                     // 下单成功操作
                     String orderId = resp.getOrderId();
+                    String realMoney = resp.getMoney();
                     long now = System.currentTimeMillis();
                     long outdateTime = now + (paymentTimeout * 1000L) + 500L;
                     if (plugin.processingLogs)
                         info("玩家 " + player.getName() + " 通过 " + type + " 下单点券 (￥" + moneyStr + ") 成功，订单号为 " + orderId);
                     Messages.commands__points__sent.tm(player,
                             Pair.of("%order_id%", orderId),
-                            Pair.of("%money%", moneyStr),
+                            Pair.of("%money%", realMoney),
+                            Pair.of("%original_money%", moneyStr),
                             Pair.of("%timeout%", paymentTimeout));
                     // 向玩家展示二维码地图
                     IMapSource source = IMapSource.fromUrl(plugin, resp.getPaymentUrl());
                     manager.requireScan(player, source, orderId, outdateTime, money -> {
                         // 支付成功操作，给予玩家点券
-                        info("玩家 " + player.getName() + " 通过 " + type + " 支付 ￥" + money + " 获得了 " + points + " 点券 --" + productName + " " + orderId);
-                        plugin.getTradeDatabase().log(player, LocalDateTime.now(), type, moneyStr, "points:" + points);
+                        if (moneyStr.equals(realMoney)) {
+                            info("玩家 " + player.getName() + " 通过 " + type + " 支付 ￥" + money + " 获得了 " + points + " 点券 --" + productName + " " + orderId);
+                        } else {
+                            info("玩家 " + player.getName() + " 通过 " + type + " 支付 ￥" + money + " (实付 ￥" + realMoney + ") 获得了 " + points + " 点券 --" + productName + " " + orderId);
+                        }
+                        plugin.getTradeDatabase().log(player, LocalDateTime.now(), type, realMoney, "points:" + points);
                         plugin.run(player, pointsCommands,
                                 Pair.of("%points%", points),
                                 Pair.of("%money%", money),
@@ -211,7 +220,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                 manager.putProcess(player, "buy:" + shop.id + ":" + type);
                 String productName = random(shop.names, "商品");
                 return send(player, Messages.commands__buy__send.str(), new PacketPluginRequestOrder(
-                        player.getName(), type, productName, price
+                        player.getName(), type, productName, price, allowIncreasing
                 ), resp -> {
                     String error = resp.getError();
                     if (!error.isEmpty()) {
@@ -223,6 +232,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                     }
                     // 下单成功操作
                     String orderId = resp.getOrderId();
+                    String realMoney = resp.getMoney();
                     long now = System.currentTimeMillis();
                     long outdateTime = now + (paymentTimeout * 1000L) + 500L;
                     if (plugin.processingLogs)
@@ -230,14 +240,19 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                     Messages.commands__buy__sent.tm(player,
                             Pair.of("%order_id%", orderId),
                             Pair.of("%display%", shop.display),
-                            Pair.of("%money%", price),
+                            Pair.of("%money%", realMoney),
+                            Pair.of("%original_money%", price),
                             Pair.of("%timeout%", paymentTimeout));
                     // 向玩家展示二维码地图
                     IMapSource source = IMapSource.fromUrl(plugin, resp.getPaymentUrl());
                     manager.requireScan(player, source, orderId, outdateTime, money -> {
                         // 支付成功操作，给予玩家奖励
-                        info("玩家 " + player.getName() + " 通过 " + type + " 支付 ￥" + money + " 购买了商品 " + shop.display + " (" + shop.id + ") --" + productName + " " + orderId);
-                        plugin.getTradeDatabase().log(player, LocalDateTime.now(), type, price, "buy:" + shop.id);
+                        if (price.equals(realMoney)) {
+                            info("玩家 " + player.getName() + " 通过 " + type + " 支付 ￥" + money + " 购买了商品 " + shop.display + " (" + shop.id + ") --" + productName + " " + orderId);
+                        } else {
+                            info("玩家 " + player.getName() + " 通过 " + type + " 支付 ￥" + money + " (实付 ￥" + realMoney + ") 购买了商品 " + shop.display + " (" + shop.id + ") --" + productName + " " + orderId);
+                        }
+                        plugin.getTradeDatabase().log(player, LocalDateTime.now(), type, realMoney, "buy:" + shop.id);
                         switch (shop.limitationMode) {
                             case GLOBAL:
                                 plugin.getBuyCountDatabase().addGlobalCount(shop, 1);
