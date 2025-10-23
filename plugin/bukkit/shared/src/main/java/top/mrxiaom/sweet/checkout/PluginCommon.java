@@ -50,10 +50,10 @@ public abstract class PluginCommon extends BukkitPlugin {
                 : new File(this.getDataFolder(), "libraries");
         DefaultLibraryResolver resolver = new DefaultLibraryResolver(getLogger(), librariesDir);
 
-        resolver.addLibrary(BuildConstants.LIBRARIES);
+        resolver.addResolvedLibrary(BuildConstants.RESOLVED_LIBRARIES);
         if (Util.isPresent("top.mrxiaom.sweet.checkout.backend.BukkitMain")) {
             if (!Util.isPresent("org.apache.commons.io.FileUtils")) {
-                resolver.addLibrary("commons-io:commons-io:2.17.0");
+                resolver.addResolvedLibrary("commons-io/commons-io/2.17.0/commons-io-2.17.0.jar");
             }
         }
 
@@ -62,13 +62,6 @@ public abstract class PluginCommon extends BukkitPlugin {
         for (URL library : libraries) {
             this.classLoader.addURL(library);
         }
-    }
-
-    @Override
-    protected @NotNull ClassLoaderWrapper initClassLoader(URLClassLoader classLoader) {
-        return ClassLoaderWrapper.isSupportLibraryLoader
-                ? new ClassLoaderWrapper(ClassLoaderWrapper.findLibraryLoader(classLoader))
-                : new ClassLoaderWrapper(classLoader);
     }
 
     @Override
