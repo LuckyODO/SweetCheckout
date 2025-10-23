@@ -6,9 +6,10 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import top.mrxiaom.pluginbase.func.AutoRegister;
-import top.mrxiaom.pluginbase.utils.PAPI;
+import top.mrxiaom.pluginbase.utils.ConfigUtils;
 import top.mrxiaom.pluginbase.utils.Pair;
 import top.mrxiaom.pluginbase.utils.Util;
+import top.mrxiaom.pluginbase.utils.depend.PAPI;
 import top.mrxiaom.sweet.checkout.PluginCommon;
 import top.mrxiaom.sweet.checkout.database.TradeDatabase;
 import top.mrxiaom.sweet.checkout.func.entry.ShopItem;
@@ -40,7 +41,7 @@ public class LogBookManager extends AbstractModule {
         if (!file.exists()) {
             plugin.saveResource("book.yml", file);
         }
-        YamlConfiguration config = Util.load(file);
+        YamlConfiguration config = ConfigUtils.load(file);
         headerText = config.getString("header.text");
         lineText = config.getString("line.text");
         lineHover = String.join("\n&r", config.getStringList("line.hover"));

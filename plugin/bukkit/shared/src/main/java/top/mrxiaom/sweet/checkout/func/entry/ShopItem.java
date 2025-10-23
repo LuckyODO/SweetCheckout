@@ -11,8 +11,8 @@ import top.mrxiaom.pluginbase.temporary.period.EveryDay;
 import top.mrxiaom.pluginbase.temporary.period.EveryMonth;
 import top.mrxiaom.pluginbase.temporary.period.EveryWeek;
 import top.mrxiaom.pluginbase.temporary.period.Period;
+import top.mrxiaom.pluginbase.utils.CollectionUtils;
 import top.mrxiaom.pluginbase.utils.Util;
-import top.mrxiaom.sweet.checkout.Placeholders;
 import top.mrxiaom.sweet.checkout.PluginCommon;
 import top.mrxiaom.sweet.checkout.func.PaymentsAndQRCodeManager;
 import top.mrxiaom.sweet.checkout.func.modifier.Modifiers;
@@ -125,7 +125,7 @@ public class ShopItem {
         List<IAction> limitationDenyActions = ActionProviders.loadActions(config, "limitation.deny-actions");
         Period limitationReset;
         if (!limitationMode.equals(EnumLimitationMode.NONE)) {
-            List<String> split = Util.split(config.getString("limitation.reset", ""), ' ');
+            List<String> split = CollectionUtils.split(config.getString("limitation.reset", ""), ' ');
             String type = split.get(0);
             int size = split.size();
             if ("Never".equalsIgnoreCase(type)) {
@@ -147,7 +147,7 @@ public class ShopItem {
                     return null;
                 }
                 Set<DayOfWeek> weeks = new HashSet<>();
-                for (String str : Util.split(split.get(1), ',')) {
+                for (String str : CollectionUtils.split(split.get(1), ',')) {
                     int i = Util.parseInt(str).orElse(0);
                     if (i >= 1 && i <= 7) {
                         weeks.add(DayOfWeek.of(i));
@@ -172,7 +172,7 @@ public class ShopItem {
                     return null;
                 }
                 List<Integer> days = new ArrayList<>();
-                for (String str : Util.split(split.get(1), ',')) {
+                for (String str : CollectionUtils.split(split.get(1), ',')) {
                     Util.parseInt(str).ifPresent(days::add);
                 }
                 if (days.isEmpty()) {

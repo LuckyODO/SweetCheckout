@@ -29,11 +29,9 @@ tasks {
     shadowJar {
         configurations.add(shadowLink)
         val shadowRelocations: Map<String, String> by project.extra
-        val shadowExcludes: List<String> by project.extra
         shadowRelocations.forEach { (original, target) ->
             relocate(original, "$shadowGroup.$target")
         }
-        shadowExcludes.forEach(this::exclude)
     }
     val copyTask = create<Copy>("copyBuildArtifact") {
         dependsOn(shadowJar)

@@ -1,7 +1,7 @@
 package top.mrxiaom.sweet.checkout.func.modifier;
 
 import com.ezylang.evalex.Expression;
-import top.mrxiaom.pluginbase.utils.PAPI;
+import top.mrxiaom.pluginbase.utils.depend.PAPI;
 
 public class ModifierExpression extends AbstractModifier {
     private final String expression;

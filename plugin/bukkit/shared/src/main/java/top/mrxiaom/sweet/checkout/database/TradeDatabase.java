@@ -7,6 +7,7 @@ import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.mrxiaom.pluginbase.database.IDatabase;
+import top.mrxiaom.pluginbase.utils.CollectionUtils;
 import top.mrxiaom.pluginbase.utils.Util;
 import top.mrxiaom.sweet.checkout.PluginCommon;
 import top.mrxiaom.sweet.checkout.func.AbstractPluginHolder;
@@ -78,7 +79,7 @@ public class TradeDatabase extends AbstractPluginHolder implements IDatabase {
             try (PreparedStatement ps = conn.prepareStatement("SELECT VERSION();");
                  ResultSet result = ps.executeQuery()) {
                 if (result.next()) {
-                    List<String> version = Util.split(result.getString(1), '.');
+                    List<String> version = CollectionUtils.split(result.getString(1), '.');
                     if (version.size() >= 2) {
                         int major = Util.parseInt(version.get(0)).orElse(0);
                         int minor = Util.parseInt(version.get(1)).orElse(0);

@@ -1,7 +1,7 @@
 package top.mrxiaom.sweet.checkout.func.modifier;
 
 import org.bukkit.configuration.ConfigurationSection;
-import top.mrxiaom.pluginbase.utils.Util;
+import top.mrxiaom.pluginbase.utils.ConfigUtils;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -27,7 +27,7 @@ public class Modifiers {
 
     public static Modifiers load(ConfigurationSection config, String key) {
         List<AbstractModifier> modifiers = new ArrayList<>();
-        for (ConfigurationSection section : Util.getSectionList(config, key)) {
+        for (ConfigurationSection section : ConfigUtils.getSectionList(config, key)) {
             String money = section.getString("operator.money", "");
             String point = section.getString("operator.point", "");
             int priority = section.getInt("priority", 1000);

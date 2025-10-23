@@ -6,7 +6,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import top.mrxiaom.pluginbase.database.IDatabase;
-import top.mrxiaom.pluginbase.utils.Util;
+import top.mrxiaom.pluginbase.utils.CollectionUtils;
 import top.mrxiaom.sweet.checkout.PluginCommon;
 import top.mrxiaom.sweet.checkout.func.AbstractPluginHolder;
 import top.mrxiaom.sweet.checkout.func.entry.ShopItem;
@@ -123,7 +123,7 @@ public class BuyCountDatabase extends AbstractPluginHolder implements IDatabase,
     }
 
     public void addGlobalCount(ShopItem shop, int count) {
-        TemporaryCount cache = Util.getOrPut(globalCaches, shop.id, () -> new TemporaryCount(shop.limitationReset, shop::whenReset, () -> 0));
+        TemporaryCount cache = CollectionUtils.getOrPut(globalCaches, shop.id, () -> new TemporaryCount(shop.limitationReset, shop::whenReset, () -> 0));
         cache.setValue(cache.getValue() + count);
         try (Connection conn = plugin.getConnection()) {
             setGlobalCount(conn, shop, cache);
@@ -150,7 +150,7 @@ public class BuyCountDatabase extends AbstractPluginHolder implements IDatabase,
 
     public TemporaryCount getPlayerCount(OfflinePlayer player, ShopItem shop, boolean update) {
         String uuid = player.getUniqueId().toString();
-        Map<String, TemporaryCount> map = Util.getOrPut(playerCaches, uuid, () -> new HashMap<>());
+        Map<String, TemporaryCount> map = CollectionUtils.getOrPut(playerCaches, uuid, () -> new HashMap<>());
         TemporaryCount cache = map.get(shop.id);
         if (cache != null) {
             if (!update) {
@@ -187,8 +187,8 @@ public class BuyCountDatabase extends AbstractPluginHolder implements IDatabase,
 
     public void addPlayerCount(OfflinePlayer player, ShopItem shop, int count) {
         String uuid = player.getUniqueId().toString();
-        Map<String, TemporaryCount> map = Util.getOrPut(playerCaches, uuid, () -> new HashMap<>());
-        TemporaryCount cache = Util.getOrPut(map, shop.id, () -> new TemporaryCount(shop.limitationReset, shop::whenReset, () -> 0));
+        Map<String, TemporaryCount> map = CollectionUtils.getOrPut(playerCaches, uuid, () -> new HashMap<>());
+        TemporaryCount cache = CollectionUtils.getOrPut(map, shop.id, () -> new TemporaryCount(shop.limitationReset, shop::whenReset, () -> 0));
         cache.setValue(cache.getValue() + count);
         try (Connection conn = plugin.getConnection()) {
             setPlayerCount(conn, player, shop, cache);

@@ -1,10 +1,16 @@
 subprojects {
-    val pluginBase = "1.6.7"
+    val pluginBase = "1.7.0"
+    fun String.module(module: String): String {
+        return "top.mrxiaom.pluginbase:$module:$this"
+    }
     extra["pluginBase"] = pluginBase
     extra["dependencies"] = mapOf(
         "com.github.technicallycoded:FoliaLib:0.4.4" to true,
-        "top.mrxiaom.pluginbase:library:$pluginBase" to false,
-        "top.mrxiaom.pluginbase:paper:$pluginBase" to false,
+        pluginBase.module("library") to false,
+        pluginBase.module("actions") to false,
+        pluginBase.module("l10n") to false,
+        pluginBase.module("temporary-data") to false,
+        pluginBase.module("paper") to false,
         "top.mrxiaom:LibrariesResolver-Lite:$pluginBase" to false,
     )
     extra["libraries"] = listOf(
@@ -20,13 +26,6 @@ subprojects {
         "de.tr7zw.changeme.nbtapi" to "nbtapi",
         "org.java_websocket" to "websocket",
         "com.tcoded.folialib" to "folialib",
-    )
-    extra["shadowExcludes"] = listOf(
-        "top/mrxiaom/pluginbase/func/AbstractGui*",
-        "top/mrxiaom/pluginbase/func/gui/*",
-        "top/mrxiaom/pluginbase/func/GuiManager*",
-        "top/mrxiaom/pluginbase/gui/*",
-        "top/mrxiaom/pluginbase/utils/Bytes*",
     )
     dependencies {
         add("compileOnly", "org.spigotmc:spigot-api:1.20-R0.1-SNAPSHOT")

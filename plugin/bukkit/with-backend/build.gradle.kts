@@ -36,7 +36,6 @@ tasks {
     shadowJar {
         configurations.add(shadowLink)
         val shadowRelocations: Map<String, String> by project.extra
-        val shadowExcludes: List<String> by project.extra
         mapOf(
             "com.google.gson" to "gson",
             "com.wechat" to "payment.wechat",
@@ -50,7 +49,6 @@ tasks {
         ).plus(shadowRelocations).forEach { (original, target) ->
             relocate(original, "$shadowGroup.$target")
         }
-        shadowExcludes.forEach(this::exclude)
         minimize {
             val dependencies = listOf(
                 "org.bouncycastle:bcprov-jdk15on",
