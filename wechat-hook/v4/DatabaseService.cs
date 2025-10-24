@@ -108,13 +108,15 @@ namespace WeChatHook
                         }
                     }
                 }
+                var timestamp = DateTimeOffset.UtcNow.AddMinutes(-15).ToUnixTimeSeconds();
                 foreach (var tableName in tables)
                 {
                     using var cmd = new SqliteCommand($"SELECT m.*, " +
                             $"CASE WHEN m.real_sender_id = 1 THEN 1 ELSE 0 END AS is_send, " +
                             $"n.user_name AS sender_id " +
                             $"FROM {tableName} m " +
-                            $"LEFT JOIN Name2Id n ON m.real_sender_id = n.rowid", conn);
+                            $"LEFT JOIN Name2Id n ON m.real_sender_id = n.rowid " +
+                            $"WHERE m.create_time > {timestamp}", conn);
                     using var reader = cmd.ExecuteReader();
                     foreach (var item in reader)
                     {
