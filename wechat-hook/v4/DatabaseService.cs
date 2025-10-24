@@ -124,8 +124,8 @@ namespace WeChatHook
                         try
                         {
                             var message = new Message(record);
-                            //if (message.Money != null) messages.Add(message);
-                            messages.Add(message);
+                            if (message.Money != null) messages.Add(message);
+                            //messages.Add(message);
                         } catch { }
                     }
                 }
