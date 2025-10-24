@@ -1,0 +1,51 @@
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+# Visual Studio cache files
+vs/
+.vs/
+# .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+# NuGet Packages
+*.nupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+# Others
+ClientBin/
+~$*
+*~
+*.dbmdl
+*.dbproj.schemaview
+*.jfm
+*.pfx
+*.publishsettings
+# Node.js Tools for Visual Studio (PTVS)
+__pycache__/
+*.pyc
+# Cake - Uncomment if you are using it
+# tools/**/*
+# !tools/packages.config
+# Azure Stream Analytics local run output
+ASALocalRun/
+# MSBuild Binary and Structured Log
+*.binlog
+# Local History for Visual Studio
+localhistory/
