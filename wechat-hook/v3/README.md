@@ -2,7 +2,7 @@
 
 这个模块基于 [WeChatFerry](https://github.com/lich0821/WeChatFerry) 开发。
 
-本模块仅适用于微信PC版 [3.9.12.17](https://github.com/tom-snow/wechat-windows-versions/releases/download/v3.9.12.17/WeChatSetup-3.9.12.17.exe)。
+本模块仅适用于微信PC版 [3.9.12.51](https://github.com/tom-snow/wechat-windows-versions/releases/download/v3.9.12.51/WeChatSetup-3.9.12.51.exe)。
 
 ## 自行构建
 

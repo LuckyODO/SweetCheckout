@@ -16,19 +16,19 @@ jobs:
     runs-on: windows-2025
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
         with:
           msbuild-architecture: x64
       - name: Setup NuGet
-        uses: nuget/setup-nuget@v1
+        uses: nuget/setup-nuget@v2
         with:
           nuget-version: '6.x'
-      - name: Build wechat-hook
+      - name: Build wechat-hook v3
         run: |
           mkdir out
-          cd wechat-hook
+          cd wechat-hook/v3
           mkdir Out
           nuget restore Hook.sln
           msbuild Hook.sln /p:Configuration=Release
@@ -36,8 +36,8 @@ jobs:
           echo "api_url=http://127.0.0.1:62233/api/hook/receive">>Out/config.properties
           cp LICENSE Out/LICENSE
           cd Out
-          Compress-Archive -Path '*' -DestinationPath '../../out/WeChat-Hook.zip'
-          cd ../../
+          Compress-Archive -Path '*' -DestinationPath '../../../out/WeChat-Hook-v3.zip'
+          cd ../../../
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
