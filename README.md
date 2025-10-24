@@ -88,7 +88,6 @@ SweetCheckout 目录结构
 + [alipay/alipay-sdk-java-all](https://github.com/alipay/alipay-sdk-java-all): 支付宝官方SDK(v2) —— Apache-2.0 License
 + [wechatpay-apiv3/wechatpay-java](https://github.com/wechatpay-apiv3/wechatpay-java): 微信支付官方SDK —— Apache-2.0 License
 + [eealba/payper](https://github.com/eealba/payper) PayPal 官方接口 第三方SDK (v2) —— Apache-2.0 License
-+ [lich0821/WeChatFerry](https://github.com/lich0821/WeChatFerry): 微信Hook实现参考 —— MIT License
 
 ## 开发者
 
