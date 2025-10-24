@@ -37,21 +37,23 @@ namespace WeChatHook
             comments.Clear();
             Config.Clear();
             string path = Environment.CurrentDirectory + "\\config.properties";
-            bool flag = false;
-            foreach (var line in File.ReadAllLines(path, utf8))
-            {
-                if (line.Trim().StartsWith('#'))
+            if (File.Exists(path)) {
+                bool flag = false;
+                foreach (var line in File.ReadAllLines(path, utf8))
                 {
-                    if (!flag) comments.Add(line);
-                    continue;
-                }
-                if (line.Contains('='))
-                {
-                    flag = true;
-                    int i = line.IndexOf('=');;
-                    var key = line.Substring(0, i);
-                    var value = line.Substring(i + 1, line.Length - i - 1);
-                    Config[key] = value;
+                    if (line.Trim().StartsWith('#'))
+                    {
+                        if (!flag) comments.Add(line);
+                        continue;
+                    }
+                    if (line.Contains('='))
+                    {
+                        flag = true;
+                        int i = line.IndexOf('='); ;
+                        var key = line.Substring(0, i);
+                        var value = line.Substring(i + 1, line.Length - i - 1);
+                        Config[key] = value;
+                    }
                 }
             }
             apiUrl = GetFromConfig("api_url") ?? "";
@@ -216,6 +218,7 @@ namespace WeChatHook
         private void ReloadConfig_Click(object sender, RoutedEventArgs e)
         {
             ReloadConfig();
+            SaveConfig();
         }
     }
 }
