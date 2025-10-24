@@ -40,6 +40,7 @@ tasks {
             "com.google.gson" to "gson",
             "com.wechat" to "payment.wechat",
             "com.alipay" to "payment.alipay",
+            "io.github.eealba.payper" to "payment.paypal",
             "okhttp3" to "okhttp3",
             "okio" to "okio",
             "javax.xml" to "xml.javax",
