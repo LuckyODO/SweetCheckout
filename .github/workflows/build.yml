@@ -32,11 +32,29 @@ jobs:
           mkdir Out
           nuget restore Hook.sln
           msbuild Hook.sln /p:Configuration=Release
+
           echo "# Hook 终结点地址">>Out/config.properties
           echo "api_url=http://127.0.0.1:62233/api/hook/receive">>Out/config.properties
+
           cp LICENSE Out/LICENSE
           cd Out
           Compress-Archive -Path '*' -DestinationPath '../../../out/WeChat-Hook-v3.zip'
+          cd ../../../
+      - name: Build wechat-hook v4
+        run: |
+          mkdir out
+          cd wechat-hook/v4
+          mkdir Out
+          build.cmd
+
+          echo "# SweetCheckout Hook 配置文件">>Out/config.properties
+          echo "api_url=http://127.0.0.1:62233/api/hook/receive">>Out/config.properties
+          echo "wechat_key=">>Out/config.properties
+          echo "database_folder=auto">>Out/config.properties
+
+          cp LICENSE Out/LICENSE
+          cd Out
+          Compress-Archive -Path '*' -DestinationPath '../../../out/WeChat-Hook-v4.zip'
           cd ../../../
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
