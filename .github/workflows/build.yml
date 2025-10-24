@@ -44,7 +44,7 @@ jobs:
         run: |
           cd wechat-hook/v4
           mkdir Out
-          build.cmd
+          cmd /c build.cmd
 
           echo "# SweetCheckout Hook 配置文件">>Out/config.properties
           echo "api_url=http://127.0.0.1:62233/api/hook/receive">>Out/config.properties
