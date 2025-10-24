@@ -1,4 +1,9 @@
-﻿using System.IO;
+﻿using Microsoft.Data.Sqlite;
+using System.Data;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text;
 using System.Windows;
 using System.Windows.Documents;
@@ -18,9 +23,87 @@ namespace WeChatHook
         private string hexKey = "";
         private string databaseFolder = "";
         private string realDbFolder = "";
+        string temp = Environment.CurrentDirectory + "\\.tmp";
+        FileSystemWatcher watcher = new FileSystemWatcher();
+        string storageConnectionString = new SqliteConnectionStringBuilder
+        {
+            DataSource = Environment.CurrentDirectory + "\\storage.db",
+            Mode = SqliteOpenMode.ReadWriteCreate
+        }.ToString();
         public MainWindow()
         {
             InitializeComponent();
+            watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.CreationTime;
+            watcher.IncludeSubdirectories = false;
+            watcher.Created += OnFileChanged;
+            watcher.Changed += OnFileChanged;
+        }
+
+        private void OnFileChanged(object sender, FileSystemEventArgs e)
+        {
+            var fi = new FileInfo(e.FullPath);
+            var fileName = fi.Name;
+            if (fi.Exists && fi.Name.StartsWith("biz_message_"))
+            {
+                if (hexKey == string.Empty) return;
+                if (fileName.EndsWith(".db"))
+                {
+                    var target = temp + "\\" + fi.Name;
+                    DecryptService.DecryptDatabase(hexKey, fi.FullName, target);
+                    var scan = DatabaseService.Scan(target);
+                    handleMessageSubmit(scan);
+                }
+            }
+        }
+
+        private void handleMessageSubmit(ICollection<Message> messages)
+        {
+            lock (storageConnectionString)
+            {
+                // 筛选并提交未处理的收款消息到后端
+                var outdate = DateTimeOffset.UtcNow.AddMinutes(-15);
+                var timestamp = outdate.ToUnixTimeSeconds();
+                using (var conn = new SqliteConnection(storageConnectionString))
+                {
+                    conn.Open();
+                    var list = new List<Message>();
+                    foreach (var item in messages)
+                    {
+                        // 太早的消息不进行处理
+                        if (item.CreateTime <= outdate) continue;
+                        list.Add(item);
+                    }
+                    using var cmd = new SqliteCommand($"SELECT * FROM 'handled_sequences' WHERE create_time > {timestamp};");
+                    var reader = cmd.ExecuteReader();
+                    var handled = new List<string>();
+                    foreach (var item in reader)
+                    {
+                        if (item is not IDataRecord record) continue;
+                        var server_seq = record["server_seq"].ToString();
+                        var sender_id = record["sender_id"].ToString();
+                        if (server_seq == null || sender_id == null) continue;
+                        handled.Add(sender_id + ";" + server_seq);
+                    }
+                    foreach (var message in list)
+                    {
+                        // 已经在数据库里的消息不进行处理
+                        var key = message.SenderId + ";" + message.ServerSequence;
+                        if (handled.Contains(key)) continue;
+                        // 提交为已处理消息
+                        PutHandled(conn, message);
+                        // 将消息发送给后端
+                        var client = new HttpClient();
+                        var request = new HttpRequestMessage(HttpMethod.Post, new Uri(apiUrl));
+                        request.Content = JsonContent.Create(new
+                        {
+                            type = "wechat",
+                            flag = message.SenderId == "gh_3dfda90e39d6" ? "reawrd-code" : "",
+                            money = message.Money ?? "",
+                        });
+                        client.Send(request);
+                    }
+                }
+            }
         }
 
         private string? GetFromConfig(string name)
@@ -34,6 +117,12 @@ namespace WeChatHook
 
         private void ReloadConfig()
         {
+            using (var conn = new SqliteConnection(storageConnectionString))
+            {
+                conn.Open();
+                using var cmd = new SqliteCommand("CREATE TABLE if NOT EXISTS 'handled_sequences'(`server_seq` INT32, `sender_id` VARCHAR(24), `create_time` INT32);", conn);
+                cmd.ExecuteNonQuery();
+            }
             comments.Clear();
             Config.Clear();
             string path = Environment.CurrentDirectory + "\\config.properties";
@@ -98,11 +187,20 @@ namespace WeChatHook
             }
             else
             {
-                realDbFolder = databaseFolder;
+                realDbFolder = databaseFolder.Trim();
                 if (realDbFolder != string.Empty)
                 {
                     info($"微信数据库路径 (手动设置): {realDbFolder}");
                 }
+            }
+
+            if (realDbFolder != string.Empty)
+            {
+                watcher.Path = realDbFolder;
+                watcher.EnableRaisingEvents = true;
+            } else
+            {
+                watcher.EnableRaisingEvents = false;
             }
         }
 
@@ -143,7 +241,6 @@ namespace WeChatHook
                 return;
             }
             var messages = new HashSet<Message>();
-            var temp = Environment.CurrentDirectory + "\\.tmp";
             var directory = new DirectoryInfo(realDbFolder);
             foreach (var file in directory.GetFiles())
             {
@@ -166,10 +263,20 @@ namespace WeChatHook
                 }
             }
             info($"共发现 {messages.Count} 条收款记录");
+
             if (submit)
             {
-
+                handleMessageSubmit(messages);
             }
+        }
+
+        private void PutHandled(SqliteConnection conn, Message message)
+        {
+            using var cmd = new SqliteCommand("INSERT INTO 'handled_sequences'(`server_seq`,`sender_id`,`create_time`) VALUES($server_seq,$sender_id,$create_time);", conn);
+            cmd.Parameters.Add("$server_seq", SqliteType.Integer).Value = Convert.ToInt64(message.ServerSequence);
+            cmd.Parameters.Add("$sender_id", SqliteType.Text).Value = message.SenderId;
+            cmd.Parameters.Add("$create_time", SqliteType.Integer).Value = message.CreateTime.ToUnixTimeSeconds();
+            cmd.ExecuteNonQuery();
         }
 
         private SolidColorBrush brushLogNormal = new SolidColorBrush(Colors.Black);
@@ -219,6 +326,12 @@ namespace WeChatHook
         {
             ReloadConfig();
             SaveConfig();
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            watcher.EnableRaisingEvents = false;
+            watcher.Dispose();
         }
     }
 }

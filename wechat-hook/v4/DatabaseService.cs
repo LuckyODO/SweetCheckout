@@ -8,7 +8,7 @@ namespace WeChatHook
     {
         public string ServerSequence { get; set; }
         public string SenderId { get; set; }
-        public DateTime CreateTime { get; set; }
+        public DateTimeOffset CreateTime { get; set; }
         public string MessageContent { get; set; }
 
         private static Regex patternNormal = new Regex("收款(到账)?(\\d+\\.\\d{2})元");
@@ -22,8 +22,8 @@ namespace WeChatHook
                 throw new ArgumentException("Record does not contain server_seq");
             }
             var create_time_unix = Convert.ToInt64(record["create_time"].ToString());
-            DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            DateTime create_time = unixEpoch.AddSeconds(create_time_unix).ToLocalTime();
+            DateTimeOffset unixEpoch = new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero);
+            DateTimeOffset create_time = unixEpoch.AddSeconds(create_time_unix).ToLocalTime();
             var sender_id = DecryptService.GetString(record, "sender_id");
             if (sender_id == string.Empty)
             {
