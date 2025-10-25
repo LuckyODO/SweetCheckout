@@ -5,6 +5,8 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.wechat.pay.api.WXPay;
 import com.wechat.pay.utils.WXPayUtility;
+import io.github.eealba.payper.core.client.PayperAuthenticator;
+import io.github.eealba.payper.core.client.PayperConfig;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +25,9 @@ public class Configuration {
     private WeChatNative weChatNative = new WeChatNative();
     @SerializedName("alipay_face2face")
     private AlipayFaceToFace alipayFaceToFace = new AlipayFaceToFace();
+    @SerializedName("paypal")
+    private Paypal paypal = new Paypal();
+    @SerializedName("hook")
     private Hook hook = new Hook();
 
     /**
@@ -54,7 +59,8 @@ public class Configuration {
     protected void postLoad(File dataFolder) {
         getWeChatNative().postLoad(dataFolder);
         getAlipayFaceToFace().postLoad(dataFolder);
-        getHook().getAlipay().postLoad(dataFolder);
+        getPaypal().postLoad(dataFolder);
+        getHook().postLoad(dataFolder);
     }
 
     public int getPort() {
@@ -67,6 +73,10 @@ public class Configuration {
 
     public AlipayFaceToFace getAlipayFaceToFace() {
         return alipayFaceToFace;
+    }
+
+    public Paypal getPaypal() {
+        return paypal;
     }
 
     public Hook getHook() {
@@ -206,6 +216,40 @@ public class Configuration {
         }
     }
 
+    public static class Paypal {
+        private boolean enable = false;
+        @SerializedName("host")
+        private String host = "https://api-m.paypal.com";
+        @SerializedName("client_id")
+        private String clientId = "";
+        @SerializedName("client_secret")
+        private String clientSecret = "";
+
+        private PayperConfig config = null;
+
+        private void postLoad(File dataFolder) {
+            if (isEnable()) {
+                if (clientId.trim().isEmpty() || clientSecret.trim().isEmpty()) {
+                    config = null;
+                    return;
+                }
+                PayperAuthenticator auth = PayperAuthenticator.PayperAuthenticators
+                        .of(() -> host, () -> clientId.toCharArray(), () -> clientSecret.toCharArray());
+                config = PayperConfig.builder().authenticator(auth).build();
+            } else {
+                config = null;
+            }
+        }
+
+        public boolean isEnable() {
+            return enable;
+        }
+
+        public PayperConfig getConfig() {
+            return config;
+        }
+    }
+
     @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
     public static class Hook {
         private boolean enable = true;
@@ -230,6 +274,11 @@ public class Configuration {
 
         public AlipayHook getAlipay() {
             return alipay;
+        }
+
+        private void postLoad(File dataFolder) {
+            getWeChat().postLoad(dataFolder);
+            getAlipay().postLoad(dataFolder);
         }
     }
 
@@ -257,7 +306,7 @@ public class Configuration {
         @Expose(serialize = false, deserialize = false)
         private AlipayConfig config;
 
-        private void postLoad(File dataFolder) {
+        protected void postLoad(File dataFolder) {
             if (isEnable()) {
                 String privateKeyStr = getPrivateKey();
                 String publicKeyStr = getAlipayPublicKey();
@@ -301,6 +350,8 @@ public class Configuration {
         private Map<String, String> paymentUrls = new HashMap<String, String>() {{
             put("1.00", "示例，1元的收款码地址");
         }};
+
+        protected void postLoad(File dataFolder) {}
 
         public boolean isEnable() {
             return enable;
