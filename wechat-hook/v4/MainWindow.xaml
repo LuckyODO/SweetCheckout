@@ -13,6 +13,7 @@
         </Grid.RowDefinitions>
         <Menu Grid.Row="0">
             <MenuItem Header="文件">
+                <MenuItem Header="设置后端地址" Click="SetApiUrl_Click"/>
                 <MenuItem Header="设置密钥" Click="SetWeChatKey_Click"/>
                 <MenuItem Header="设置数据库路径" Click="SetWeChatDatabaseFolder_Click"/>
                 <Separator />

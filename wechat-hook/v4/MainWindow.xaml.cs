@@ -327,6 +327,17 @@ namespace WeChatHook
 
         private void error(string message) => log(LogLevel.Error, message);
 
+        private void SetApiUrl_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new DialogSetApiUrl(apiUrl);
+            if (dialog.ShowDialog() == true)
+            {
+                apiUrl = dialog.Text;
+                SaveConfig();
+                CheckWatcherStatus();
+            }
+        }
+
         private void SetWeChatKey_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new DialogSetKey(hexKey);
