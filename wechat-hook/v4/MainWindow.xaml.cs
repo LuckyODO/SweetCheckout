@@ -297,6 +297,7 @@ namespace WeChatHook
 
         private void PutHandled(SqliteConnection conn, Message message)
         {
+            debug($"提交 {message.SenderId} 在 {message.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")} 的消息 {message.ServerSequence} 为已处理: {message.MessageContent.Replace("\n", "").Replace("\r", "")}");
             using var cmd = new SqliteCommand("INSERT INTO 'handled_sequences'(`server_seq`,`sender_id`,`create_time`) VALUES($server_seq,$sender_id,$create_time);", conn);
             cmd.Parameters.Add("$server_seq", SqliteType.Integer).Value = Convert.ToInt64(message.ServerSequence);
             cmd.Parameters.Add("$sender_id", SqliteType.Text).Value = message.SenderId;
@@ -309,34 +310,54 @@ namespace WeChatHook
         private SolidColorBrush brushLogError = new SolidColorBrush(Colors.Red);
         enum LogLevel
         {
+            Debug,
             Info,
             Warning,
             Error
         }
         private void log(LogLevel level, string message)
         {
+            DateTime time = DateTime.Now;
             var inlines = TextLogs.Inlines;
-            inlines.Add(new Run(DateTime.Now.ToString("[MM-dd HH:mm:ss] ")) { Foreground = brushLogNormal });
+            var levelStr = "[信息]";
+            var show = level >= LogLevel.Info;
+            if (show) inlines.Add(new Run(time.ToString("[MM-dd HH:mm:ss] ")) { Foreground = brushLogNormal });
             switch(level)
             {
+                case LogLevel.Debug:
+                    levelStr = "[调试]";
+                    break;
                 case LogLevel.Info:
-                    inlines.Add(new Run("[信息]") { Foreground = brushLogNormal, FontWeight = FontWeights.Bold });
+                    levelStr = "[信息]";
+                    inlines.Add(new Run(levelStr) { Foreground = brushLogNormal, FontWeight = FontWeights.Bold });
                     break;
                 case LogLevel.Warning:
-                    inlines.Add(new Run("[警告]") { Foreground = brushLogWarning, FontWeight = FontWeights.Bold });
+                    levelStr = "[信息]";
+                    inlines.Add(new Run(levelStr) { Foreground = brushLogWarning, FontWeight = FontWeights.Bold });
                     break;
                 case LogLevel.Error:
-                    inlines.Add(new Run("[错误]") { Foreground = brushLogError, FontWeight = FontWeights.Bold });
+                    levelStr = "[错误]";
+                    inlines.Add(new Run(levelStr) { Foreground = brushLogError, FontWeight = FontWeights.Bold });
                     break;
             }
-            TextLogs.Inlines.Add(new Run(" " + message) { Foreground = brushLogNormal });
-            TextLogs.Inlines.Add(new LineBreak());
+            if (show)
+            {
+                TextLogs.Inlines.Add(new Run(" " + message) { Foreground = brushLogNormal });
+                TextLogs.Inlines.Add(new LineBreak());
+            }
+            string directory = Environment.CurrentDirectory + "\\logs\\";
+            string filePath = directory + time.ToString("yyyy-MM-dd") + ".log";
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+            string content = $"{time.ToString("[HH:mm:ss]")} {levelStr} {message}";
+            File.AppendAllText(filePath, content + Environment.NewLine, utf8);
         }
 
+        private void debug(string message) => log(LogLevel.Debug, message);
         private void info(string message) => log(LogLevel.Info, message);
-
         private void warn(string message) => log(LogLevel.Warning, message);
-
         private void error(string message) => log(LogLevel.Error, message);
 
         private void SetApiUrl_Click(object sender, RoutedEventArgs e)
