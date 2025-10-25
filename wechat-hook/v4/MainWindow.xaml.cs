@@ -287,7 +287,7 @@ namespace WeChatHook
                     }
                 }
             }
-            info($"共发现最近有 {messages.Count} 条收款记录");
+            info($"共发现最近 {DatabaseService.RecentMinutes} 分钟内有 {messages.Count} 条收款记录");
 
             handleMessageSubmit(messages, submit);
         }
