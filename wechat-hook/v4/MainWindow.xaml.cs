@@ -315,36 +315,42 @@ namespace WeChatHook
             Warning,
             Error
         }
+        private string GetLogLevelString(LogLevel level)
+        {
+            return level switch
+            {
+                LogLevel.Debug => "[调试]",
+                LogLevel.Info => "[信息]",
+                LogLevel.Warning => "[警告]",
+                LogLevel.Error => "[错误]",
+                _ => ""
+            };
+        }
         private void log(LogLevel level, string message)
         {
             DateTime time = DateTime.Now;
             var inlines = TextLogs.Inlines;
-            var levelStr = "[信息]";
+            var levelStr = GetLogLevelString(level);
             var show = level >= LogLevel.Info;
-            if (show) inlines.Add(new Run(time.ToString("[MM-dd HH:mm:ss] ")) { Foreground = brushLogNormal });
-            switch(level)
+
+            if (show) Dispatcher.Invoke(() =>
             {
-                case LogLevel.Debug:
-                    levelStr = "[调试]";
-                    break;
-                case LogLevel.Info:
-                    levelStr = "[信息]";
-                    inlines.Add(new Run(levelStr) { Foreground = brushLogNormal, FontWeight = FontWeights.Bold });
-                    break;
-                case LogLevel.Warning:
-                    levelStr = "[信息]";
-                    inlines.Add(new Run(levelStr) { Foreground = brushLogWarning, FontWeight = FontWeights.Bold });
-                    break;
-                case LogLevel.Error:
-                    levelStr = "[错误]";
-                    inlines.Add(new Run(levelStr) { Foreground = brushLogError, FontWeight = FontWeights.Bold });
-                    break;
-            }
-            if (show)
-            {
+                inlines.Add(new Run(time.ToString("[MM-dd HH:mm:ss] ")) { Foreground = brushLogNormal });
+                switch (level)
+                {
+                    case LogLevel.Info:
+                        inlines.Add(new Run(levelStr) { Foreground = brushLogNormal, FontWeight = FontWeights.Bold });
+                        break;
+                    case LogLevel.Warning:
+                        inlines.Add(new Run(levelStr) { Foreground = brushLogWarning, FontWeight = FontWeights.Bold });
+                        break;
+                    case LogLevel.Error:
+                        inlines.Add(new Run(levelStr) { Foreground = brushLogError, FontWeight = FontWeights.Bold });
+                        break;
+                }
                 TextLogs.Inlines.Add(new Run(" " + message) { Foreground = brushLogNormal });
                 TextLogs.Inlines.Add(new LineBreak());
-            }
+            });
             string directory = Environment.CurrentDirectory + "\\logs\\";
             string filePath = directory + time.ToString("yyyy-MM-dd") + ".log";
             if (!Directory.Exists(directory))
