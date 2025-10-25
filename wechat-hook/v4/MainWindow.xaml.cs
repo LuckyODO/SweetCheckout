@@ -329,7 +329,13 @@ namespace WeChatHook
 
         private void SetWeChatKey_Click(object sender, RoutedEventArgs e)
         {
-
+            var dialog = new DialogSetKey(hexKey);
+            if (dialog.ShowDialog() == true)
+            {
+                hexKey = dialog.Text;
+                SaveConfig();
+                CheckWatcherStatus();
+            }
         }
         private void SetWeChatDatabaseFolder_Click(object sender, RoutedEventArgs e)
         {
