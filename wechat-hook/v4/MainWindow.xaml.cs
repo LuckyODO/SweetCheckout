@@ -387,5 +387,10 @@ namespace WeChatHook
             watcher.EnableRaisingEvents = false;
             watcher.Dispose();
         }
+
+        private void ButtonClear_Click(object sender, RoutedEventArgs e)
+        {
+            TextLogs.Inlines.Clear();
+        }
     }
 }

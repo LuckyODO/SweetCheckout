@@ -26,10 +26,18 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" Margin="0,0,0,2">日志 </TextBlock>
+                <Grid Grid.Row="0" Margin="0,0,0,4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" VerticalAlignment="Center">日志</TextBlock>
+                    <Button Grid.Column="2" Width="60" Click="ButtonClear_Click">清空</Button>
+                </Grid>
                 <Border Grid.Row="1" BorderBrush="#000000" BorderThickness="1">
-                    <ScrollViewer VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Hidden" Margin="1">
-                        <TextBlock x:Name="TextLogs" VerticalAlignment="Top" TextWrapping="Wrap"></TextBlock>
+                    <ScrollViewer x:Name="ScrollBox" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Hidden" Margin="1">
+                        <TextBlock x:Name="TextLogs" VerticalAlignment="Top" Width="{Binding ElementName=ScrollBox, Path=ViewportWidth}" TextWrapping="Wrap" />
                     </ScrollViewer>
                 </Border>
             </Grid>
