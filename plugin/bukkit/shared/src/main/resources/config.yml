@@ -47,6 +47,8 @@ payment:
     wechat: true
     # 是否启用支付宝支付
     alipay: true
+    # 是否启用 Paypal 支付
+    paypal: true
   # 支付超时时间 (秒)
   timeout: 120
   # 是否允许价格自增

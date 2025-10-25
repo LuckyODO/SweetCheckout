@@ -33,7 +33,7 @@ public class ShopItem {
     public final @Nullable String permission;
     public final Modifiers modifiers;
     public final List<String> names;
-    public final boolean paymentAlipay, paymentWeChat;
+    public final boolean paymentAlipay, paymentWeChat, paymentPaypal;
     public final EnumLimitationMode limitationMode;
     public final int limitationCounts;
     public final List<IAction> limitationDenyActions;
@@ -44,7 +44,7 @@ public class ShopItem {
 
     public ShopItem(
             PluginCommon plugin, String id, String display, @Nullable String permission, Modifiers modifiers,
-            List<String> names, boolean paymentAlipay, boolean paymentWeChat,
+            List<String> names, boolean paymentAlipay, boolean paymentWeChat, boolean paymentPaypal,
             EnumLimitationMode limitationMode, int limitationCounts,
             List<IAction> limitationDenyActions, Period limitationReset,
             String price, List<IAction> rewards, List<IAction> resetActions
@@ -57,6 +57,7 @@ public class ShopItem {
         this.names = names;
         this.paymentAlipay = paymentAlipay;
         this.paymentWeChat = paymentWeChat;
+        this.paymentPaypal = paymentPaypal;
         this.limitationMode = limitationMode;
         this.limitationCounts = limitationCounts;
         this.limitationDenyActions = limitationDenyActions;
@@ -119,6 +120,7 @@ public class ShopItem {
     public static ShopItem load(PluginCommon plugin, ConfigurationSection config, String id) {
         boolean paymentAlipay = config.getBoolean("payment.alipay");
         boolean paymentWeChat = config.getBoolean("payment.wechat");
+        boolean paymentPaypal = config.getBoolean("payment.paypal");
         String display = config.getString("display", id);
         EnumLimitationMode limitationMode = Util.valueOr(EnumLimitationMode.class, config.getString("limitation.mode"), EnumLimitationMode.NONE);
         int limitationCounts = config.getInt("limitation.counts", 0);
@@ -211,7 +213,7 @@ public class ShopItem {
         String permission = config.getString("permission", null);
         Modifiers modifiers = Modifiers.load(config, "modifiers");
         return new ShopItem(plugin, id, display, permission == null ? null : permission.replace("%id%", id), modifiers,
-                names, paymentAlipay, paymentWeChat,
+                names, paymentAlipay, paymentWeChat, paymentPaypal,
                 limitationMode, limitationCounts,
                 limitationDenyActions, limitationReset,
                 String.format("%.2f", price), rewards, resetActions);

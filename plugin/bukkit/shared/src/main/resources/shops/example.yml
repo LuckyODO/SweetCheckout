@@ -16,6 +16,8 @@ payment:
   alipay: true
   # 是否允许使用微信
   wechat: true
+  # 是否允许使用 Paypal
+  paypal: true
 # 限购设置
 limitations:
   # 限购模式

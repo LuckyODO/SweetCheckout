@@ -46,8 +46,7 @@ import static top.mrxiaom.sweet.checkout.utils.Utils.*;
 @AutoRegister
 public class CommandMain extends AbstractModule implements CommandExecutor, TabCompleter, Listener {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    private boolean useWeChat;
-    private boolean useAlipay;
+    private boolean useWeChat, useAlipay, usePaypal;
     private int paymentTimeout;
     private int pointsScale;
     private Modifiers pointsModifiers;
@@ -69,6 +68,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
 
         useWeChat = config.getBoolean("payment.enable.wechat");
         useAlipay = config.getBoolean("payment.enable.alipay");
+        usePaypal = config.getBoolean("payment.enable.paypal");
         paymentTimeout = config.getInt("payment.timeout");
 
         allowIncreasing = config.getBoolean("payment.allow-increasing", false);
@@ -121,6 +121,10 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                 } else if ("alipay".equalsIgnoreCase(type)) {
                     if (!useAlipay) {
                         return Messages.commands__points__disabled__alipay.tm(player);
+                    }
+                } else if ("paypal".equalsIgnoreCase(type)) {
+                    if (!usePaypal) {
+                        return Messages.commands__points__disabled__paypal.tm(player);
                     }
                 } else {
                     return Messages.commands__points__unknown_type.tm(player);
@@ -204,6 +208,10 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                 } else if ("alipay".equalsIgnoreCase(type)) {
                     if (!shop.paymentAlipay) {
                         return Messages.commands__buy__disabled__alipay.tm(player);
+                    }
+                } else if ("paypal".equalsIgnoreCase(type)) {
+                    if (!shop.paymentPaypal) {
+                        return Messages.commands__buy__disabled__paypal.tm(player);
                     }
                 } else {
                     return Messages.commands__buy__unknown_type.tm(player);
@@ -531,6 +539,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                 List<String> list = new ArrayList<>();
                 if (useAlipay) list.add("alipay");
                 if (useWeChat) list.add("wechat");
+                if (usePaypal) list.add("paypal");
                 return startsWith(list, args[1]);
             }
             if ("buy".equalsIgnoreCase(args[0])) {
@@ -578,6 +587,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                 List<String> list = new ArrayList<>();
                 if (shop.paymentAlipay) list.add("alipay");
                 if (shop.paymentWeChat) list.add("wechat");
+                if (shop.paymentPaypal) list.add("paypal");
                 return startsWith(list, args[1]);
             }
         }

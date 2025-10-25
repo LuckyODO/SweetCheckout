@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import top.mrxiaom.sweet.checkout.backend.data.ClientInfo;
 import top.mrxiaom.sweet.checkout.backend.data.HookReceive;
 import top.mrxiaom.sweet.checkout.backend.payment.PaymentAlipay;
+import top.mrxiaom.sweet.checkout.backend.payment.PaymentPaypal;
 import top.mrxiaom.sweet.checkout.backend.payment.PaymentWeChat;
 import top.mrxiaom.sweet.checkout.backend.util.Util;
 import top.mrxiaom.sweet.checkout.packets.PacketSerializer;
@@ -30,6 +31,7 @@ public abstract class AbstractPaymentServer<C extends ClientInfo<C>> {
     Map<String, List<BiFunction>> executors = new HashMap<>();
     PaymentWeChat wechat = new PaymentWeChat(this);
     PaymentAlipay alipay = new PaymentAlipay(this);
+    PaymentPaypal paypal = new PaymentPaypal(this);
 
     public AbstractPaymentServer(Logger logger) {
         this.logger = logger;
@@ -124,6 +126,12 @@ public abstract class AbstractPaymentServer<C extends ClientInfo<C>> {
                 } else {
                     return alipay.handleFaceToFace(packet, client, config);
                 }
+            }
+        }
+        if (packet.getType().equals("paypal")) {
+            // Paypal 官方接口
+            if (config.getPaypal().isEnable()) {
+                return paypal.handleCreateOrder(packet, client, config);
             }
         }
         return new PacketPluginRequestOrder.Response("payment.type-unknown");
