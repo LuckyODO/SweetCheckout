@@ -236,7 +236,11 @@ namespace WeChatHook
             {
                 watcher.Path = realDbFolder;
                 watcher.EnableRaisingEvents = true;
-                if (!oldStatus) info("聊天数据文件监视器已开启");
+                if (!oldStatus)
+                {
+                    info("聊天数据文件监视器已开启");
+                    Dispatcher.InvokeAsync(() => ScanAll(false));
+                }
             }
             else
             {
@@ -249,7 +253,6 @@ namespace WeChatHook
         {
             ReloadConfig();
             SaveConfig();
-            Dispatcher.InvokeAsync(() => ScanAll(false));
         }
 
         private void ScanAll(bool submit)
