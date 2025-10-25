@@ -49,6 +49,7 @@ namespace WeChatHook
                 if (hexKey == string.Empty) return;
                 if (fileName.EndsWith(".db"))
                 {
+                    info($"检测到聊天数据变更 {fi.Name}");
                     var target = temp + "\\" + fi.Name;
                     DecryptService.DecryptDatabase(hexKey, fi.FullName, target);
                     var scan = DatabaseService.Scan(target);
@@ -57,7 +58,7 @@ namespace WeChatHook
             }
         }
 
-        private void handleMessageSubmit(ICollection<Message> messages)
+        private void handleMessageSubmit(ICollection<Message> messages, bool submitToBackend = true)
         {
             lock (storageConnectionString)
             {
@@ -92,6 +93,8 @@ namespace WeChatHook
                         if (handled.Contains(key)) continue;
                         // 提交为已处理消息
                         PutHandled(conn, message);
+                        if (!submitToBackend) continue;
+                        info($"提交收款记录到后端: ￥{message.Money}");
                         // 将消息发送给后端
                         if (apiUrl != string.Empty)
                         {
@@ -223,14 +226,17 @@ namespace WeChatHook
 
         private void CheckWatcherStatus()
         {
+            var oldStatus = watcher.EnableRaisingEvents;
             if (realDbFolder != string.Empty && hexKey != string.Empty)
             {
                 watcher.Path = realDbFolder;
                 watcher.EnableRaisingEvents = true;
+                if (!oldStatus) info("聊天数据文件监视器已开启");
             }
             else
             {
                 watcher.EnableRaisingEvents = false;
+                if (oldStatus) info("聊天数据文件监视器已关闭");
             }
         }
 
@@ -253,6 +259,7 @@ namespace WeChatHook
                 error("未设置微信数据库路径");
                 return;
             }
+            info("开始扫描所有聊天数据文件…");
             var messages = new HashSet<Message>();
             var directory = new DirectoryInfo(realDbFolder);
             foreach (var file in directory.GetFiles())
@@ -275,12 +282,9 @@ namespace WeChatHook
                     }
                 }
             }
-            info($"共发现 {messages.Count} 条收款记录");
+            info($"共发现最近有 {messages.Count} 条收款记录");
 
-            if (submit)
-            {
-                handleMessageSubmit(messages);
-            }
+            handleMessageSubmit(messages, submit);
         }
 
         private void PutHandled(SqliteConnection conn, Message message)
