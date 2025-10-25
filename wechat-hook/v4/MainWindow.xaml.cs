@@ -162,26 +162,19 @@ namespace WeChatHook
                     var users = new List<string>();
                     foreach (var item in directiroy.GetDirectories())
                     {
-                        if (item.Name.StartsWith("wxid_")) users.Add(item.Name);
+                        var fileName = item.Name;
+                        if (fileName == "all_users" || fileName == "Backup" || fileName == "WMPF") continue;
+                        string dbPath = directiroy.FullName + "\\" + item.Name + "\\db_storage\\message";
+                        if (Directory.Exists(dbPath)) users.Add(dbPath);
                     }
-                    if (users.Count > 1)
+                    realDbFolder = users.FirstOrDefault(string.Empty);
+                    if (realDbFolder == string.Empty)
                     {
-                        realDbFolder = "";
                         warn("当前环境有多位用户登录过微信，无法确定应该使用哪一个用户，请到左上角“文件”设置数据库路径。");
                     }
                     else
                     {
-                        string dbPath = directiroy.FullName + "\\" + users[0] + "\\db_storage\\message";
-                        if (!Directory.Exists(dbPath))
-                        {
-                            realDbFolder = "";
-                            warn($"已拼接微信数据库路径 {dbPath}，但路径指向的文件夹不存在，请到左上角“文件”设置数据库路径。");
-                        }
-                        else
-                        {
-                            realDbFolder = dbPath;
-                            info($"微信数据库路径 (自动选择): {realDbFolder}");
-                        }
+                        info($"微信数据库路径 (自动选择): {realDbFolder}");
                     }
                 }
             }
