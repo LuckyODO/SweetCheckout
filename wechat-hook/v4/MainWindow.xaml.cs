@@ -75,7 +75,7 @@ namespace WeChatHook
                         if (item.CreateTime <= outdate) continue;
                         list.Add(item);
                     }
-                    using var cmd = new SqliteCommand($"SELECT * FROM 'handled_sequences' WHERE create_time > {timestamp};");
+                    using var cmd = new SqliteCommand($"SELECT * FROM 'handled_sequences' WHERE create_time > {timestamp};", conn);
                     var reader = cmd.ExecuteReader();
                     var handled = new List<string>();
                     foreach (var item in reader)
