@@ -82,6 +82,7 @@ namespace WeChatHook
     public class DatabaseService
     {
         private static readonly List<string> AllowSenders = [ "gh_f0a92aa7146c", "gh_3dfda90e39d6" ];
+        public static int RecentMinutes = 15;
         public static List<Message> Scan(string dbFile)
         {
             var connectionString = new SqliteConnectionStringBuilder
@@ -108,7 +109,7 @@ namespace WeChatHook
                         }
                     }
                 }
-                var timestamp = DateTimeOffset.UtcNow.AddMinutes(-15).ToUnixTimeSeconds();
+                var timestamp = DateTimeOffset.UtcNow.AddMinutes(-RecentMinutes).ToUnixTimeSeconds();
                 foreach (var tableName in tables)
                 {
                     using var cmd = new SqliteCommand($"SELECT m.*, " +

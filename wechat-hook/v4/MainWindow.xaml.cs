@@ -63,7 +63,7 @@ namespace WeChatHook
             lock (storageConnectionString)
             {
                 // 筛选并提交未处理的收款消息到后端
-                var outdate = DateTimeOffset.UtcNow.AddMinutes(-15);
+                var outdate = DateTimeOffset.UtcNow.AddMinutes(-DatabaseService.RecentMinutes);
                 var timestamp = outdate.ToUnixTimeSeconds();
                 using (var conn = new SqliteConnection(storageConnectionString))
                 {
