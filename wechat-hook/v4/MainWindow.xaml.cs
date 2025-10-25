@@ -96,6 +96,7 @@ namespace WeChatHook
 
         private void handleMessageSubmit(ICollection<Message> messages, bool submitToBackend = true)
         {
+            if (messages.Count == 0) return;
             lock (storageConnectionString)
             {
                 // 筛选并提交未处理的收款消息到后端
