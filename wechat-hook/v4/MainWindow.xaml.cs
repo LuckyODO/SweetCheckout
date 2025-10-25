@@ -276,7 +276,7 @@ namespace WeChatHook
                 if (!oldStatus)
                 {
                     info("聊天数据文件监视器已开启");
-                    Dispatcher.BeginInvoke(async () => await ScanAll(false));
+                    Task.Run(async () => await ScanAll(false));
                 }
             }
             else
