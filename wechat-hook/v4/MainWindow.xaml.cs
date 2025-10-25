@@ -201,15 +201,7 @@ namespace WeChatHook
                     info($"微信数据库路径 (手动设置): {realDbFolder}");
                 }
             }
-
-            if (realDbFolder != string.Empty)
-            {
-                watcher.Path = realDbFolder;
-                watcher.EnableRaisingEvents = true;
-            } else
-            {
-                watcher.EnableRaisingEvents = false;
-            }
+            CheckWatcherStatus();
         }
 
         private void SaveConfig()
@@ -227,6 +219,19 @@ namespace WeChatHook
                 lines.Add(pair.Key + "=" + pair.Value);
             }
             File.WriteAllLines(path, lines, utf8);
+        }
+
+        private void CheckWatcherStatus()
+        {
+            if (realDbFolder != string.Empty && hexKey != string.Empty)
+            {
+                watcher.Path = realDbFolder;
+                watcher.EnableRaisingEvents = true;
+            }
+            else
+            {
+                watcher.EnableRaisingEvents = false;
+            }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -339,6 +344,7 @@ namespace WeChatHook
                 databaseFolder = ofd.FolderName;
                 realDbFolder = databaseFolder;
                 SaveConfig();
+                CheckWatcherStatus();
             }
         }
         private void ReloadConfig_Click(object sender, RoutedEventArgs e)
