@@ -307,10 +307,12 @@ namespace WeChatHook
             info("开始扫描所有聊天数据文件…");
             var messages = new HashSet<Message>();
             var directory = new DirectoryInfo(realDbFolder);
+            var warning = true;
             foreach (var file in directory.GetFiles())
             {
                 if (file.Name.StartsWith("biz_message_") && file.Name.EndsWith(".db"))
                 {
+                    warning = false;
                     try
                     {
                         var target = temp + "\\" + file.Name.Replace(".db", "") + "-" + Guid.NewGuid() + ".db";
@@ -328,7 +330,14 @@ namespace WeChatHook
                     }
                 }
             }
-            info($"共发现最近 {DatabaseService.RecentMinutes} 分钟内有 {messages.Count} 条收款记录");
+            if (warning)
+            {
+                warn($"在数据库文件夹下没有发现 .db 文件，你确定你输入的路径是正确的吗？");
+            }
+            else
+            {
+                info($"共发现最近 {DatabaseService.RecentMinutes} 分钟内有 {messages.Count} 条收款记录");
+            }
 
             handleMessageSubmit(messages, submit);
         }
