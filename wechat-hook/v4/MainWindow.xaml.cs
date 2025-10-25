@@ -453,6 +453,38 @@ namespace WeChatHook
             ReloadConfig();
             SaveConfig();
         }
+        private void ToolsCustomDecrypt_Click(object sender, RoutedEventArgs e)
+        {
+            var ofd = new OpenFileDialog
+            {
+                Title = "选择要解密的微信数据库文件",
+                Filter = "微信数据库文件 (*.db)|*.db",
+                Multiselect = false,
+                InitialDirectory = realDbFolder == string.Empty ? (Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\xwechat_files") : realDbFolder,
+            };
+            if (ofd.ShowDialog() == true)
+            {
+                var sfd = new SaveFileDialog
+                {
+                    Title = "选择解密后的保存位置",
+                    Filter = "SQLite 文件 (*.db)|*.db",
+                    FileName = Path.GetFileNameWithoutExtension(ofd.FileName) + "-decrypted.db",
+                    InitialDirectory = Environment.CurrentDirectory,
+                };
+                if (sfd.ShowDialog() == true)
+                {
+                    try
+                    {
+                        DecryptService.DecryptDatabase(hexKey, ofd.FileName, sfd.FileName);
+                        MessageBox.Show($"已将微信数据库文件解密并保存到\n{sfd.FileName}");
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"解密微信数据库文件时发生错误:\n {ex}");
+                    }
+                }
+            }
+        }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
