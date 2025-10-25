@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 using System.Data;
+using System.IO;
 using System.Text.RegularExpressions;
 
 namespace WeChatHook
@@ -83,19 +84,22 @@ namespace WeChatHook
     {
         private static readonly List<string> AllowSenders = [ "gh_f0a92aa7146c", "gh_3dfda90e39d6" ];
         public static int RecentMinutes = 15;
-        public static List<Message> Scan(string dbFile)
+        public static async Task<List<Message>> Scan(string dbFile)
         {
             var connectionString = new SqliteConnectionStringBuilder
             {
                 DataSource = dbFile,
-                Mode = SqliteOpenMode.ReadOnly
+                Mode = SqliteOpenMode.ReadOnly,
+                Cache = SqliteCacheMode.Shared,
+                Pooling = false,
             }.ToString();
-            using (var conn = new SqliteConnection(connectionString))
+            var conn = new SqliteConnection(connectionString);
+            await conn.OpenAsync();
+            var tables = new List<string>();
+            var messages = new List<Message>();
+            // 查询所有表，找到表名 Msg_ 开头的表
+            try
             {
-                conn.Open();
-                var tables = new List<string>();
-                var messages = new List<Message>();
-                // 查询所有表，找到表名 Msg_ 开头的表
                 using (var cmd = new SqliteCommand("SELECT name FROM sqlite_master WHERE type='table'", conn))
                 {
                     using var reader = cmd.ExecuteReader();
@@ -109,8 +113,15 @@ namespace WeChatHook
                         }
                     }
                 }
-                var timestamp = DateTimeOffset.UtcNow.AddMinutes(-RecentMinutes).ToUnixTimeSeconds();
-                foreach (var tableName in tables)
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"在读取数据库文件 ${new FileInfo(dbFile).Name} 的所有数据表时出现异常", e);
+            }
+            var timestamp = DateTimeOffset.UtcNow.AddMinutes(-RecentMinutes).ToUnixTimeSeconds();
+            foreach (var tableName in tables)
+            {
+                try
                 {
                     using var cmd = new SqliteCommand($"SELECT m.*, " +
                             $"CASE WHEN m.real_sender_id = 1 THEN 1 ELSE 0 END AS is_send, " +
@@ -129,11 +140,17 @@ namespace WeChatHook
                             var message = new Message(record);
                             if (message.Money != null) messages.Add(message);
                             //messages.Add(message);
-                        } catch { }
+                        }
+                        catch { }
                     }
                 }
-                return messages;
+                catch (Exception e)
+                {
+                    throw new Exception($"在读取数据库文件 ${new FileInfo(dbFile).Name} 的数据表 {tableName} 时出现异常", e);
+                }
             }
+            await conn.CloseAsync();
+            return messages;
         }
     }
 }

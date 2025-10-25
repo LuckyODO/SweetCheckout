@@ -29,8 +29,11 @@ namespace WeChatHook
         string storageConnectionString = new SqliteConnectionStringBuilder
         {
             DataSource = Environment.CurrentDirectory + "\\storage.db",
-            Mode = SqliteOpenMode.ReadWriteCreate
+            Mode = SqliteOpenMode.ReadWriteCreate,
+            Cache = SqliteCacheMode.Shared,
+            Pooling = false,
         }.ToString();
+        private HashSet<string> ProcessingFiles = [], NextProcessFiles = [];
         public MainWindow()
         {
             InitializeComponent();
@@ -40,7 +43,7 @@ namespace WeChatHook
             watcher.Changed += OnFileChanged;
         }
 
-        private void OnFileChanged(object sender, FileSystemEventArgs e)
+        private async void OnFileChanged(object sender, FileSystemEventArgs e)
         {
             var fi = new FileInfo(e.FullPath);
             var fileName = fi.Name;
@@ -50,11 +53,44 @@ namespace WeChatHook
                 if (fileName.EndsWith(".db"))
                 {
                     info($"检测到聊天数据变更 {fi.Name}");
-                    var target = temp + "\\" + fi.Name;
-                    DecryptService.DecryptDatabase(hexKey, fi.FullName, target);
-                    var scan = DatabaseService.Scan(target);
-                    handleMessageSubmit(scan);
+                    await OnFileChange(fi);
                 }
+            }
+        }
+
+        private async Task OnFileChange(FileInfo fi)
+        {
+            var fullPath = fi.FullName;
+            var target = temp + "\\" + fi.Name.Replace(".db", "") + "-" + Guid.NewGuid() + ".db";
+            if (ProcessingFiles.Contains(fullPath))
+            {
+                NextProcessFiles.Add(fullPath);
+                return;
+            }
+            List<Message> scan;
+            try
+            {
+                DecryptService.DecryptDatabase(hexKey, fi.FullName, target);
+                scan = await DatabaseService.Scan(target);
+                ProcessingFiles.Remove(fullPath);
+            }
+            catch (Exception ex)
+            {
+                warn($"(文件监听) {ex}");
+                ProcessingFiles.Remove(fullPath);
+                if (NextProcessFiles.Remove(fullPath)) OnFileChange(fi);
+                DeleteDatabaseFile(target);
+                return;
+            }
+            if (NextProcessFiles.Remove(fullPath))
+            {
+                DeleteDatabaseFile(target);
+                OnFileChange(fi);
+            }
+            else
+            {
+                handleMessageSubmit(scan);
+                DeleteDatabaseFile(target);
             }
         }
 
@@ -121,6 +157,7 @@ namespace WeChatHook
                             warn("未设置后端 API 地址，无法提交收款记录");
                         }
                     }
+                    conn.Close();
                 }
                 catch (Exception ex)
                 {
@@ -239,7 +276,7 @@ namespace WeChatHook
                 if (!oldStatus)
                 {
                     info("聊天数据文件监视器已开启");
-                    Dispatcher.InvokeAsync(() => ScanAll(false));
+                    Dispatcher.BeginInvoke(async () => await ScanAll(false));
                 }
             }
             else
@@ -255,7 +292,7 @@ namespace WeChatHook
             SaveConfig();
         }
 
-        private void ScanAll(bool submit)
+        private async Task ScanAll(bool submit)
         {
             if (hexKey == string.Empty)
             {
@@ -276,23 +313,31 @@ namespace WeChatHook
                 {
                     try
                     {
-                        var target = temp + "\\" + file.Name;
+                        var target = temp + "\\" + file.Name.Replace(".db", "") + "-" + Guid.NewGuid() + ".db";
                         DecryptService.DecryptDatabase(hexKey, file.FullName, target);
-                        var scan = DatabaseService.Scan(target);
+                        var scan = await DatabaseService.Scan(target);
                         foreach (var message in scan)
                         {
                             messages.Add(message);
                         }
+                        DeleteDatabaseFile(target);
                     }
                     catch (Exception ex)
                     {
-                        error($"处理 {file.Name} 时发生错误: ${ex.Message}");
+                        error($"(扫描全部) 处理 {file.Name} 时发生错误: ${ex}");
                     }
                 }
             }
             info($"共发现最近 {DatabaseService.RecentMinutes} 分钟内有 {messages.Count} 条收款记录");
 
             handleMessageSubmit(messages, submit);
+        }
+
+        private void DeleteDatabaseFile(string target)
+        {
+            if (File.Exists(target)) File.Delete(target);
+            if (File.Exists(target + "-shm")) File.Delete(target + "-shm");
+            if (File.Exists(target + "-wal")) File.Delete(target + "-wal");
         }
 
         private void PutHandled(SqliteConnection conn, Message message)
@@ -306,7 +351,7 @@ namespace WeChatHook
         }
 
         private SolidColorBrush brushLogNormal = new SolidColorBrush(Colors.Black);
-        private SolidColorBrush brushLogWarning = new SolidColorBrush(Colors.Yellow);
+        private SolidColorBrush brushLogWarning = new SolidColorBrush(Colors.Orange);
         private SolidColorBrush brushLogError = new SolidColorBrush(Colors.Red);
         enum LogLevel
         {
@@ -413,6 +458,15 @@ namespace WeChatHook
         {
             watcher.EnableRaisingEvents = false;
             watcher.Dispose();
+            var directory = new DirectoryInfo(temp);
+            foreach (var file in directory.GetFiles())
+            {
+                try
+                {
+                    file.Delete();
+                }
+                catch { }
+            }
         }
 
         private void ButtonClear_Click(object sender, RoutedEventArgs e)
