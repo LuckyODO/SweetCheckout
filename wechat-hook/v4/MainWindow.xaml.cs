@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.Sqlite;
+using Microsoft.Win32;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -313,7 +314,18 @@ namespace WeChatHook
         }
         private void SetWeChatDatabaseFolder_Click(object sender, RoutedEventArgs e)
         {
-
+            var ofd = new OpenFolderDialog
+            {
+                Title = "选择 “xwechat_files\\(用户文件夹)\\db_storage\\message”",
+                InitialDirectory = realDbFolder == string.Empty ? (Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\xwechat_files") : realDbFolder,
+                Multiselect = false
+            };
+            if (ofd.ShowDialog() == true)
+            {
+                databaseFolder = ofd.FolderName;
+                realDbFolder = databaseFolder;
+                SaveConfig();
+            }
         }
         private void ReloadConfig_Click(object sender, RoutedEventArgs e)
         {
