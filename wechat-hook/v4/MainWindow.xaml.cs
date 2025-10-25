@@ -65,8 +65,9 @@ namespace WeChatHook
                 // 筛选并提交未处理的收款消息到后端
                 var outdate = DateTimeOffset.UtcNow.AddMinutes(-DatabaseService.RecentMinutes);
                 var timestamp = outdate.ToUnixTimeSeconds();
-                using (var conn = new SqliteConnection(storageConnectionString))
+                try
                 {
+                    using var conn = new SqliteConnection(storageConnectionString);
                     conn.Open();
                     var list = new List<Message>();
                     foreach (var item in messages)
@@ -120,6 +121,10 @@ namespace WeChatHook
                             warn("未设置后端 API 地址，无法提交收款记录");
                         }
                     }
+                }
+                catch (Exception ex)
+                {
+                    error($"处理收款记录时发生错误: {ex.Message}");
                 }
             }
         }
