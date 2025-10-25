@@ -77,7 +77,13 @@ namespace WeChatHook
 
             using (var outputStream = new FileStream(outputPath, FileMode.Create, FileAccess.Write))
             {
-                var encryptedData = File.ReadAllBytes(dbPath);
+                FileStream fs = File.Open(dbPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                byte[] encryptedData;
+                using (var memoryStream = new MemoryStream())
+                {
+                    fs.CopyTo(memoryStream);
+                    encryptedData = memoryStream.ToArray();
+                }
                 var totalPages = (int)Math.Ceiling((double)encryptedData.Length / PageSize);
                 var salt = new byte[SaltSize];
                 Array.Copy(encryptedData, 0, salt, 0, SaltSize);
