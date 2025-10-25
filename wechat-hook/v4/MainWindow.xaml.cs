@@ -93,15 +93,29 @@ namespace WeChatHook
                         // 提交为已处理消息
                         PutHandled(conn, message);
                         // 将消息发送给后端
-                        var client = new HttpClient();
-                        var request = new HttpRequestMessage(HttpMethod.Post, new Uri(apiUrl));
-                        request.Content = JsonContent.Create(new
+                        if (apiUrl != string.Empty)
                         {
-                            type = "wechat",
-                            flag = message.SenderId == "gh_3dfda90e39d6" ? "reawrd-code" : "",
-                            money = message.Money ?? "",
-                        });
-                        client.Send(request);
+                            try
+                            {
+                                var client = new HttpClient();
+                                var request = new HttpRequestMessage(HttpMethod.Post, new Uri(apiUrl));
+                                request.Content = JsonContent.Create(new
+                                {
+                                    type = "wechat",
+                                    flag = message.SenderId == "gh_3dfda90e39d6" ? "reawrd-code" : "",
+                                    money = message.Money ?? "",
+                                });
+                                client.Send(request);
+                            }
+                            catch (Exception ex)
+                            {
+                                error($"提交收款记录时发生错误: {ex.Message}");
+                            }
+                        }
+                        else
+                        {
+                            warn("未设置后端 API 地址，无法提交收款记录");
+                        }
                     }
                 }
             }
