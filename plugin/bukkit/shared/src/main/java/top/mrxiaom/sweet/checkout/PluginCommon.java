@@ -26,7 +26,6 @@ import top.mrxiaom.sweet.checkout.nms.NMS;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.List;
 
 public abstract class PluginCommon extends BukkitPlugin {

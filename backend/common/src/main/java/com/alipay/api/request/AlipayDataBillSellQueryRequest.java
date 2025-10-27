@@ -1,12 +1,11 @@
 package com.alipay.api.request;
 
-import com.alipay.api.domain.AlipayDataBillSellQueryModel;
-import java.util.Map;
-
+import com.alipay.api.AlipayObject;
 import com.alipay.api.AlipayRequest;
 import com.alipay.api.internal.util.AlipayHashMap;
 import com.alipay.api.response.AlipayDataBillSellQueryResponse;
-import com.alipay.api.AlipayObject;
+
+import java.util.Map;
 
 /**
  * ALIPAY API: alipay.data.bill.sell.query request

@@ -1,7 +1,7 @@
 package com.wechat.pay.api;
 
-import com.google.gson.annotations.SerializedName;
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.wechat.pay.utils.WXPayUtility;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;

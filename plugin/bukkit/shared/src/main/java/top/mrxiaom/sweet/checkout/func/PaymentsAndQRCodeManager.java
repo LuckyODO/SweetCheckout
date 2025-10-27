@@ -38,7 +38,10 @@ import top.mrxiaom.sweet.checkout.packets.plugin.PacketPluginCancelOrder;
 import top.mrxiaom.sweet.checkout.utils.Utils;
 
 import java.io.File;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 @AutoRegister

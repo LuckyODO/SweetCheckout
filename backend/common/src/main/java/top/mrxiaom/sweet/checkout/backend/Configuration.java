@@ -8,9 +8,6 @@ import com.wechat.pay.api.WXPay;
 import com.wechat.pay.utils.WXPayUtility;
 import io.github.eealba.payper.core.client.PayperAuthenticator;
 import io.github.eealba.payper.core.client.PayperConfig;
-import io.github.eealba.payper.orders.v2.api.CheckoutOrdersApiClient;
-import io.github.eealba.payper.orders.v2.api.Orders;
-import io.github.eealba.payper.orders.v2.model.*;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,8 +16,6 @@ import top.mrxiaom.sweet.checkout.backend.util.NullAdapter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -321,6 +316,7 @@ public class Configuration {
         @SerializedName("seller_id")
         private String sellerId = "";
 
+        @JsonAdapter(NullAdapter.class)
         @Expose(serialize = false, deserialize = false)
         private AlipayConfig config;
 

@@ -1,9 +1,11 @@
 package com.wechat.pay.api;
 
-import com.wechat.pay.utils.WXPayUtility;
-
 import com.google.gson.annotations.SerializedName;
-import okhttp3.*;
+import com.wechat.pay.utils.WXPayUtility;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;

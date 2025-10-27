@@ -13,8 +13,6 @@ import top.mrxiaom.sweet.checkout.func.ShopManager;
 import top.mrxiaom.sweet.checkout.func.entry.ShopItem;
 import top.mrxiaom.sweet.checkout.func.modifier.OrderInfo;
 
-import java.util.Optional;
-
 public class Placeholders extends PlaceholdersExpansion<PluginCommon> {
     public Placeholders(PluginCommon plugin) {
         super(plugin);

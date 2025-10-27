@@ -17,7 +17,6 @@ import io.github.eealba.payper.core.web.Headers;
 import io.github.eealba.payper.core.web.Method;
 import io.github.eealba.payper.core.web.Request;
 
-import java.net.URI;
 import java.net.URL;
 import java.time.Duration;
 import java.util.HashMap;

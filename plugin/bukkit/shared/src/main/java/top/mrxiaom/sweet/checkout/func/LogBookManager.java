@@ -8,7 +8,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import top.mrxiaom.pluginbase.func.AutoRegister;
 import top.mrxiaom.pluginbase.utils.ConfigUtils;
 import top.mrxiaom.pluginbase.utils.Pair;
-import top.mrxiaom.pluginbase.utils.Util;
 import top.mrxiaom.pluginbase.utils.depend.PAPI;
 import top.mrxiaom.sweet.checkout.PluginCommon;
 import top.mrxiaom.sweet.checkout.database.TradeDatabase;

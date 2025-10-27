@@ -13,13 +13,7 @@
  */
 package io.github.eealba.payper.core.client.internal;
 
-import io.github.eealba.payper.core.client.Payper;
-import io.github.eealba.payper.core.client.PayperConfig;
-import io.github.eealba.payper.core.client.PayperProvider;
-import io.github.eealba.payper.core.client.PayperRequest;
-import io.github.eealba.payper.core.client.PayperResponse;
-import io.github.eealba.payper.core.client.RequestSpecsFactory;
-import io.github.eealba.payper.core.client.Spec;
+import io.github.eealba.payper.core.client.*;
 import io.github.eealba.payper.core.json.Json;
 
 import java.nio.charset.Charset;

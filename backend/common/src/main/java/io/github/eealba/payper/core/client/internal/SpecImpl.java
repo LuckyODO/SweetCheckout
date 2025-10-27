@@ -18,7 +18,10 @@ import io.github.eealba.payper.core.client.PayperRequest;
 import io.github.eealba.payper.core.client.PayperResponse;
 import io.github.eealba.payper.core.client.Spec;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * The type SpecImpl.

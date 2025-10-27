@@ -14,15 +14,7 @@
 package io.github.eealba.payper.orders.v2.api;
 
 import io.github.eealba.payper.core.client.RequestSpec;
-import io.github.eealba.payper.orders.v2.model.ConfirmOrderRequest;
-import io.github.eealba.payper.orders.v2.model.ErrorDefault;
-import io.github.eealba.payper.orders.v2.model.Order;
-import io.github.eealba.payper.orders.v2.model.OrderAuthorizeRequest;
-import io.github.eealba.payper.orders.v2.model.OrderAuthorizeResponse;
-import io.github.eealba.payper.orders.v2.model.OrderCaptureRequest;
-import io.github.eealba.payper.orders.v2.model.OrderRequest;
-import io.github.eealba.payper.orders.v2.model.OrderTrackerRequest;
-import io.github.eealba.payper.orders.v2.model.PatchRequest;
+import io.github.eealba.payper.orders.v2.model.*;
 /**
  * Interface representing the Orders API.
  *

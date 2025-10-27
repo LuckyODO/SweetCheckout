@@ -1,11 +1,11 @@
 package com.alipay.api.response;
 
-import java.util.List;
+import com.alipay.api.AlipayResponse;
+import com.alipay.api.domain.TradeItemResult;
 import com.alipay.api.internal.mapping.ApiField;
 import com.alipay.api.internal.mapping.ApiListField;
-import com.alipay.api.domain.TradeItemResult;
 
-import com.alipay.api.AlipayResponse;
+import java.util.List;
 
 /**
  * ALIPAY API: alipay.data.bill.sell.query response.
