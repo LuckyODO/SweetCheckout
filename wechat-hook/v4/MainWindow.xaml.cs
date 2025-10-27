@@ -2,10 +2,9 @@
 using Microsoft.Win32;
 using System.Data;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
@@ -26,6 +25,11 @@ namespace WeChatHook
         private string realDbFolder = "";
         string temp = Environment.CurrentDirectory + "\\.tmp";
         FileSystemWatcher watcher = new FileSystemWatcher();
+        JsonSerializerOptions serializerOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+            WriteIndented = false
+        };
         string storageConnectionString = new SqliteConnectionStringBuilder
         {
             DataSource = Environment.CurrentDirectory + "\\storage.db",
@@ -140,12 +144,16 @@ namespace WeChatHook
                             {
                                 var client = new HttpClient();
                                 var request = new HttpRequestMessage(HttpMethod.Post, new Uri(apiUrl));
-                                request.Content = JsonContent.Create(new
+                                
+                                string jsonString = JsonSerializer.Serialize(new
                                 {
                                     type = "wechat",
                                     flag = message.SenderId == "gh_3dfda90e39d6" ? "reawrd-code" : "",
                                     money = message.Money ?? "",
-                                });
+                                }, serializerOptions);
+                                request.Content = new StringContent(jsonString, utf8, "application/json");
+                                request.Content.Headers.ContentLength = utf8.GetByteCount(jsonString);
+
                                 client.Send(request);
                             }
                             catch (Exception ex)
