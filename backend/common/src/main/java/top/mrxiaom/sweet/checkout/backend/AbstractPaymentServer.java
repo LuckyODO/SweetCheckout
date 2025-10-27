@@ -221,11 +221,12 @@ public abstract class AbstractPaymentServer<C extends ClientInfo<C>> {
     }
 
     protected void receiveHook(CharSequence content) {
+        String str = content.toString();
         try {
-            HookReceive receive = gson.fromJson(content.toString(), HookReceive.class);
+            HookReceive receive = gson.fromJson(str, HookReceive.class);
             onHookReceive(receive);
         } catch (Throwable t) {
-            logger.warn("解析Hook消息时出现异常", t);
+            logger.warn("解析Hook消息时出现异常 `{}`", str, t);
         }
     }
 }
