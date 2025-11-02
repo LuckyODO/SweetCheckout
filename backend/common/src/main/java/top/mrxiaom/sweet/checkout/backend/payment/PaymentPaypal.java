@@ -1,5 +1,6 @@
 package top.mrxiaom.sweet.checkout.backend.payment;
 
+import io.github.eealba.payper.core.json.Json;
 import io.github.eealba.payper.orders.v2.api.CheckoutOrdersApiClient;
 import io.github.eealba.payper.orders.v2.model.*;
 import top.mrxiaom.sweet.checkout.backend.AbstractPaymentServer;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.TimerTask;
 
 public class PaymentPaypal<C extends ClientInfo<C>> {
+    private static final Json json = Json.create();
     AbstractPaymentServer<C> server;
     public PaymentPaypal(AbstractPaymentServer<C> server) {
         this.server = server;
@@ -42,6 +44,9 @@ public class PaymentPaypal<C extends ClientInfo<C>> {
                             .build())
                     .retrieve()
                     .toEntity();
+            if (config.isDebug()) {
+                server.getLogger().info("[DEBUG] Paypal 官方接口 下单结果: {}", json.toJson(createdOrder));
+            }
             String url = createdOrder.links().get(0).href();
 
             ClientInfo.Order<C> order = client.createOrder(orderId, "alipay", packet.getPlayerName(), packet.getPrice());
@@ -82,6 +87,9 @@ public class PaymentPaypal<C extends ClientInfo<C>> {
 
             // 查询订单
             Order response = api.orders().get().withId(outTradeNo).retrieve().toEntity();
+            if (config.isDebug()) {
+                server.getLogger().info("[DEBUG] Paypal 官方接口 检查结果: {}", json.toJson(response));
+            }
             switch (response.status()) {
                 // 订单是使用指定的上下文创建的。
                 case CREATED:

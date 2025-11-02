@@ -22,6 +22,9 @@ import java.util.Map;
 @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
 public class Configuration {
     private static Logger logger = LoggerFactory.getLogger(Configuration.class);
+    @SerializedName("debug")
+    private boolean debug = false;
+    @SerializedName("port")
     private int port = 62233;
     @SerializedName("wechat_native")
     private WeChatNative weChatNative = new WeChatNative();
@@ -63,6 +66,10 @@ public class Configuration {
         getAlipayFaceToFace().postLoad(dataFolder);
         getPaypal().postLoad(dataFolder);
         getHook().postLoad(dataFolder);
+    }
+
+    public boolean isDebug() {
+        return debug;
     }
 
     public int getPort() {

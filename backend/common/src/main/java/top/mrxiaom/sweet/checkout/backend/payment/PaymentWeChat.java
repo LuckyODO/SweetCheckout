@@ -1,8 +1,10 @@
 package top.mrxiaom.sweet.checkout.backend.payment;
 
+import com.google.gson.JsonParser;
 import com.wechat.pay.api.CloseOrder;
 import com.wechat.pay.api.NativePrepay;
 import com.wechat.pay.api.QueryByOutTradeNo;
+import com.wechat.pay.utils.WXPayUtility;
 import top.mrxiaom.sweet.checkout.backend.AbstractPaymentServer;
 import top.mrxiaom.sweet.checkout.backend.Configuration;
 import top.mrxiaom.sweet.checkout.backend.data.ClientInfo;
@@ -84,6 +86,9 @@ public class PaymentWeChat<C extends ClientInfo<C>> {
         NativePrepay.Response response;
         try {
             response = service.run(request);
+            if (config.isDebug()) {
+                server.getLogger().info("[DEBUG] 微信 Native支付 下单结果: {}", WXPayUtility.toJson(response));
+            }
         } catch (RuntimeException e) {
             client.removeOrder(orderId);
             server.getLogger().warn("微信 Native支付 API执行错误", e);
@@ -124,6 +129,9 @@ public class PaymentWeChat<C extends ClientInfo<C>> {
         QueryByOutTradeNo.Response response;
         try {
             response = service.run(request);
+            if (config.isDebug()) {
+                server.getLogger().info("[DEBUG] 微信 Native支付 检查结果: {}", WXPayUtility.toJson(response));
+            }
         } catch (RuntimeException e) {
             server.getLogger().warn("微信 Native支付 API检查订单时执行错误", e);
             return;

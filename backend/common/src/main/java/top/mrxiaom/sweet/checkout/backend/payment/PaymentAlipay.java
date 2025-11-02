@@ -88,6 +88,9 @@ public class PaymentAlipay<C extends ClientInfo<C>> {
 
             AlipayTradePrecreateResponse response = alipayClient.execute(request);
 
+            if (config.isDebug()) {
+                server.getLogger().info("[DEBUG] 支付宝 订单码支付 下单结果: {}", response);
+            }
             if (response.isSuccess()) {
                 ClientInfo.Order<C> order = client.createOrder(orderId, "alipay", packet.getPlayerName(), packet.getPrice());
                 String outTradeNo = response.getOutTradeNo();
@@ -177,6 +180,9 @@ public class PaymentAlipay<C extends ClientInfo<C>> {
             request.setBizModel(model);
             AlipayDataBillSellQueryResponse response = alipayClient.execute(request);
 
+            if (config.isDebug()) {
+                server.getLogger().info("[DEBUG] 支付宝 Hook 检查结果: {}", response);
+            }
             if (response.isSuccess()) {
                 TradeItemResult item = null;
                 // 筛选成功的、备注相符的条目
@@ -230,6 +236,9 @@ public class PaymentAlipay<C extends ClientInfo<C>> {
             request.setBizModel(model);
             AlipayDataBillSellQueryResponse response = alipayClient.execute(request);
 
+            if (config.isDebug()) {
+                server.getLogger().info("[DEBUG] 支付宝 轮询模式 检查结果: {}", response);
+            }
             if (response.isSuccess()) {
                 TradeItemResult item = null;
                 // 筛选成功的、备注相符的条目
@@ -288,6 +297,10 @@ public class PaymentAlipay<C extends ClientInfo<C>> {
             request.setBizModel(model);
 
             AlipayTradeQueryResponse response = alipayClient.execute(request);
+
+            if (config.isDebug()) {
+                server.getLogger().info("[DEBUG] 支付宝 订单码支付 检查结果: {}", response);
+            }
             if (response.isSuccess()) {
                 String status = response.getTradeStatus();
                 switch (status.toUpperCase()) {
@@ -331,6 +344,9 @@ public class PaymentAlipay<C extends ClientInfo<C>> {
             model.setOutTradeNo(outTradeNo);
             request.setBizModel(model);
             AlipayTradeCloseResponse response = alipayClient.execute(request);
+            if (config.isDebug()) {
+                server.getLogger().info("[DEBUG] 支付宝 订单码支付 关闭订单结果: {}", response);
+            }
             if (!response.isSuccess()) {
                 if (!response.getSubCode().equals("ACQ.TRADE_NOT_EXIST")) {
                     server.getLogger().warn("支付宝 订单码支付 关闭订单失败 {}, {} {}，要关闭的订单号 {}\n    {}", response.getMsg(), response.getSubCode(), response.getSubMsg(), outTradeNo, response.getBody());
