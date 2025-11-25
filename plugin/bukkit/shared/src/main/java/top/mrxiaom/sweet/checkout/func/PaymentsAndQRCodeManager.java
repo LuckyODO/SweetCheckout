@@ -13,11 +13,9 @@ import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
@@ -156,6 +154,13 @@ public class PaymentsAndQRCodeManager extends AbstractModule implements Listener
 
     private void onLeave(Player player) {
         remove(player);
+    }
+
+    @EventHandler(priority = EventPriority.LOW)
+    public void onPlayerInteract(PlayerInteractEvent e) {
+        if (isMap(e.getItem())) {
+            e.setCancelled(true);
+        }
     }
 
     @EventHandler
