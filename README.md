@@ -46,7 +46,7 @@ SweetCheckout 目录结构
 | ✅ | 支付宝    | Hook                                                                                     | 第三方接口。商家在后端配置各金额的支付`二维码`，付款时将二维码展示给用户，Hook截取开放平台的卖出交易查询信息，由后端进行确认付款的模式。 |
 | ✅ | 微信     | [Native](https://pay.weixin.qq.com/static/product/product_intro.shtml?name=native)       | 官方接口。Native支付是指商户系统按微信支付协议生成支付`二维码`，用户再用微信“扫一扫”完成支付的模式。                 |
 | ✅ | 微信     | Hook                                                                                     | 第三方接口。商家在后端配置各金额的支付`二维码`，付款时将二维码展示给用户，Hook截取微信PC版收款信息，由后端进行确认付款的模式。     |
-| ❔ | PayPal | Hook                                                                                     | 官方接口。通过第三方的API包装库 `payper`，向官方API发送请求，用户再通过返回的链接包装成的二维码完成支付的模式。         |
+| ❔ | PayPal | [PayPal REST API](https://developer.paypal.com/docs/api/orders/v2/)                      | 官方接口。通过第三方的API包装库 `payper`，向官方API发送请求，用户再通过返回的链接包装成的二维码完成支付的模式。         |
 
 + ✅ 代表 此方案可用，已测试通过。
 + ❔ 代表 此方案已实现，但由于开发者未申请相关接口等原因，未进行测试。
