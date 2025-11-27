@@ -192,7 +192,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
                 }
                 String shopId = args[1];
                 ShopItem shop = ShopManager.inst().get(shopId);
-                if (shop == null) {
+                if (shop == null || (shop.permission != null && !player.hasPermission(shop.permission))) {
                     return Messages.commands__buy__not_found.tm(player);
                 }
                 if (shop.checkLimitation(plugin, player)) {
