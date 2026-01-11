@@ -4,6 +4,7 @@ main: top.mrxiaom.sweet.checkout.SweetCheckout
 api-version: 1.13
 softdepend:
   - PlaceholderAPI
+  - SweetPlayerMarket
 authors: [ MrXiaoM ]
 folia-supported: true
 libraries:

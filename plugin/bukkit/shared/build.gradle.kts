@@ -16,6 +16,7 @@ dependencies {
     for (lib in libraries) {
         base.library(lib)
     }
+    compileOnly("com.github.MrXiaoM:SweetPlayerMarket:11dafcb097")
     compileOnly(project(":plugin:nms"))
     compileOnly(project(":packets"))
 }

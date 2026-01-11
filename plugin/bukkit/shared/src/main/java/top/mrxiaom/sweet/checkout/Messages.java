@@ -11,6 +11,9 @@ import static top.mrxiaom.pluginbase.func.language.LanguageEnumAutoHolder.wrap;
 @Language(prefix = "messages.")
 public enum Messages implements IHolderAccessor {
     not_connect("&e插件未连接到后端，请联系服务器管理员"),
+
+    market__not_allow("&e不允许上架该商品到全球市场"),
+
     commands__reload("&a配置文件已重载"),
     commands__reload_database("&a已重新连接到数据库"),
     commands__points__disabled__wechat("&e管理员已禁用微信支付"),
