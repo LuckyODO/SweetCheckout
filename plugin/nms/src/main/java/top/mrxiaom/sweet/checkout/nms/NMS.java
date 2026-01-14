@@ -19,7 +19,11 @@ public class NMS {
         if (loaded) return true;
         MinecraftVersion version = MinecraftVersion.getVersion();
         if (version.equals(MC1_21_R7)) {
-            mapPacket = new MapPacket_v1_21_R7();
+            try {
+                mapPacket = new MapPacket_mojmap_1_21_11();
+            } catch (Throwable ignored) {
+                mapPacket = new MapPacket_v1_21_R7();
+            }
             return loaded = true;
         }
         if (version.equals(MC1_21_R6)) {
