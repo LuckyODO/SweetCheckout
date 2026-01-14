@@ -18,7 +18,11 @@ public class NMS {
     public static boolean init() {
         if (loaded) return true;
         MinecraftVersion version = MinecraftVersion.getVersion();
-        if (version.equals(MC1_21_R7) || version.equals(MC1_21_R6)) {
+        if (version.equals(MC1_21_R7)) {
+            mapPacket = new MapPacket_v1_21_R7();
+            return loaded = true;
+        }
+        if (version.equals(MC1_21_R6)) {
             mapPacket = new MapPacket_v1_21_R6();
             return loaded = true;
         }
