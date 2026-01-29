@@ -19,7 +19,7 @@ payment:
   # 是否允许使用 Paypal
   paypal: true
 # 限购设置
-limitations:
+limitation:
   # 限购模式
   # GLOBAL     - 全服限购
   # PER_PLAYER - 每个玩家限购
