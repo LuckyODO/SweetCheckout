@@ -1,5 +1,5 @@
 subprojects {
-    val pluginBase = "1.7.1"
+    val pluginBase = "1.7.4"
     fun String.module(module: String): String {
         return "top.mrxiaom.pluginbase:$module:$this"
     }
