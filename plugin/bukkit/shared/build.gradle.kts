@@ -12,7 +12,7 @@ dependencies {
     for (lib in libraries) {
         base.library(lib)
     }
-    compileOnly("com.github.MrXiaoM:SweetPlayerMarket:11dafcb097")
+    compileOnly("com.github.MrXiaoM:SweetPlayerMarket:1.0.14")
     compileOnly(project(":plugin:nms"))
     compileOnly(project(":packets"))
 }
