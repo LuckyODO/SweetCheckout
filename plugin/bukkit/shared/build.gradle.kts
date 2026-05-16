@@ -12,6 +12,7 @@ dependencies {
     for (lib in libraries) {
         base.library(lib)
     }
+    base.collectPluginHolders()
     compileOnly("com.github.MrXiaoM:SweetPlayerMarket:1.0.14")
     compileOnly(project(":plugin:nms"))
     compileOnly(project(":packets"))

@@ -6,6 +6,7 @@ dependencies {
     compileOnly(project(":plugin:bukkit:shared"))
     compileOnly(project(":plugin:bukkit:with-backend"))
     compileOnly(project(":backend:common"))
+    base.collectPluginHolders()
 }
 java {
     val javaVersion = JavaVersion.toVersion(targetJavaVersion)

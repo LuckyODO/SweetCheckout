@@ -19,6 +19,7 @@ dependencies {
     for (library in libraries) {
         base.library(library)
     }
+    base.collectPluginHolders()
     implementation("top.mrxiaom:Java-WebSocket:1.5.8") { isTransitive = false }
     implementation(project(":plugin:bukkit:shared"))
     for (dependency in project.project(":plugin:nms").allprojects) {

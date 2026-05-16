@@ -1,4 +1,6 @@
+import com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer
 import com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer
+import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
 
 plugins {
     id("com.gradleup.shadow")
@@ -21,6 +23,7 @@ dependencies {
     for (library in libraries) {
         base.library(library)
     }
+    base.collectPluginHolders()
     val backendDependencies: List<String> by project.extra
     for (dependency in backendDependencies) {
         implementation(dependency)
@@ -35,6 +38,7 @@ dependencies {
 }
 tasks {
     shadowJar {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
         configurations.add(project.configurations.runtimeClasspath.get())
         configurations.add(shadowLink)
         val shadowRelocations: Map<String, String> by project.extra
@@ -52,6 +56,7 @@ tasks {
         ).plus(shadowRelocations).forEach { (original, target) ->
             relocate(original, "$shadowGroup.$target")
         }
+        append("META-INF/PluginBaseHolders")
         minimize {
             val dependencies = listOf(
                 "org.bouncycastle:bcprov-jdk15on",
